@@ -1,2 +1,6 @@
 *.o
-
+*.d
+*g_sim
+.*.swp
+*.out
+*.log
