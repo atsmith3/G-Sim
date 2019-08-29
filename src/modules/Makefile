@@ -1,4 +1,4 @@
-INCPATH = -I.
+INCPATH = -I. -Imemory
 CPPFLAGS += -Wall $(INCPATH)
 CPPFLAGS += -pg 
 LFLAGS += -pg
