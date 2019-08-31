@@ -1,7 +1,7 @@
-INCPATH = -I. -Imemory
+INCPATH = -I. -Imemory -Icrossbar
 CPPFLAGS += -Wall $(INCPATH)
-CPPFLAGS += -pg 
-LFLAGS += -pg
+#CPPFLAGS += -pg 
+#LFLAGS += -pg
 
 PROG := g_sim
 
