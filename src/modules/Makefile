@@ -1,5 +1,5 @@
 INCPATH = -I. -Imemory
-CPPFLAGS += -Wall $(INCPATH)
+CPPFLAGS += -std=c++11 -Wall $(INCPATH)
 CPPFLAGS += -pg 
 LFLAGS += -pg
 
