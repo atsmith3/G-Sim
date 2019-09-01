@@ -3,6 +3,7 @@
 
 #include "module.h"
 #include "memory.h"
+#include "crossbar.h"
 
 int main() {
   SimObj::Module start;
@@ -42,6 +43,24 @@ int main() {
       if(mem_test[j] == true) {
         mem_test[j] = false;
         std::cout << "MemTest " << j << " has finished @ tick: " << i << "\n";
+      }
+    }
+  }
+
+  // Crossbar Tests:
+  SimObj::Crossbar xbar(3);
+  for(int i = 0; i < 10; i++) {
+    uint64_t data = rand() % 10;
+    if(xbar.send_data(data)) {
+      std::cout << "Sent " << data << "\n";
+    }
+    else {
+      std::cout << "Failed to send " << data << "\n";
+      std::cout << "Reading data from ports:\n";
+      for(int j = 0; j < 10; j++) {
+        if(xbar.has_data(j % 3)) {
+          std::cout << "Read " << xbar.get_data(j % 3) << " From port " << j % 3 << "\n";
+        }
       }
     }
   }
