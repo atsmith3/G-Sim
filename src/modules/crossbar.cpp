@@ -11,7 +11,7 @@
 
 SimObj::Crossbar::Crossbar(uint64_t num_ports) {
   assert(num_ports > 0);
-  _max_queue_size = 1;
+  _max_queue_size = 2;
   _num_ports = num_ports;
   _msg_queue.resize(num_ports);
   _in_module.resize(num_ports);
@@ -49,7 +49,7 @@ bool SimObj::Crossbar::send_data(uint64_t data) {
 
 bool SimObj::Crossbar::has_data(uint64_t port_num) {
   assert(port_num < _num_ports);
-  return _msg_queue[port_num].empty();
+  return !_msg_queue[port_num].empty();
 }
 
 uint64_t SimObj::Crossbar::get_data(uint64_t port_num) {
