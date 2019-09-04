@@ -52,3 +52,15 @@ void SimObj::Module::set_prev(SimObj::Module* prev) {
   _prev = prev;
 }
 
+void SimObj::Module::update_stats() {
+  _stall_ticks[_stall]++;
+  if(_stall != STALL_CAN_ACCEPT) {
+    _stall_count++;
+  }
+}
+
+#ifdef DEBUG
+void SimObj::Module::set_stall(stall_t stall) {
+  _stall = stall;
+}
+#endif

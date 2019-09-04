@@ -30,7 +30,7 @@ enum msg_t {
 
 
 class Module {
-private:
+protected:
   uint64_t _tick;
   stall_t _stall;
   uint64_t _stall_count;
@@ -51,6 +51,11 @@ public:
   virtual void ready(void);
   void set_next(Module* next);
   void set_prev(Module* prev);
+  virtual void update_stats();
+
+#ifdef DEBUG
+  void set_stall(stall_t stall);
+#endif
 };
 
 } // namespace SimObj

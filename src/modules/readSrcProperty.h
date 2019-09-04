@@ -16,11 +16,43 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
+#include <map>
+
+#include "module.h"
+#include "memory.h"
 
 namespace SimObj {
 
-class ReadSrcProperty : public module {
 
+class ReadSrcProperty : public Module {
+private:
+  enum read_src_op_t {
+    OP_WAIT,
+    OP_FETCH,
+    OP_MEM_WAIT,
+    OP_NUM_OPS
+  };
+
+#ifdef DEBUG
+  std::map<int, std::string> _state_name = {
+    {0, "OP_WAIT"},
+    {1, "OP_FETCH"},
+    {2, "OP_MEM_WAIT"},
+    {3, "OP_NUM_OPS"}};
+#endif
+
+  Memory* _dram;
+  read_src_op_t _state;
+  bool _fetched;
+
+public:
+  bool _mem_flag;
+  ReadSrcProperty();
+  ReadSrcProperty(Memory* dram);
+  ~ReadSrcProperty();
+
+  void tick(void);
+  void ready(void);
 };
 
 } // namespace SimObj

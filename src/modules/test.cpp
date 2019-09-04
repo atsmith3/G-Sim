@@ -4,8 +4,10 @@
 #include "module.h"
 #include "memory.h"
 #include "crossbar.h"
+#include "readSrcProperty.h"
 
 int main() {
+#if 0
   SimObj::Module start;
   SimObj::Module middle;
   SimObj::Module end;
@@ -64,4 +66,34 @@ int main() {
       }
     }
   }
+#endif
+
+#if 1
+  // Test readSrcProperty;
+  SimObj::Module dummy;
+  SimObj::Memory mem(10, 100, 2);
+  SimObj::ReadSrcProperty p1(&mem);
+
+  // Connect:
+  p1.set_next(&dummy);
+  p1.set_prev(NULL);
+  dummy.set_next(NULL);
+  dummy.set_prev(&p1);
+  
+  dummy.set_stall(SimObj::STALL_CAN_ACCEPT);
+
+  for(int i = 0; i < 500; i++) {
+    p1.tick();
+    dummy.tick();
+
+    if(i == 200) {
+      dummy.set_stall(SimObj::STALL_PIPE);
+    }
+    if(i == 300) {
+      dummy.set_stall(SimObj::STALL_CAN_ACCEPT);
+    }
+  }
+#endif
+
+
 }
