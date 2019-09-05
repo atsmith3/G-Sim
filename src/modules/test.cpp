@@ -85,6 +85,7 @@ int main() {
   for(int i = 0; i < 500; i++) {
     p1.tick();
     dummy.tick();
+    mem.tick();
 
     if(i == 200) {
       dummy.set_stall(SimObj::STALL_PIPE);

@@ -45,6 +45,9 @@ void SimObj::ReadSrcProperty::tick() {
     case OP_WAIT : {
       if(_fetched && _next->is_stalled() == STALL_CAN_ACCEPT) {
         // Send Data Downstream
+#ifdef DEBUG
+        std::cout << "[ " << __func__ << " ] tick: " << _tick << "  sending data downstream\n";
+#endif
         _next->ready();
         _fetched = false;
         next_state = OP_WAIT;
@@ -60,10 +63,14 @@ void SimObj::ReadSrcProperty::tick() {
         next_state = OP_WAIT;
         _stall = STALL_PIPE;
       }
+      break;
     }
     case OP_FETCH : {
+      _mem_flag = false;
       _dram->read(0x100, &_mem_flag);
       _stall = STALL_MEM;
+      next_state = OP_MEM_WAIT;
+      break;
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
@@ -74,6 +81,7 @@ void SimObj::ReadSrcProperty::tick() {
         next_state = OP_MEM_WAIT;
         _stall = STALL_MEM;
       }
+      break;
     }
     default : {
 
@@ -81,7 +89,7 @@ void SimObj::ReadSrcProperty::tick() {
   }
 #ifdef DEBUG
   if(_state != next_state) {
-    std::cout << "[ " << __func__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[_state] << "\n";
+    std::cout << "[ " << __func__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }
 #endif
   _state = next_state;
