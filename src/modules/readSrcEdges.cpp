@@ -99,7 +99,7 @@ void SimObj::ReadSrcEdges::tick(void) {
   }
 #ifdef DEBUG
   if(_state != next_state) {
-    std::cout << "[ " << __func__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
+    std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }
 #endif
   _state = next_state;

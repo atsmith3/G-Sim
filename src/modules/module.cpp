@@ -39,9 +39,7 @@ uint64_t SimObj::Module::get_attr(void) {
 }
 
 void SimObj::Module::ready(void) {
-  if(_stall == STALL_CAN_ACCEPT) {
-    _stall = STALL_PROCESSING;
-  }
+  // Does Nothing
 }
 
 void SimObj::Module::set_next(SimObj::Module* next) {
