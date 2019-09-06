@@ -6,6 +6,7 @@
 #include "crossbar.h"
 #include "readSrcProperty.h"
 #include "readSrcEdges.h"
+#include "readDstProperty.h"
 
 int main() {
 #if 0
@@ -97,7 +98,7 @@ int main() {
   }
 #endif
 
-#if 1
+#if 0
   // Test readSrcEdges;
   SimObj::Module dummy;
   SimObj::Memory mem(10, 100, 2);
@@ -120,6 +121,37 @@ int main() {
     scratchpad.tick();
     p1.tick();
     p2.tick();
+    dummy.tick();
+  }
+#endif
+
+#if 1
+  // Test readSrcEdges;
+  SimObj::Module dummy;
+  SimObj::Memory mem(10, 100, 2);
+  SimObj::Memory scratchpad(2, 10, 1);
+  SimObj::ReadSrcProperty p1(&mem);
+  SimObj::ReadSrcEdges p2(&scratchpad);
+  SimObj::ReadDstProperty p3(&mem);
+
+  // Connect:
+  p1.set_next(&p2);
+  p1.set_prev(NULL);
+  p2.set_next(&p3);
+  p2.set_prev(&p1);
+  p3.set_next(&dummy);
+  p3.set_prev(&p2);
+  dummy.set_next(NULL);
+  dummy.set_prev(&p2);
+  
+  dummy.set_stall(SimObj::STALL_CAN_ACCEPT);
+
+  for(int i = 0; i < 500; i++) {
+    mem.tick();
+    scratchpad.tick();
+    p1.tick();
+    p2.tick();
+    p3.tick();
     dummy.tick();
   }
 #endif
