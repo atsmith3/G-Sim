@@ -46,7 +46,7 @@ public:
 
   stall_t is_stalled(void);
   virtual void tick(void);
-  virtual void recieve_message(msg_t msg);
+  virtual void receive_message(msg_t msg);
   uint64_t get_attr(void); 
   virtual void ready(void);
   void set_next(Module* next);

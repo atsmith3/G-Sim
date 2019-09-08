@@ -38,5 +38,9 @@ clean:
 	rm -f $(OBJS)
 	rm -f $(PROG)
 
+tidy:
+	rm -f $(CPP_DEPS)
+	rm -f $(OBJS)
+
 -include $(CPP_DEPS)
 

@@ -7,6 +7,7 @@
 #include "readSrcProperty.h"
 #include "readSrcEdges.h"
 #include "readDstProperty.h"
+#include "controlAtomicUpdate.h"
 
 int main() {
 #if 0
@@ -133,16 +134,19 @@ int main() {
   SimObj::ReadSrcProperty p1(&mem);
   SimObj::ReadSrcEdges p2(&scratchpad);
   SimObj::ReadDstProperty p3(&mem);
+  SimObj::ControlAtomicUpdate p4;
 
   // Connect:
   p1.set_next(&p2);
   p1.set_prev(NULL);
   p2.set_next(&p3);
   p2.set_prev(&p1);
-  p3.set_next(&dummy);
+  p3.set_next(&p4);
   p3.set_prev(&p2);
+  p4.set_next(&dummy);
+  p4.set_prev(&p3);
   dummy.set_next(NULL);
-  dummy.set_prev(&p2);
+  dummy.set_prev(&p4);
   
   dummy.set_stall(SimObj::STALL_CAN_ACCEPT);
 
@@ -152,6 +156,7 @@ int main() {
     p1.tick();
     p2.tick();
     p3.tick();
+    p4.tick();
     dummy.tick();
   }
 #endif

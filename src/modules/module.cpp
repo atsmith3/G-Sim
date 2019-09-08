@@ -29,7 +29,7 @@ void SimObj::Module::tick(void) {
   _tick++;
 }
 
-void SimObj::Module::recieve_message(SimObj::msg_t msg) {
+void SimObj::Module::receive_message(SimObj::msg_t msg) {
   // Process Message
 }
 
