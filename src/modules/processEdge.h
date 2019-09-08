@@ -1,17 +1,14 @@
 /*
  * Andrew Smith
  *
- * Reduction Function
- * 
- * User Programmable to perform graph application task.
- *  Hardcoded computational delay for now,
- *  ToDo: Actually perform graph operation.
+ * User Definable Function to process the edge.
+ *  Used in certain applications.
+ *  Purely computational delay
  *
  */
 
-
-#ifndef READDSTPROPERTY_H
-#define READDSTPROPERTY_H
+#ifndef PROCESSEDGE_H
+#define PROCESSEDGE_H
 
 #include <iostream>
 #include <vector>
@@ -21,10 +18,7 @@
 #include "module.h"
 #include "memory.h"
 
-namespace SimObj {
-
-
-class Reduce : public Module {
+class ProcessEdge : public Module {
 private:
   enum op_t {
     OP_WAIT,
@@ -44,14 +38,12 @@ private:
   bool _ready;
 
 public:
-  Reduce();
-  Reduce(int delay_cycles);
-  ~Reduce();
+  ProcessEdge();
+  ProcessEdge(int delay_cycles);
+  ~ProcessEdge();
 
   void tick(void);
   void ready(void);
 };
 
 } // namespace SimObj
-
-#endif

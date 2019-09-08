@@ -1,20 +1,18 @@
 /*
  * Andrew Smith
  *
- * Reduction Function
- * 
- * User Programmable to perform graph application task.
- *  Hardcoded computational delay for now,
- *  ToDo: Actually perform graph operation.
+ * User Definable Function to process the edge.
+ *  Used in certain applications.
+ *  Purely computational delay
  *
  */
 
 #include <cassert>
 
-#include "reduce.h"
+#include "processEdge.h"
 
 
-Reduce() {
+ProcessEdge() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -22,7 +20,7 @@ Reduce() {
   _delay_cycles = 1;
 }
 
-Reduce(int delay_cycles) {
+ProcessEdge(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -30,7 +28,7 @@ Reduce(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-~Reduce() {
+~ProcessEdge() {
   // Do Nothing
 }
 

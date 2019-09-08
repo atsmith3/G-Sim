@@ -1,41 +1,40 @@
 /*
- * Andrew Smith
  *
- * WriteTempDstProperty
- *  This is the last stage in the processing phase, it writes the temp value
- *  back to memory and tells the ControlAtomicUpdate module a edge has finished.
+ * Andrew Smith
+ * 
+ * WriteVertexProperty
+ *  This is the last stage in the apply phase
+ *  Writes the vertex value back to memory
  */
 
 #include <cassert>
 
-#include "writeTempDstProperty.h"
+#include "writeVertexProperty.h"
 
 
-SimObj::WriteTempDstProperty::WriteTempDstProperty() {
-  _scratchpad = NULL;
-  _cau = NULL;
+SimObj::WriteVertexProperty::WriteVertexProperty() {
+  _dram = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
 }
 
 
-SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, Module* cau) {
-  assert(scratchpad != NULL);
-  assert(cau != NULL);
-  _scratchpad = scratchpad;
+SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram) {
+  assert(dram != NULL);
+  _dram = dram;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
 }
 
 
-SimObj::WriteTempDstProperty::~WriteTempDstProperty() {
+SimObj::WriteVertexProperty::~WriteVertexProperty() {
   // Do Nothing
 }
 
 
-void SimObj::WriteTempDstProperty::tick(void) {
+void SimObj::WriteVertexProperty::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -57,31 +56,19 @@ void SimObj::WriteTempDstProperty::tick(void) {
     }
     case OP_WRITE : {
       _mem_flag = false;
-      _scratchpad->write(0x01, &_mem_flag);
+      _dram->write(0x01, &_mem_flag);
       _stall = STALL_MEM;
       next_state = OP_MEM_WAIT;
       break;
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        next_state = OP_SIGNAL_CAU;
-        _stall = STALL_PROCESSING;
-      }
-      else {
-        next_state = OP_MEM_WAIT;
-        _stall = STALL_MEM;
-      }
-      break;
-    }
-    case OP_SIGNAL_CAU : {
-      if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _cau->receive_msg(MSG_ATOMIC_OP_COMPLETE);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
       else {
-        next_state = OP_SEND_DOWNSTREAM;
-        _stall = STALL_PIPE;
+        next_state = OP_MEM_WAIT;
+        _stall = STALL_MEM;
       }
       break;
     }
@@ -99,6 +86,6 @@ void SimObj::WriteTempDstProperty::tick(void) {
 }
 
 
-void SimObj::WriteTempDstProperty::ready(void) {
+void SimObj::WriteVertexProperty::ready(void) {
   _ready = true;
 }
