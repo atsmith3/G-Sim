@@ -16,6 +16,7 @@
 
 #include "module.h"
 #include "memory.h"
+#include "controlAtomicUpdate.h"
 
 namespace SimObj {
 
@@ -41,14 +42,14 @@ private:
   Memory* _scratchpad;
   op_t _state;
   bool _ready;
-  Module* _cau;
+  ControlAtomicUpdate* _cau;
 
   uint64_t _edges_written;
 
 public:
   bool _mem_flag;
   WriteTempDstProperty();
-  WriteTempDstProperty(Memory* scratchpad, Module* cau);
+  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau);
   ~WriteTempDstProperty();
 
   void tick(void);

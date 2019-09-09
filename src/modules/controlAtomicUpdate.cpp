@@ -67,7 +67,7 @@ void SimObj::ControlAtomicUpdate::tick(void) {
     case OP_SEND : {
       if(_next->is_stalled() == STALL_CAN_ACCEPT) {
         _next->ready();
-        _edges.push_back(_cur_edge);
+        _edges.push_front(_cur_edge);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -106,7 +106,7 @@ void SimObj::ControlAtomicUpdate::tick(void) {
 
 void SimObj::ControlAtomicUpdate::ready(void) {
   _ready = true;
-  _cur_edge = rand() % 10;
+  _cur_edge = rand() % 400;
 }
 
 

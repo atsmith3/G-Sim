@@ -18,6 +18,7 @@
 
 #include "module.h"
 #include "memory.h"
+#include "controlAtomicUpdate.h"
 
 namespace SimObj {
 

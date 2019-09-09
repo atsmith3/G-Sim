@@ -59,6 +59,7 @@ void SimObj::ProcessEdge::tick(void) {
         _stall = STALL_PROCESSING;
       }
       else {
+        _next->ready();
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }

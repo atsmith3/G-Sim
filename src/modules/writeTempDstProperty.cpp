@@ -20,10 +20,11 @@ SimObj::WriteTempDstProperty::WriteTempDstProperty() {
 }
 
 
-SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, Module* cau) {
+SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau) {
   assert(scratchpad != NULL);
   assert(cau != NULL);
   _scratchpad = scratchpad;
+  _cau = cau;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;

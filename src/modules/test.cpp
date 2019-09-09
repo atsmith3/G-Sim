@@ -132,15 +132,15 @@ int main() {
 
 #if 1
   // Processing Phase Pipeline:
-  SimObj::Memory mem(10, 100, 2);
-  SimObj::Memory scratchpad(2, 10, 1);
+  SimObj::Memory mem(1, 1, 10);
+  SimObj::Memory scratchpad(1, 1, 10);
   SimObj::ReadSrcProperty p1(&mem);
   SimObj::ReadSrcEdges p2(&scratchpad);
   SimObj::ReadDstProperty p3(&mem);
-  SimObj::ProcessEdge p4(3);
+  SimObj::ProcessEdge p4(1);
   SimObj::ControlAtomicUpdate p5;
   SimObj::ReadTempDstProperty p6(&scratchpad);
-  SimObj::Reduce p7(3);
+  SimObj::Reduce p7(1);
   SimObj::WriteTempDstProperty p8(&scratchpad, &p5);
 
   // Connect:
