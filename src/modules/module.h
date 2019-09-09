@@ -9,6 +9,7 @@
 #define MODULE_H
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <cstdint>
 
@@ -31,6 +32,7 @@ enum msg_t {
 
 class Module {
 protected:
+  std::string _name;
   uint64_t _tick;
   stall_t _stall;
   uint64_t _stall_count;
@@ -52,6 +54,8 @@ public:
   void set_next(Module* next);
   void set_prev(Module* prev);
   virtual void update_stats();
+  virtual void print_stats();
+  virtual void set_name(std::string name);
 
 #ifdef DEBUG
   void set_stall(stall_t stall);

@@ -27,6 +27,7 @@ SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, Module* c
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  _edges_written = 0;
 }
 
 
@@ -74,6 +75,7 @@ void SimObj::WriteTempDstProperty::tick(void) {
       break;
     }
     case OP_SIGNAL_CAU : {
+      _edges_written++;
       _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
       next_state = OP_WAIT;
       _stall = STALL_CAN_ACCEPT;
@@ -92,7 +94,19 @@ void SimObj::WriteTempDstProperty::tick(void) {
   update_stats();
 }
 
-
 void SimObj::WriteTempDstProperty::ready(void) {
   _ready = true;
+}
+
+void SimObj::WriteTempDstProperty::print_stats(void) {
+  std::cout << "-------------------------------------------------------------------------------\n";
+  std::cout << "[ " << _name << " ]\n";
+  std::cout << "  Stalls:\n";
+  std::cout << "    STALL_CAN_ACCEPT: " << _stall_ticks[STALL_CAN_ACCEPT] << " cycles\n";
+  std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
+  std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
+  std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
+  std::cout << "  Performance:\n";
+  std::cout << "    Edges:            " << _edges_written << "\n";
+  std::cout << "    Cycles:           " << _tick << "\n";
 }

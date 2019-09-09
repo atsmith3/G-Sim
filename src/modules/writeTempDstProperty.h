@@ -43,6 +43,8 @@ private:
   bool _ready;
   Module* _cau;
 
+  uint64_t _edges_written;
+
 public:
   bool _mem_flag;
   WriteTempDstProperty();
@@ -51,6 +53,7 @@ public:
 
   void tick(void);
   void ready(void);
+  void print_stats();
 };
 
 } // namespace SimObj

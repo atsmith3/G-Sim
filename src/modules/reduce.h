@@ -10,8 +10,8 @@
  */
 
 
-#ifndef READDSTPROPERTY_H
-#define READDSTPROPERTY_H
+#ifndef REDUCE_H
+#define REDUCE_H
 
 #include <iostream>
 #include <vector>
@@ -22,7 +22,6 @@
 #include "memory.h"
 
 namespace SimObj {
-
 
 class Reduce : public Module {
 private:

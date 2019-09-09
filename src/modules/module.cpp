@@ -57,6 +57,20 @@ void SimObj::Module::update_stats() {
   }
 }
 
+void SimObj::Module::set_name(std::string name) {
+  _name = name;
+}
+
+void SimObj::Module::print_stats() {
+  std::cout << "-------------------------------------------------------------------------------\n";
+  std::cout << "[ " << _name << " ]\n";
+  std::cout << "  Stalls:\n";
+  std::cout << "    STALL_CAN_ACCEPT: " << _stall_ticks[STALL_CAN_ACCEPT] << " cycles\n";
+  std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
+  std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
+  std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
+}
+
 #ifdef DEBUG
 void SimObj::Module::set_stall(stall_t stall) {
   _stall = stall;

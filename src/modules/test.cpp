@@ -8,6 +8,10 @@
 #include "readSrcEdges.h"
 #include "readDstProperty.h"
 #include "controlAtomicUpdate.h"
+#include "processEdge.h"
+#include "readTempDstProperty.h"
+#include "reduce.h"
+#include "writeTempDstProperty.h"
 
 int main() {
 #if 0
@@ -127,14 +131,17 @@ int main() {
 #endif
 
 #if 1
-  // Test readSrcEdges;
-  SimObj::Module dummy;
+  // Processing Phase Pipeline:
   SimObj::Memory mem(10, 100, 2);
   SimObj::Memory scratchpad(2, 10, 1);
   SimObj::ReadSrcProperty p1(&mem);
   SimObj::ReadSrcEdges p2(&scratchpad);
   SimObj::ReadDstProperty p3(&mem);
-  SimObj::ControlAtomicUpdate p4;
+  SimObj::ProcessEdge p4(3);
+  SimObj::ControlAtomicUpdate p5;
+  SimObj::ReadTempDstProperty p6(&scratchpad);
+  SimObj::Reduce p7(3);
+  SimObj::WriteTempDstProperty p8(&scratchpad, &p5);
 
   // Connect:
   p1.set_next(&p2);
@@ -143,21 +150,46 @@ int main() {
   p2.set_prev(&p1);
   p3.set_next(&p4);
   p3.set_prev(&p2);
-  p4.set_next(&dummy);
+  p4.set_next(&p5);
   p4.set_prev(&p3);
-  dummy.set_next(NULL);
-  dummy.set_prev(&p4);
+  p5.set_next(&p6);
+  p5.set_prev(&p4);
+  p6.set_next(&p7);
+  p6.set_prev(&p5);
+  p7.set_next(&p8);
+  p7.set_prev(&p6);
+  p8.set_next(NULL);
+  p8.set_prev(&p7);
   
-  dummy.set_stall(SimObj::STALL_CAN_ACCEPT);
+  p1.set_name("ReadSrcProperty");
+  p2.set_name("ReadSrcEdges");
+  p3.set_name("ReadDstProperty");
+  p4.set_name("ProcessEdge");
+  p5.set_name("ControlAtomicUpdate");
+  p6.set_name("ReadTempDstProperty");
+  p7.set_name("Reduce");
+  p8.set_name("WriteTempDestProperty");
 
-  for(int i = 0; i < 500; i++) {
+  for(int i = 0; i < 10000; i++) {
     mem.tick();
     scratchpad.tick();
     p1.tick();
     p2.tick();
     p3.tick();
     p4.tick();
-    dummy.tick();
+    p5.tick();
+    p6.tick();
+    p7.tick();
+    p8.tick();
   }
+
+  p1.print_stats();
+  p2.print_stats();
+  p3.print_stats();
+  p4.print_stats();
+  p5.print_stats();
+  p6.print_stats();
+  p7.print_stats();
+  p8.print_stats();
 #endif
 }
