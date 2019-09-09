@@ -14,7 +14,7 @@
 #include "reduce.h"
 
 
-Reduce() {
+SimObj::Reduce::Reduce() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -22,7 +22,7 @@ Reduce() {
   _delay_cycles = 1;
 }
 
-Reduce(int delay_cycles) {
+SimObj::Reduce::Reduce(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -30,11 +30,11 @@ Reduce(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-~Reduce() {
+SimObj::Reduce::~Reduce() {
   // Do Nothing
 }
 
-void tick(void) {
+void SimObj::Reduce::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -81,6 +81,6 @@ void tick(void) {
 
 }
 
-void ready(void) {
+void SimObj::Reduce::ready(void) {
   _ready = true;
 }

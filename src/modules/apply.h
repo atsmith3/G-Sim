@@ -18,6 +18,8 @@
 #include "module.h"
 #include "memory.h"
 
+namespace SimObj {
+
 class Apply : public Module {
 private:
   enum op_t {
@@ -36,6 +38,7 @@ private:
   op_t _state;
   uint64_t _counter;
   bool _ready;
+  uint64_t _delay_cycles;
 
 public:
   Apply();
@@ -45,5 +48,7 @@ public:
   void tick(void);
   void ready(void);
 };
+
+} // namespace SimObj
 
 #endif

@@ -42,6 +42,7 @@ private:
   op_t _state;
   uint64_t _counter;
   bool _ready;
+  uint64_t _delay_cycles;
 
 public:
   Reduce();

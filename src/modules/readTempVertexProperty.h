@@ -20,7 +20,7 @@
 namespace SimObj {
 
 
-class ReadTempTempVertexProperty : public Module {
+class ReadTempVertexProperty : public Module {
 private:
   enum op_t {
     OP_WAIT,

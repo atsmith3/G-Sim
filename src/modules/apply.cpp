@@ -10,10 +10,10 @@
 
 #include <cassert>
 
-#include "processEdge.h"
+#include "apply.h"
 
 
-Apply() {
+SimObj::Apply::Apply() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -21,7 +21,7 @@ Apply() {
   _delay_cycles = 1;
 }
 
-Apply(int delay_cycles) {
+SimObj::Apply::Apply(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -29,11 +29,11 @@ Apply(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-~Apply() {
+SimObj::Apply::~Apply() {
   // Do Nothing
 }
 
-void tick(void) {
+void SimObj::Apply::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -80,6 +80,6 @@ void tick(void) {
 
 }
 
-void ready(void) {
+void SimObj::Apply::ready(void) {
   _ready = true;
 }

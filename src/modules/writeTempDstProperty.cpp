@@ -74,15 +74,9 @@ void SimObj::WriteTempDstProperty::tick(void) {
       break;
     }
     case OP_SIGNAL_CAU : {
-      if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _cau->receive_msg(MSG_ATOMIC_OP_COMPLETE);
-        next_state = OP_WAIT;
-        _stall = STALL_CAN_ACCEPT;
-      }
-      else {
-        next_state = OP_SEND_DOWNSTREAM;
-        _stall = STALL_PIPE;
-      }
+      _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
+      next_state = OP_WAIT;
+      _stall = STALL_CAN_ACCEPT;
       break;
     }
     default : {

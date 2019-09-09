@@ -9,20 +9,20 @@
 
 #include <cassert>
 
-#include "readDstProperty.h"
+#include "readTempDstProperty.h"
 
 
 SimObj::ReadTempDstProperty::ReadTempDstProperty() {
-  _dram = NULL;
+  _scratchpad = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
 }
 
 
-SimObj::ReadTempDstProperty::ReadTempDstProperty(Memory* dram) {
-  assert(dram != NULL);
-  _dram = dram;
+SimObj::ReadTempDstProperty::ReadTempDstProperty(Memory* scratchpad) {
+  assert(scratchpad != NULL);
+  _scratchpad = scratchpad;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -56,7 +56,7 @@ void SimObj::ReadTempDstProperty::tick(void) {
     }
     case OP_FETCH : {
       _mem_flag = false;
-      _dram->read(0x01, &_mem_flag);
+      _scratchpad->read(0x01, &_mem_flag);
       _stall = STALL_MEM;
       next_state = OP_MEM_WAIT;
       break;

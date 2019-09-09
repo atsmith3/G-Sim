@@ -18,6 +18,8 @@
 #include "module.h"
 #include "memory.h"
 
+namespace SimObj {
+
 class ProcessEdge : public Module {
 private:
   enum op_t {
@@ -30,12 +32,13 @@ private:
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
     {1, "OP_COUNT"},
-    {4, "OP_NUM_OPS"}};
+    {2, "OP_NUM_OPS"}};
 #endif
 
   op_t _state;
   uint64_t _counter;
   bool _ready;
+  uint64_t _delay_cycles;
 
 public:
   ProcessEdge();
@@ -47,3 +50,5 @@ public:
 };
 
 } // namespace SimObj
+
+#endif

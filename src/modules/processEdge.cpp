@@ -12,7 +12,7 @@
 #include "processEdge.h"
 
 
-ProcessEdge() {
+SimObj::ProcessEdge::ProcessEdge() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -20,7 +20,7 @@ ProcessEdge() {
   _delay_cycles = 1;
 }
 
-ProcessEdge(int delay_cycles) {
+SimObj::ProcessEdge::ProcessEdge(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -28,11 +28,11 @@ ProcessEdge(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-~ProcessEdge() {
+SimObj::ProcessEdge::~ProcessEdge() {
   // Do Nothing
 }
 
-void tick(void) {
+void SimObj::ProcessEdge::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -79,6 +79,6 @@ void tick(void) {
 
 }
 
-void ready(void) {
+void SimObj::ProcessEdge::ready(void) {
   _ready = true;
 }
