@@ -1,0 +1,110 @@
+/******************************************************************************
+Copyright (c) 2018 Georgia Instititue of Technology
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*******************************************************************************/
+
+/*
+ * Adapted from MAESTRO options
+ */
+
+#ifndef OPTION_H
+#define OPTION_H
+
+#include <iostream>
+#include <list>
+#include <string>
+
+#include <boost/program_options.hpp>
+
+namespace Utility {
+
+  namespace po = boost::program_options;
+
+  class Options {
+    public:
+      std::string logfile = "";
+      
+      // Scratchpad options
+      uint64_t scratchpad_read_latency = 1;
+      uint64_t scratchpad_write_latency = 1;
+      uint64_t scratchpad_num_simultaneous_requests = 4;
+      uint64_t scratchpad_data_width = 4;
+      
+      // Scratchpad options
+      uint64_t dram_read_latency = 5;
+      uint64_t dram_write_latency = 30;
+      uint64_t dram_num_simultaneous_requests = 4;
+      uint64_t dram_data_width = 256;
+
+      // Simultaion Options
+      uint64_t num_iter = 10000;
+      uint64_t num_pipelines = 1;
+
+      bool parse(long long int argc, char** argv)
+      {
+          std::vector<std::string> config_fnames;
+
+          po::options_description desc("General Options");
+          desc.add_options()
+            ("help", "Display help message")
+          ;
+
+          po::options_description io("File IO options");
+          io.add_options()
+            ("logfile", po::value<std::string>(&logfile) ,"the name of the log file to write to")
+          ;
+
+          po::options_description scratch("Scratchpad Options");
+          scratchpad.add_options()
+            ("scratch_read_latency", po::value<uint64_t>(&scratchpad_read_latency), "scratchpad read latency in cycles")
+            ("scratch_write_latency", po::value<uint64_t>(&scratchpad_write_latency), "scratchpad write latency in cycles")
+            ("scratch_num_requests", po::value<uint64_t>(&scratchpad_num_simultaneous_requests), "number of simultaneous requests")
+            ("scratch_width", po::value<uint64_t>(&scratchpad_data_width), "scratchpad data width in bytes");
+          ;
+
+          po::options_description dram("DRAM Options");
+          scratchpad.add_options()
+            ("dram_read_latency", po::value<uint64_t>(&dram_read_latency), "dram read latency in cycles")
+            ("dram_write_latency", po::value<uint64_t>(&dram_write_latency), "dram write latency in cycles")
+            ("dram_num_requests", po::value<uint64_t>(&dram_num_simultaneous_requests), "number of simultaneous requests")
+            ("dram_width", po::value<uint64_t>(&dram_data_width), "dram data width in bytes");
+          ;
+
+          po::options_description sim("Simulation Options");
+          pe_array.add_options()
+            ("num_iter", po::value<uint64_t>(&num_iter), "the number of iterations to simulate")
+            ("num_pipelines", po::value<uint64_t>(&num_pipelines), "the number of pipelines in parallel")
+          ;
+
+
+          po::options_description all_options;
+          all_options.add(desc);
+          all_options.add(io);
+          all_options.add(scratch);
+          all_options.add(dram);
+          all_options.add(sim);
+
+
+          po::variables_map vm;
+          po::store(po::parse_command_line(argc, argv, all_options), vm);
+          po::notify(vm);
+
+          return true;
+      }
+  }; //End of class Options
+}; //End of namespace maestro
+#endif
