@@ -18,9 +18,14 @@
 #include "readTempVertexProperty.h"
 #include "writeVertexProperty.h"
 
+#include "option.h"
+
 #define ITERATIONS 10000
 
-int main() {
+int main(int argc, char** argv) {
+  Utility::Options opt;
+  opt.parse(argc, argv);
+
   // Processing Phase Pipeline:
   SimObj::Memory mem(0, 0, 10);
   SimObj::Memory scratchpad(0, 0, 10);

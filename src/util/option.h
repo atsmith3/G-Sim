@@ -69,7 +69,7 @@ namespace Utility {
           ;
 
           po::options_description scratch("Scratchpad Options");
-          scratchpad.add_options()
+          scratch.add_options()
             ("scratch_read_latency", po::value<uint64_t>(&scratchpad_read_latency), "scratchpad read latency in cycles")
             ("scratch_write_latency", po::value<uint64_t>(&scratchpad_write_latency), "scratchpad write latency in cycles")
             ("scratch_num_requests", po::value<uint64_t>(&scratchpad_num_simultaneous_requests), "number of simultaneous requests")
@@ -77,7 +77,7 @@ namespace Utility {
           ;
 
           po::options_description dram("DRAM Options");
-          scratchpad.add_options()
+          dram.add_options()
             ("dram_read_latency", po::value<uint64_t>(&dram_read_latency), "dram read latency in cycles")
             ("dram_write_latency", po::value<uint64_t>(&dram_write_latency), "dram write latency in cycles")
             ("dram_num_requests", po::value<uint64_t>(&dram_num_simultaneous_requests), "number of simultaneous requests")
@@ -85,7 +85,7 @@ namespace Utility {
           ;
 
           po::options_description sim("Simulation Options");
-          pe_array.add_options()
+          sim.add_options()
             ("num_iter", po::value<uint64_t>(&num_iter), "the number of iterations to simulate")
             ("num_pipelines", po::value<uint64_t>(&num_pipelines), "the number of pipelines in parallel")
           ;
