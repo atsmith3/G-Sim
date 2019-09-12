@@ -106,7 +106,7 @@ void SimObj::ControlAtomicUpdate::tick(void) {
 
 void SimObj::ControlAtomicUpdate::ready(void) {
   _ready = true;
-  _cur_edge = rand() % 400;
+  _cur_edge = _tick;
 }
 
 

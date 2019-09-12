@@ -39,7 +39,7 @@ void SimObj::ReadVertexProperty::tick(void) {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(_ready) {
+      if(true) {
         // Upstream sent vertex & vertex property
         _ready = false;
         next_state = OP_FETCH;

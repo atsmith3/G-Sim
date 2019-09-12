@@ -13,6 +13,13 @@
 #include "reduce.h"
 #include "writeTempDstProperty.h"
 
+#include "apply.h"
+#include "readVertexProperty.h"
+#include "readTempVertexProperty.h"
+#include "writeVertexProperty.h"
+
+#define ITERATIONS 10000
+
 int main() {
 #if 0
   SimObj::Module start;
@@ -132,8 +139,8 @@ int main() {
 
 #if 1
   // Processing Phase Pipeline:
-  SimObj::Memory mem(1, 1, 10);
-  SimObj::Memory scratchpad(1, 1, 10);
+  SimObj::Memory mem(0, 0, 10);
+  SimObj::Memory scratchpad(0, 0, 10);
   SimObj::ReadSrcProperty p1(&mem);
   SimObj::ReadSrcEdges p2(&scratchpad);
   SimObj::ReadDstProperty p3(&mem);
@@ -142,6 +149,13 @@ int main() {
   SimObj::ReadTempDstProperty p6(&scratchpad);
   SimObj::Reduce p7(1);
   SimObj::WriteTempDstProperty p8(&scratchpad, &p5);
+
+  SimObj::Memory mem_a(1, 1, 10);
+  SimObj::Memory scratchpad_a(1, 1, 10);
+  SimObj::ReadVertexProperty a1(&mem_a);
+  SimObj::ReadTempVertexProperty a2(&scratchpad_a);
+  SimObj::Apply a3;
+  SimObj::WriteVertexProperty a4(&mem_a);
 
   // Connect:
   p1.set_next(&p2);
@@ -170,7 +184,7 @@ int main() {
   p7.set_name("Reduce");
   p8.set_name("WriteTempDestProperty");
 
-  for(int i = 0; i < 10000; i++) {
+  for(int i = 0; i < ITERATIONS; i++) {
     mem.tick();
     scratchpad.tick();
     p1.tick();
@@ -191,5 +205,33 @@ int main() {
   p6.print_stats();
   p7.print_stats();
   p8.print_stats();
+
+  a1.set_prev(NULL);
+  a1.set_next(&a2);
+  a2.set_prev(&a1);
+  a2.set_next(&a3);
+  a3.set_prev(&a2);
+  a3.set_next(&a4);
+  a4.set_prev(&a3);
+  a4.set_next(NULL);
+
+  a1.set_name("ReadVertexProperty");
+  a2.set_name("ReadTempVertexProperty");
+  a3.set_name("Apply");
+  a4.set_name("WriteTempVertexProperty");
+
+  for(int i = 0; i < ITERATIONS; i++) {
+    mem_a.tick();
+    scratchpad_a.tick();
+    a1.tick();
+    a2.tick();
+    a3.tick();
+    a4.tick();
+  }
+
+  a1.print_stats();
+  a2.print_stats();
+  a3.print_stats();
+  a4.print_stats();
 #endif
 }

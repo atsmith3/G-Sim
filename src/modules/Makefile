@@ -15,7 +15,7 @@ OBJS :=  $(CPP_OBJS)
 
 .PHONY: clean
 
-all: CPPFLAGS += -O3
+all: CPPFLAGS += -O0
 all: $(PROG)
 
 debug: CPPFLAGS += -O0 -g -DVERBOSE -DDEBUG

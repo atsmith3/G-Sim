@@ -35,7 +35,7 @@ private:
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
     {1, "OP_COUNT"},
-    {4, "OP_NUM_OPS"}};
+    {2, "OP_NUM_OPS"}};
 #endif
 
   op_t _state;

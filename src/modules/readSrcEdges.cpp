@@ -109,5 +109,5 @@ void SimObj::ReadSrcEdges::tick(void) {
 void SimObj::ReadSrcEdges::ready(void) {
   _ready = true;
   // ToDo Make this an Actual Edge List
-  _edge_list.resize(rand()%100);
+  _edge_list.resize(1);
 }
