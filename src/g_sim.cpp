@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
   opt.parse(argc, argv);
 
   // Processing Phase Pipeline:
-  SimObj::Memory mem(0, 0, 10);
-  SimObj::Memory scratchpad(0, 0, 10);
+  SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
+  SimObj::Memory scratchpad(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
   SimObj::ReadSrcProperty p1(&mem);
   SimObj::ReadSrcEdges p2(&scratchpad);
   SimObj::ReadDstProperty p3(&mem);
@@ -38,8 +38,8 @@ int main(int argc, char** argv) {
   SimObj::Reduce p7(1);
   SimObj::WriteTempDstProperty p8(&scratchpad, &p5);
 
-  SimObj::Memory mem_a(1, 1, 10);
-  SimObj::Memory scratchpad_a(1, 1, 10);
+  SimObj::Memory mem_a(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
+  SimObj::Memory scratchpad_a(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
   SimObj::ReadVertexProperty a1(&mem_a);
   SimObj::ReadTempVertexProperty a2(&scratchpad_a);
   SimObj::Apply a3;

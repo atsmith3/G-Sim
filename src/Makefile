@@ -1,7 +1,8 @@
 INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil
 CPPFLAGS += -std=c++11 -Wall $(INCPATH)
 #CPPFLAGS += -pg 
-#LFLAGS += -pg
+LFLAGS += -lboost_program_options
+LPATH = -L/usr/local/bin
 
 PROG := g_sim
 
@@ -25,7 +26,7 @@ verbose: CPPFLAGS += -O3 -DVERBOSE -DDEBUG
 verbose: $(PROG)
 
 $(PROG): $(OBJS)
-	 $(CXX) $(LFLAGS) $^ -o $@
+	 $(CXX) $^ $(LPATH) $(LFLAGS) -o $@
 
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) -MMD -c $< -o $@
