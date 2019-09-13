@@ -39,20 +39,20 @@ namespace Utility {
       std::string logfile = "";
       
       // Scratchpad options
-      uint64_t scratchpad_read_latency = 1;
-      uint64_t scratchpad_write_latency = 1;
-      uint64_t scratchpad_num_simultaneous_requests = 4;
-      uint64_t scratchpad_data_width = 4;
+      unsigned long long int scratchpad_read_latency = 1;
+      unsigned long long int scratchpad_write_latency = 1;
+      unsigned long long int scratchpad_num_simultaneous_requests = 4;
+      unsigned long long int scratchpad_data_width = 4;
       
       // Scratchpad options
-      uint64_t dram_read_latency = 5;
-      uint64_t dram_write_latency = 30;
-      uint64_t dram_num_simultaneous_requests = 4;
-      uint64_t dram_data_width = 256;
+      unsigned long long int dram_read_latency = 5;
+      unsigned long long int dram_write_latency = 30;
+      unsigned long long int dram_num_simultaneous_requests = 4;
+      unsigned long long int dram_data_width = 256;
 
       // Simultaion Options
-      uint64_t num_iter = 10000;
-      uint64_t num_pipelines = 1;
+      unsigned long long int num_iter = 10000;
+      unsigned long long int num_pipelines = 1;
 
       bool parse(long long int argc, char** argv)
       {
@@ -70,24 +70,24 @@ namespace Utility {
 
           po::options_description scratch("Scratchpad Options");
           scratch.add_options()
-            ("scratch_read_latency", po::value<uint64_t>(&scratchpad_read_latency), "scratchpad read latency in cycles")
-            ("scratch_write_latency", po::value<uint64_t>(&scratchpad_write_latency), "scratchpad write latency in cycles")
-            ("scratch_num_requests", po::value<uint64_t>(&scratchpad_num_simultaneous_requests), "number of simultaneous requests")
-            ("scratch_width", po::value<uint64_t>(&scratchpad_data_width), "scratchpad data width in bytes");
+            ("scratch_read_latency", po::value<unsigned long long int>(&scratchpad_read_latency), "scratchpad read latency in cycles")
+            ("scratch_write_latency", po::value<unsigned long long int>(&scratchpad_write_latency), "scratchpad write latency in cycles")
+            ("scratch_num_requests", po::value<unsigned long long int>(&scratchpad_num_simultaneous_requests), "number of simultaneous requests")
+            ("scratch_width", po::value<unsigned long long int>(&scratchpad_data_width), "scratchpad data width in bytes");
           ;
 
           po::options_description dram("DRAM Options");
           dram.add_options()
-            ("dram_read_latency", po::value<uint64_t>(&dram_read_latency), "dram read latency in cycles")
-            ("dram_write_latency", po::value<uint64_t>(&dram_write_latency), "dram write latency in cycles")
-            ("dram_num_requests", po::value<uint64_t>(&dram_num_simultaneous_requests), "number of simultaneous requests")
-            ("dram_width", po::value<uint64_t>(&dram_data_width), "dram data width in bytes");
+            ("dram_read_latency", po::value<unsigned long long int>(&dram_read_latency), "dram read latency in cycles")
+            ("dram_write_latency", po::value<unsigned long long int>(&dram_write_latency), "dram write latency in cycles")
+            ("dram_num_requests", po::value<unsigned long long int>(&dram_num_simultaneous_requests), "number of simultaneous requests")
+            ("dram_width", po::value<unsigned long long int>(&dram_data_width), "dram data width in bytes");
           ;
 
           po::options_description sim("Simulation Options");
           sim.add_options()
-            ("num_iter", po::value<uint64_t>(&num_iter), "the number of iterations to simulate")
-            ("num_pipelines", po::value<uint64_t>(&num_pipelines), "the number of pipelines in parallel")
+            ("num_iter", po::value<unsigned long long int>(&num_iter), "the number of iterations to simulate")
+            ("num_pipelines", po::value<unsigned long long int>(&num_pipelines), "the number of pipelines in parallel")
           ;
 
 
@@ -106,5 +106,5 @@ namespace Utility {
           return true;
       }
   }; //End of class Options
-}; //End of namespace maestro
+}; //End of namespace Utility
 #endif
