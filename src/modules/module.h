@@ -55,6 +55,7 @@ public:
   void set_prev(Module* prev);
   virtual void update_stats();
   virtual void print_stats();
+  virtual void print_stats_csv();
   virtual void set_name(std::string name);
 
 #ifdef DEBUG

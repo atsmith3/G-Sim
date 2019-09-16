@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
   p5.set_name("ControlAtomicUpdate");
   p6.set_name("ReadTempDstProperty");
   p7.set_name("Reduce");
-  p8.set_name("WriteTempDestProperty");
+  p8.set_name("WriteTempDstProperty");
 
   for(int i = 0; i < ITERATIONS; i++) {
     mem.tick();
@@ -85,14 +85,14 @@ int main(int argc, char** argv) {
     p8.tick();
   }
 
-  p1.print_stats();
-  p2.print_stats();
-  p3.print_stats();
-  p4.print_stats();
-  p5.print_stats();
-  p6.print_stats();
-  p7.print_stats();
-  p8.print_stats();
+  p1.print_stats_csv();
+  p2.print_stats_csv();
+  p3.print_stats_csv();
+  p4.print_stats_csv();
+  p5.print_stats_csv();
+  p6.print_stats_csv();
+  p7.print_stats_csv();
+  p8.print_stats_csv();
 
   a1.set_prev(NULL);
   a1.set_next(&a2);
@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
   a1.set_name("ReadVertexProperty");
   a2.set_name("ReadTempVertexProperty");
   a3.set_name("Apply");
-  a4.set_name("WriteTempVertexProperty");
+  a4.set_name("WriteVertexProperty");
 
   for(int i = 0; i < ITERATIONS; i++) {
     mem_a.tick();
@@ -117,8 +117,8 @@ int main(int argc, char** argv) {
     a4.tick();
   }
 
-  a1.print_stats();
-  a2.print_stats();
-  a3.print_stats();
-  a4.print_stats();
+  a1.print_stats_csv();
+  a2.print_stats_csv();
+  a3.print_stats_csv();
+  a4.print_stats_csv();
 }

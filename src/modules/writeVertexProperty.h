@@ -40,6 +40,7 @@ private:
   Memory* _dram;
   op_t _state;
   bool _ready;
+  uint64_t _throughput;
 
 public:
   bool _mem_flag;
@@ -49,6 +50,9 @@ public:
 
   void tick(void);
   void ready(void);
+
+  void print_stats(void);
+  void print_stats_csv(void);
 };
 
 } // namespace SimObj

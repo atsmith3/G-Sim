@@ -71,6 +71,13 @@ void SimObj::Module::print_stats() {
   std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
 }
 
+void SimObj::Module::print_stats_csv() {
+  std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
+    << _stall_ticks[STALL_PROCESSING] << ","
+    << _stall_ticks[STALL_PIPE] << ","
+    << _stall_ticks[STALL_MEM] << "\n";
+}
+
 #ifdef DEBUG
 void SimObj::Module::set_stall(stall_t stall) {
   _stall = stall;

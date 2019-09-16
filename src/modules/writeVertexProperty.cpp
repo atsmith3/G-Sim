@@ -17,6 +17,7 @@ SimObj::WriteVertexProperty::WriteVertexProperty() {
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  _throughput = 0;
 }
 
 
@@ -26,6 +27,7 @@ SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram) {
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  _throughput = 0;
 }
 
 
@@ -65,6 +67,7 @@ void SimObj::WriteVertexProperty::tick(void) {
       if(_mem_flag) {
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _throughput++;
       }
       else {
         next_state = OP_MEM_WAIT;
@@ -88,4 +91,26 @@ void SimObj::WriteVertexProperty::tick(void) {
 
 void SimObj::WriteVertexProperty::ready(void) {
   _ready = true;
+}
+
+
+void SimObj::WriteVertexProperty::print_stats(void) {
+  std::cout << "-------------------------------------------------------------------------------\n";
+  std::cout << "[ " << _name << " ]\n";
+  std::cout << "  Stalls:\n";
+  std::cout << "    STALL_CAN_ACCEPT: " << _stall_ticks[STALL_CAN_ACCEPT] << " cycles\n";
+  std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
+  std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
+  std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
+  std::cout << "  Performance:\n";
+  std::cout << "    Vertex:           " << _throughput << "\n";
+  std::cout << "    Cycles:           " << _tick << "\n";
+}
+
+void SimObj::WriteVertexProperty::print_stats_csv() {
+  std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
+    << _stall_ticks[STALL_PROCESSING] << ","
+    << _stall_ticks[STALL_PIPE] << ","
+    << _stall_ticks[STALL_MEM] << ","
+    << _throughput << ",\n";
 }

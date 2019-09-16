@@ -111,3 +111,11 @@ void SimObj::WriteTempDstProperty::print_stats(void) {
   std::cout << "    Edges:            " << _edges_written << "\n";
   std::cout << "    Cycles:           " << _tick << "\n";
 }
+
+void SimObj::WriteTempDstProperty::print_stats_csv(void) {
+  std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
+    << _stall_ticks[STALL_PROCESSING] << ","
+    << _stall_ticks[STALL_PIPE] << ","
+    << _stall_ticks[STALL_MEM] << ","
+    << _edges_written << ",\n";
+}

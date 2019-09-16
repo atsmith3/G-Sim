@@ -54,8 +54,10 @@ public:
 
   void tick(void);
   void ready(void);
-  void print_stats();
+  void print_stats(void);
+  void print_stats_csv(void);
 };
+
 
 } // namespace SimObj
 

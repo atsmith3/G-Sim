@@ -14,6 +14,6 @@ for drl in "${DRAM_READ_LATENCY[@]}"
   for dwl in "${DRAM_WRITE_LATENCY[@]}"
     do
     echo "./g_sim -dram_read_latency $drl -dram_write_latency $dwl"
-    ./g_sim --dram_read_latency=$drl --dram_write_latency=$dwl
+    ./g_sim --dram_read_latency=$drl --dram_write_latency=$dwl > output/dram_param_sweep_${drl}_${dwl}.csv
   done
 done
