@@ -47,8 +47,10 @@ void SimObj::WriteTempDstProperty::tick(void) {
       if(_ready) {
         // Upstream sent _edge property
         _ready = false;
-        next_state = OP_WRITE;
-        _stall = STALL_PROCESSING;
+        _mem_flag = false;
+        _scratchpad->write(0x01, &_mem_flag);
+        _stall = STALL_MEM;
+        next_state = OP_MEM_WAIT;
       }
       else {
         // Wait for upstream to send _edge
@@ -57,29 +59,17 @@ void SimObj::WriteTempDstProperty::tick(void) {
       }
       break;
     }
-    case OP_WRITE : {
-      _mem_flag = false;
-      _scratchpad->write(0x01, &_mem_flag);
-      _stall = STALL_MEM;
-      next_state = OP_MEM_WAIT;
-      break;
-    }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        next_state = OP_SIGNAL_CAU;
-        _stall = STALL_PROCESSING;
+        _edges_written++;
+        _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
+        next_state = OP_WAIT;
+        _stall = STALL_CAN_ACCEPT;
       }
       else {
         next_state = OP_MEM_WAIT;
         _stall = STALL_MEM;
       }
-      break;
-    }
-    case OP_SIGNAL_CAU : {
-      _edges_written++;
-      _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
-      next_state = OP_WAIT;
-      _stall = STALL_CAN_ACCEPT;
       break;
     }
     default : {

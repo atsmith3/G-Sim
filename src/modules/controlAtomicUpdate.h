@@ -18,7 +18,6 @@
 
 #include "module.h"
 #include "memory.h"
-#include "controlAtomicUpdate.h"
 
 namespace SimObj {
 
@@ -26,19 +25,15 @@ class ControlAtomicUpdate : public Module {
 private:
   enum op_t {
     OP_WAIT,
-    OP_CHECK_DEP,
     OP_STALL,
-    OP_SEND,
     OP_NUM_OPS
   };
 
 #ifdef DEBUG
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
-    {1, "OP_CHECK_DEP"},
-    {2, "OP_STALL"},
-    {3, "OP_SEND"},
-    {4, "OP_NUM_OPS"}};
+    {1, "OP_STALL"},
+    {2, "OP_NUM_OPS"}};
 #endif
 
   op_t _state;

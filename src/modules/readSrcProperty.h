@@ -28,7 +28,6 @@ class ReadSrcProperty : public Module {
 private:
   enum read_src_op_t {
     OP_WAIT,
-    OP_FETCH,
     OP_MEM_WAIT,
     OP_NUM_OPS
   };
@@ -36,9 +35,8 @@ private:
 #ifdef DEBUG
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
-    {1, "OP_FETCH"},
-    {2, "OP_MEM_WAIT"},
-    {3, "OP_NUM_OPS"}};
+    {1, "OP_MEM_WAIT"},
+    {2, "OP_NUM_OPS"}};
 #endif
 
   Memory* _dram;

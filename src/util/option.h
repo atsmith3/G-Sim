@@ -53,6 +53,9 @@ namespace Utility {
       // Simultaion Options
       unsigned long long int num_iter = 10000;
       unsigned long long int num_pipelines = 1;
+      unsigned long long int avg_connectivity = 1;
+      int shouldInit = 0; // Used for the readGraph
+      std::string graph_path = "";
 
       bool parse(long long int argc, char** argv)
       {
@@ -88,6 +91,13 @@ namespace Utility {
           sim.add_options()
             ("num_iter", po::value<unsigned long long int>(&num_iter), "the number of iterations to simulate")
             ("num_pipelines", po::value<unsigned long long int>(&num_pipelines), "the number of pipelines in parallel")
+            ("avg_connectivity", po::value<unsigned long long int>(&avg_connectivity), "the average connectivity k of the graph");
+          ;
+
+          po::options_description graph("ReadGrpah Options");
+          sim.add_options()
+            ("should_init", po::value<int>(&shouldInit), "graph needs to be initialized")
+            ("graph_path", po::value<std::string>(&graph_path), "path to mat market format graph")
           ;
 
 
@@ -97,6 +107,7 @@ namespace Utility {
           all_options.add(scratch);
           all_options.add(dram);
           all_options.add(sim);
+          all_options.add(graph);
 
 
           po::variables_map vm;

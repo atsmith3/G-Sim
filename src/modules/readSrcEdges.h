@@ -25,24 +25,21 @@ class ReadSrcEdges : public Module {
 private:
   enum op_t {
     OP_WAIT,
-    OP_FETCH,
     OP_MEM_WAIT,
-    OP_SEND_EDGE_DOWNSTREAM,
     OP_NUM_OPS
   };
 
 #ifdef DEBUG
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
-    {1, "OP_FETCH"},
-    {2, "OP_MEM_WAIT"},
-    {3, "OP_SEND_EDGE_DOWNSTREAM"},
-    {4, "OP_NUM_OPS"}};
+    {1, "OP_MEM_WAIT"},
+    {2, "OP_NUM_OPS"}};
 #endif
 
   Memory* _scratchpad;
   op_t _state;
   bool _ready;
+  uint64_t _avg_connectivity;
   std::vector<int> _edge_list;
   std::vector<int>::iterator _edge_it;
 
@@ -50,6 +47,7 @@ public:
   bool _mem_flag;
   ReadSrcEdges();
   ReadSrcEdges(Memory* dram);
+  ReadSrcEdges(Memory* dram, uint64_t avg_connectivity);
   ~ReadSrcEdges();
 
   void tick(void);

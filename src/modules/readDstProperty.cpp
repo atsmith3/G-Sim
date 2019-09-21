@@ -44,8 +44,10 @@ void SimObj::ReadDstProperty::tick(void) {
       if(_ready) {
         // Upstream sent vertex & vertex property
         _ready = false;
-        next_state = OP_FETCH;
-        _stall = STALL_PROCESSING;
+        _mem_flag = false;
+        _dram->read(0x01, &_mem_flag);
+        _stall = STALL_MEM;
+        next_state = OP_MEM_WAIT;
       }
       else {
         // Wait for upstream to send vertex
@@ -54,33 +56,21 @@ void SimObj::ReadDstProperty::tick(void) {
       }
       break;
     }
-    case OP_FETCH : {
-      _mem_flag = false;
-      _dram->read(0x01, &_mem_flag);
-      _stall = STALL_MEM;
-      next_state = OP_MEM_WAIT;
-      break;
-    }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        next_state = OP_SEND_DOWNSTREAM;
-        _stall = STALL_PROCESSING;
+        if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          _next->ready();
+          next_state = OP_WAIT;
+          _stall = STALL_CAN_ACCEPT;
+        }
+        else {
+          next_state = OP_MEM_WAIT;
+          _stall = STALL_PIPE;
+        }
       }
       else {
         next_state = OP_MEM_WAIT;
         _stall = STALL_MEM;
-      }
-      break;
-    }
-    case OP_SEND_DOWNSTREAM : {
-      if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready();
-        next_state = OP_WAIT;
-        _stall = STALL_CAN_ACCEPT;
-      }
-      else {
-        next_state = OP_SEND_DOWNSTREAM;
-        _stall = STALL_PIPE;
       }
       break;
     }

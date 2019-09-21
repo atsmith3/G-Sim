@@ -46,21 +46,16 @@ void SimObj::WriteVertexProperty::tick(void) {
       if(_ready) {
         // Upstream sent _edge property
         _ready = false;
-        next_state = OP_WRITE;
-        _stall = STALL_PROCESSING;
+        _mem_flag = false;
+        _dram->write(0x01, &_mem_flag);
+        _stall = STALL_MEM;
+        next_state = OP_MEM_WAIT;
       }
       else {
         // Wait for upstream to send _edge
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
-      break;
-    }
-    case OP_WRITE : {
-      _mem_flag = false;
-      _dram->write(0x01, &_mem_flag);
-      _stall = STALL_MEM;
-      next_state = OP_MEM_WAIT;
       break;
     }
     case OP_MEM_WAIT : {

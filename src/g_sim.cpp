@@ -17,6 +17,7 @@
 #include "readVertexProperty.h"
 #include "readTempVertexProperty.h"
 #include "writeVertexProperty.h"
+#include "readGraph.h"
 
 #include "option.h"
 
@@ -24,13 +25,14 @@
 
 int main(int argc, char** argv) {
   Utility::Options opt;
+  Utility::readGraph graph(opt);
   opt.parse(argc, argv);
 
   // Processing Phase Pipeline:
   SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
   SimObj::Memory scratchpad(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
   SimObj::ReadSrcProperty p1(&mem);
-  SimObj::ReadSrcEdges p2(&scratchpad);
+  SimObj::ReadSrcEdges p2(&scratchpad, opt.avg_connectivity);
   SimObj::ReadDstProperty p3(&mem);
   SimObj::ProcessEdge p4(1);
   SimObj::ControlAtomicUpdate p5;

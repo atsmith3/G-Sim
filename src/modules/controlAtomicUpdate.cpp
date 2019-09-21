@@ -43,46 +43,31 @@ void SimObj::ControlAtomicUpdate::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         _ready = false;
-        next_state = OP_CHECK_DEP;
-        _stall = STALL_PROCESSING;
+        if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
+          _next->ready();
+          _edges.push_front(_cur_edge);
+          next_state = OP_WAIT;
+          _stall = STALL_CAN_ACCEPT;
+        }
+        else {
+          next_state = OP_STALL;
+          _stall = STALL_PROCESSING;
+        }
       }
       else {
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
-      }
-      break;
-    }
-    // Check if the same edge is in the pipe
-    case OP_CHECK_DEP : {
-      if(dependency()) {
-        _stall = STALL_PIPE;
-        next_state = OP_STALL;
-      }
-      else {
-        _stall = STALL_PROCESSING;
-        next_state = OP_SEND;
-      }
-      break;
-    }
-    case OP_SEND : {
-      if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready();
-        _edges.push_front(_cur_edge);
-        next_state = OP_WAIT;
-        _stall = STALL_CAN_ACCEPT;
-      }
-      else {
-        next_state = OP_SEND;
-        _stall = STALL_PROCESSING;
       }
       break;
     }
     // If there is a dep stall the pipe until the edge completes
     case OP_STALL : {
       // Check if an edge was finalized:
-      if(!dependency()) {
-        next_state = OP_SEND;
-        _stall = STALL_PIPE;
+      if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
+        _next->ready();
+        _edges.push_front(_cur_edge);
+        next_state = OP_WAIT;
+        _stall = STALL_CAN_ACCEPT;
       }
       else {
         next_state = OP_STALL;
