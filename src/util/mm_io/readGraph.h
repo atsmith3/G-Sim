@@ -11,6 +11,7 @@
 
 namespace Utility {
 
+template<class vertex_t>
 class readGraph {
   public:
     readGraph(Options const & opt) : shouldInit(opt.shouldInit) {}
@@ -22,8 +23,13 @@ class readGraph {
     int getNodePtr(int nodeInd) { return nodePtrs[nodeInd]; }
     int getNodeIncomingPtr(int nodeInd) { return nodeIncomingPtrs[nodeInd]; }
     int getNodeNeighbor(int neighborInd) { return nodeNeighbors[neighborInd]; }
-    int getNodeIncomingNeighbor(int neighborInd){return nodeIncomingNeighbors[neighborInd];}
+    int getNodeIncomingNeighbor(int neighborInd){return nodeIncomingNeighbors[neighborInd]; }
+
     double getEdgeWeight(int neighborInd) { return edgeWeights[neighborInd]; }
+
+    vertex_t getVertexProperty(int nodeInd) { return vertex_property[nodeInd]; }
+    void setVertexProperty(int nodeInd, vertex_t vertexProperty) { vertex_property[nodeInd] = vertexProperty; }
+
     std::queue<uint>* getNeighbors(int nodeInd) {
       uint *startPtr = nodeNeighbors + getNodePtr(nodeInd);
       uint *endPtr = nodeNeighbors + getNodePtr(nodeInd+1);
@@ -52,6 +58,7 @@ class readGraph {
     double *edgeWeights;
     int *numNodes;
     int *numNeighbors;
+    int *vertex_property;
 
     int shouldInit;
 
@@ -65,5 +72,7 @@ class readGraph {
 };
 
 }; // namespace Utility
+
+#include "readGraph.tcc"
 
 #endif

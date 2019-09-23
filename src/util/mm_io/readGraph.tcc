@@ -10,22 +10,26 @@
 
 #include <filesystem>
 
-#include "readGraph.h"
-
 extern "C" {
 #include "mm_io.h"
 }
 
-void Utility::readGraph::allocateGraph() {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::allocateGraph() {
   // Initialize node pointers
   nodePtrs = (unsigned int *)malloc((*numNodes + 1) * sizeof(unsigned int));
+  vertex_property = (vertex_t *)malloc((*numNodes + 2) * sizeof(vertex_t));
+  for(int i = 0 ; i < *numNodes + 1; i ++) {
+    vertex_property[i] = vertex_t();
+  }
   nodeNeighbors = (unsigned int *)malloc(*numNeighbors * sizeof(unsigned int));
   edgeWeights = (double *)malloc(*numNeighbors * sizeof(double));
   nodeIncomingPtrs = (unsigned int *)malloc((*numNodes + 1) * sizeof(unsigned int));
   nodeIncomingNeighbors = (unsigned int *)malloc(*numNeighbors * sizeof(unsigned int));
 }
 
-void Utility::readGraph::readMatrixMarket(const char *mmInputFile) {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::readMatrixMarket(const char *mmInputFile) {
   fprintf(stderr, "[readMatrixMarket] allocating space for shared integers \n");
   numNodes = (int*) malloc(sizeof(int));
   numNeighbors = (int*) malloc(sizeof(int));
@@ -128,20 +132,23 @@ void Utility::readGraph::readMatrixMarket(const char *mmInputFile) {
   }
 }
 
-void Utility::readGraph::printEdgeWeights(void) {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::printEdgeWeights(void) {
   for(int i = 0; i < *numNeighbors; i++) {
     fprintf(stderr, "[readGraph DEBUG] edge %u: %lf\n", i, edgeWeights[i]);
   }
 }
 
-void Utility::readGraph::printNodePtrs(void) {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::printNodePtrs(void) {
   fprintf(stderr, "[readGraph DEBUG] nodePtrs:\n");
   for(int i = 1; i <* numNodes; i++) {
     fprintf(stderr, "                  node %u: %u\n", i, nodePtrs[i]);
   }
 }
 
-void Utility::readGraph::printGraph(void) {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::printGraph(void) {
   for(int i = 1 ; i < *numNodes; i++) {
     fprintf(stderr, "[readGraph DEBUG] Node: %u\n", i);
     for(int j = getNodePtr(i); j < getNodePtr(i+1); j++) {
@@ -150,7 +157,8 @@ void Utility::readGraph::printGraph(void) {
   }
 }
 
-void Utility::readGraph::writeBin(std::string binFname) {
+template<class vertex_t>
+void Utility::readGraph<vertex_t>::writeBin(std::string binFname) {
   fprintf(stderr, "[writeBin] writing binary\n");
   std::ofstream binFile;
   binFile.open(binFname.c_str(), std::ios::out | std::ios::binary);
@@ -165,7 +173,8 @@ void Utility::readGraph::writeBin(std::string binFname) {
   binFile.close();
 }
 
-bool Utility::readGraph::readBin(std::string binFname) {
+template<class vertex_t>
+bool Utility::readGraph<vertex_t>::readBin(std::string binFname) {
   std::ifstream binFile;
   binFile.open(binFname.c_str(), std::ios::in | std::ios::binary);
   if(!binFile.good()) return false;

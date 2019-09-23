@@ -21,12 +21,17 @@
 
 #include "option.h"
 
+#include "edge.h"
+
 #define ITERATIONS 10000
 
 int main(int argc, char** argv) {
   Utility::Options opt;
-  Utility::readGraph graph(opt);
   opt.parse(argc, argv);
+  Utility::readGraph<int> graph(opt);
+  graph.readMatrixMarket(opt.graph_path.c_str());
+
+  return 0;
 
   // Processing Phase Pipeline:
   SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
