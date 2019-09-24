@@ -1,4 +1,4 @@
-INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil
+INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil -IgraphMat
 CPPFLAGS += -std=c++17 -Wall $(INCPATH)
 CFLAGS += -Wall $(INCPATH)
 #CPPFLAGS += -pg 

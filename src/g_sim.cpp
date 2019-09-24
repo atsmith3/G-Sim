@@ -23,6 +23,8 @@
 
 #include "edge.h"
 
+#include "bfs.h"
+
 #define ITERATIONS 10000
 
 int main(int argc, char** argv) {
@@ -30,6 +32,8 @@ int main(int argc, char** argv) {
   opt.parse(argc, argv);
   Utility::readGraph<int> graph(opt);
   graph.readMatrixMarket(opt.graph_path.c_str());
+
+  GraphMat::BFS<uint64_t, uint64_t> bfs;
 
   return 0;
 
