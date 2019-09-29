@@ -17,14 +17,17 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <list>
 
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-
-class ReadSrcProperty : public Module {
+template<class v_t, class e_t>
+class ReadSrcProperty : public Module<v_t, e_t> {
 private:
   enum read_src_op_t {
     OP_WAIT,
@@ -45,14 +48,19 @@ private:
 
 public:
   bool _mem_flag;
+  std::list<uint64_t>* _process;
+  Utility::readGraph<v_t>* _graph;
+
+  uint64_t _vertex_id;
   ReadSrcProperty();
-  ReadSrcProperty(Memory* dram);
+  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph);
   ~ReadSrcProperty();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "readSrcProperty.tcc"
 
 #endif

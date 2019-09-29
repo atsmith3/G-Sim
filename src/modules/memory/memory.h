@@ -39,6 +39,7 @@ public:
   void complete(void);
 };
 
+template<class v_t>
 class Memory {
 private:
   uint64_t _tick;
@@ -47,6 +48,8 @@ private:
   uint64_t _num_simultaneous_requests;
   std::vector<MemRequest> _action;
   std::queue<MemRequest> _req_queue;
+
+  std::map<uint64_t, v_t> mem;
 
 public:
   Memory(void);

@@ -12,31 +12,41 @@
 
 #include <cassert>
 
-#include "readSrcProperty.h"
-
-SimObj::ReadSrcProperty::ReadSrcProperty() {
+template<class v_t, class e_t>
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty() {
   _dram = NULL;
+  _process = NULL;
+  _graph = NULL;
   _state = OP_WAIT;
   _mem_flag = false;
   _fetched = false;
+  _vertex_id = 0;
 }
 
 
-SimObj::ReadSrcProperty::ReadSrcProperty(Memory* dram) {
+template<class v_t, class e_t>
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<vertex_t>* graph) {
   assert(dram != NULL);
+  assert(process != NULL);
+  assert(graph != NULL);
+  _graph = graph;
   _dram = dram;
+  _process = process;
   _state = OP_WAIT;
   _mem_flag = false;
   _fetched = false;
+  _vertex_id = 0;
 }
 
 
-SimObj::ReadSrcProperty::~ReadSrcProperty() {
+template<class v_t, class e_t>
+SimObj::ReadSrcProperty<v_t, e_t>::~ReadSrcProperty() {
   _dram = NULL;
 }
 
 
-void SimObj::ReadSrcProperty::tick() {
+template<class v_t, class e_t>
+void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   _tick++;
   read_src_op_t next_state;
 
@@ -44,21 +54,18 @@ void SimObj::ReadSrcProperty::tick() {
   switch(_state) {
     case OP_WAIT : {
       if(_fetched && _next->is_stalled() == STALL_CAN_ACCEPT) {
-        // Send Data Downstream
-        _next->ready();
+        _next->ready(_data);
         _fetched = false;
         next_state = OP_WAIT;
         _stall = STALL_PROCESSING;
       }
       else if(!_fetched) {
-        // Data Not Fetched yet, Begin Fetch Sequence
         _mem_flag = false;
         _dram->read(0x100, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
       else {
-        // Data Fetched, but Cannot send Downstream
         next_state = OP_WAIT;
         _stall = STALL_PIPE;
       }
@@ -66,8 +73,14 @@ void SimObj::ReadSrcProperty::tick() {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+        // Dequeue from the work queue
+        _data.vertex_id = _process->front();
+        _process->pop_front();
+        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
+        _data.edge_id = 0;
+
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready();
+          _next->ready(_data);
           _fetched = false;
           _mem_flag = false;
           _dram->read(0x100, &_mem_flag);
@@ -100,7 +113,7 @@ void SimObj::ReadSrcProperty::tick() {
 }
 
 
-void SimObj::ReadSrcProperty::ready() {
+template<class v_t, class e_t>
+void SimObj::ReadSrcProperty<v_t, e_t>::ready() {
   // Not Needed
 }
-

@@ -16,6 +16,8 @@ SimObj::ControlAtomicUpdate::ControlAtomicUpdate() {
   _state = OP_WAIT;
   _ready = false;
   _op_complete = false;
+  _vertex_id = 0;
+  _edge_id = 0;
 }
 
 
@@ -26,7 +28,7 @@ SimObj::ControlAtomicUpdate::~ControlAtomicUpdate() {
 bool SimObj::ControlAtomicUpdate::dependency() {
   bool ret = false;
   for(auto it = _edges.begin(); it != _edges.end(); it++) {
-    if(_cur_edge == *it) {
+    if(_edge_id == *it) {
       ret = true;
       break;
     }
@@ -44,8 +46,8 @@ void SimObj::ControlAtomicUpdate::tick(void) {
       if(_ready) {
         _ready = false;
         if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready();
-          _edges.push_front(_cur_edge);
+          _next->ready(_vertex_id, _edge_id);
+          _edges.push_front(_edge_id);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
         }
@@ -64,8 +66,8 @@ void SimObj::ControlAtomicUpdate::tick(void) {
     case OP_STALL : {
       // Check if an edge was finalized:
       if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready();
-        _edges.push_front(_cur_edge);
+        _next->ready(_vertex_id, _edge_id);
+        _edges.push_front(_edge_id);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -87,13 +89,6 @@ void SimObj::ControlAtomicUpdate::tick(void) {
   _state = next_state;
   update_stats();
 }
-
-
-void SimObj::ControlAtomicUpdate::ready(void) {
-  _ready = true;
-  _cur_edge = _tick;
-}
-
 
 void SimObj::ControlAtomicUpdate::receive_message(msg_t msg) {
   if(msg == MSG_ATOMIC_OP_COMPLETE) {

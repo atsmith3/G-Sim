@@ -13,6 +13,8 @@
 #include <vector>
 #include <cstdint>
 
+#include "pipeline_data.h"
+
 namespace SimObj {
 
 enum stall_t {
@@ -29,7 +31,7 @@ enum msg_t {
   MSG_NUM_TYPES
 };
 
-
+template<class v_t, class e_t>
 class Module {
 protected:
   std::string _name;
@@ -42,6 +44,9 @@ protected:
   Module* _next;
   Module* _prev;
 
+  Utility::pipeline_data<v_t, e_t> _data;
+  bool _ready;
+
 public:
   Module();
   ~Module();
@@ -51,6 +56,7 @@ public:
   virtual void receive_message(msg_t msg);
   uint64_t get_attr(void); 
   virtual void ready(void);
+  virtual void ready(pipeline_data<v_t, e_t> data);
   void set_next(Module* next);
   void set_prev(Module* prev);
   virtual void update_stats();
@@ -64,5 +70,7 @@ public:
 };
 
 } // namespace SimObj
+
+#include "module.tcc"
 
 #endif // MODULE_H

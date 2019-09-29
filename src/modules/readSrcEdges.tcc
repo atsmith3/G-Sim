@@ -9,10 +9,8 @@
 
 #include <cassert>
 
-#include "readSrcEdges.h"
-
-
-SimObj::ReadSrcEdges::ReadSrcEdges() {
+template<class v_t, class e_t>
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges() {
   _scratchpad = NULL;
   _state = OP_WAIT;
   _ready = false;
@@ -21,7 +19,8 @@ SimObj::ReadSrcEdges::ReadSrcEdges() {
 }
 
 
-SimObj::ReadSrcEdges::ReadSrcEdges(Memory* scratchpad) {
+template<class v_t, class e_t>
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* _graph) {
   assert(scratchpad != NULL);
   _scratchpad = scratchpad;
   _state = OP_WAIT;
@@ -31,7 +30,8 @@ SimObj::ReadSrcEdges::ReadSrcEdges(Memory* scratchpad) {
 }
 
 
-SimObj::ReadSrcEdges::ReadSrcEdges(Memory* scratchpad, uint64_t avg_connectivity) {
+template<class v_t, class e_t>
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, uint64_t avg_connectivity) {
   assert(scratchpad != NULL);
   _scratchpad = scratchpad;
   _state = OP_WAIT;
@@ -41,12 +41,14 @@ SimObj::ReadSrcEdges::ReadSrcEdges(Memory* scratchpad, uint64_t avg_connectivity
 }
 
 
-SimObj::ReadSrcEdges::~ReadSrcEdges() {
+template<class v_t, class e_t>
+SimObj::ReadSrcEdges<v_t, e_t>::~ReadSrcEdges() {
   //Do Nothing
 }
 
 
-void SimObj::ReadSrcEdges::tick(void) {
+template<class v_t, class e_t>
+void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -56,13 +58,11 @@ void SimObj::ReadSrcEdges::tick(void) {
       if(_ready) {
         // Upstream sent vertex & vertex property
         _ready = false;
-        _edge_it = _edge_list.begin();
-        if(_edge_it != _edge_list.end()) {
+        if(!_edge_list->end()) {
           _mem_flag = false;
           _scratchpad->read(0x01, &_mem_flag);
           _stall = STALL_MEM;
           next_state = OP_MEM_WAIT;
-          _edge_it++;
         }
         else {
           // Edge List is Empty
@@ -80,16 +80,19 @@ void SimObj::ReadSrcEdges::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready();
-          if(_edge_it != _edge_list.end()) {
+          _data.edge_id = _edge_list->front();
+          _edge_list->pop();
+          _data.edge_data = _graph->getEdgeWeight(_data.edge_id);
+          _next->ready(_data);
+          if(!_edge_list->empty()) {
             _mem_flag = false;
             _scratchpad->read(0x01, &_mem_flag);
             _stall = STALL_MEM;
             next_state = OP_MEM_WAIT;
-            _edge_it++;
           }
           else {
-            // Edge List is Empty
+            delete _edge_list;
+            _edge_list = NULL;
             next_state = OP_WAIT;
             _stall = STALL_CAN_ACCEPT;
           }
@@ -118,8 +121,9 @@ void SimObj::ReadSrcEdges::tick(void) {
   update_stats();
 }
 
-void SimObj::ReadSrcEdges::ready(void) {
+template<class v_t, class e_t>
+void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _ready = true;
-  // ToDo Make this an Actual Edge List
-  _edge_list.resize(_avg_connectivity);
+  _data = data;
+  _edge_list = _graph->getNeighbors(data.vertex_id);
 }

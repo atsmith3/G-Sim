@@ -57,7 +57,7 @@ void SimObj::ReadVertexProperty::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready();
+          _next->ready(_vertex_id, _edge_id);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
         }
@@ -74,7 +74,7 @@ void SimObj::ReadVertexProperty::tick(void) {
     }
     case OP_SEND_DOWNSTREAM : {
       if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready();
+        _next->ready(_vertex_id, _edge_id);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -97,7 +97,3 @@ void SimObj::ReadVertexProperty::tick(void) {
   update_stats();
 }
 
-
-void SimObj::ReadVertexProperty::ready(void) {
-  _ready = true;
-}

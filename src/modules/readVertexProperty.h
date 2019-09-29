@@ -26,17 +26,15 @@ private:
     OP_WAIT,
     OP_FETCH,
     OP_MEM_WAIT,
-    OP_SEND_DOWNSTREAM,
     OP_NUM_OPS
   };
 
 #ifdef DEBUG
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
-    {1, "OP_FETCH"},
-    {2, "OP_MEM_WAIT"},
-    {3, "OP_SEND_DOWNSTREAM"},
-    {4, "OP_NUM_OPS"}};
+    {1, "OP_MEM_WAIT"},
+    {2, "OP_SEND_DOWNSTREAM"},
+    {3, "OP_NUM_OPS"}};
 #endif
 
   Memory* _dram;

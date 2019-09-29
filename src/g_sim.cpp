@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <list>
 
+// Process Modules
 #include "module.h"
 #include "memory.h"
 #include "crossbar.h"
@@ -13,34 +16,76 @@
 #include "reduce.h"
 #include "writeTempDstProperty.h"
 
+// Apply Modules
 #include "apply.h"
 #include "readVertexProperty.h"
 #include "readTempVertexProperty.h"
 #include "writeVertexProperty.h"
 #include "readGraph.h"
 
+// Utility
 #include "option.h"
-
 #include "edge.h"
 
+// GraphMat
 #include "bfs.h"
 
 #define ITERATIONS 10000
 
+// The vertex type
+typedef bool vertex_t;
+
+// The edge type
+typedef double edge_t;
+
 int main(int argc, char** argv) {
   Utility::Options opt;
   opt.parse(argc, argv);
-  Utility::readGraph<int> graph(opt);
+  Utility::readGraph<vertex_t> graph(opt);
   graph.readMatrixMarket(opt.graph_path.c_str());
 
-  GraphMat::BFS<uint64_t, uint64_t> bfs;
+  GraphMat::BFS<vertex_t, edge_t> bfs;
+
+  std::list<uint64_t>* process = new std::list<uint64_t>;
+  std::list<uint64_t>* apply = new std::list<uint64_t>;
+  std::list<uint64_t>* next_frontier = new std::list<uint64_t>;
+
+  // "Scratchpad memory"
+  std::map<uint64_t, vertex_t>* scratchpad_map = new std::map<uint64_t, vertex_t>;
+
+  uint64_t global_tick = 0;
+
+  // Setup problem:
+  process->ush_back(1);
+  graph.setVertexProperty(1, true);
+
+  // Iteration Loop:
+  for(uint64_t iteration = 0; iteration < opt.num_iter; i++) {
+    // Processing Phase 
+    while(!process->empty()) {
+      global_tick++;
+
+
+
+
+    }
+    
+    // Apply Phase
+    while(!apply->empty()) {
+      global_tick++;
+
+
+
+    }
+  }
 
   return 0;
 
   // Processing Phase Pipeline:
   SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
   SimObj::Memory scratchpad(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
-  SimObj::ReadSrcProperty p1(&mem);
+
+  SimObj::ReadSrcProperty<vertex_t, edge_t> p1(&mem, process, &graph);
   SimObj::ReadSrcEdges p2(&scratchpad, opt.avg_connectivity);
   SimObj::ReadDstProperty p3(&mem);
   SimObj::ProcessEdge p4(1);

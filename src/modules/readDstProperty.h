@@ -18,10 +18,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-
-class ReadDstProperty : public Module {
+template<class v_t, class e_t>
+class ReadDstProperty : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -38,18 +40,19 @@ private:
 
   Memory* _dram;
   op_t _state;
-  bool _ready;
+  Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
   ReadDstProperty();
-  ReadDstProperty(Memory* dram);
+  ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph);
   ~ReadDstProperty();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "readDstProperty.tcc"
 
 #endif

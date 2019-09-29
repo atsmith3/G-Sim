@@ -9,9 +9,8 @@
 
 #include <cassert>
 
-#include "readDstProperty.h"
 
-
+template<class v_t, class e_t>
 SimObj::ReadDstProperty::ReadDstProperty() {
   _dram = NULL;
   _ready = false;
@@ -20,6 +19,7 @@ SimObj::ReadDstProperty::ReadDstProperty() {
 }
 
 
+template<class v_t, class e_t>
 SimObj::ReadDstProperty::ReadDstProperty(Memory* dram) {
   assert(dram != NULL);
   _dram = dram;
@@ -29,11 +29,13 @@ SimObj::ReadDstProperty::ReadDstProperty(Memory* dram) {
 }
 
 
+template<class v_t, class e_t>
 SimObj::ReadDstProperty::~ReadDstProperty() {
   // Do Nothing
 }
 
 
+template<class v_t, class e_t>
 void SimObj::ReadDstProperty::tick(void) {
   _tick++;
   op_t next_state;
@@ -58,10 +60,13 @@ void SimObj::ReadDstProperty::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+        _data.vertex_dst_data = _graph->getVertexProperty(_data.edge_id);
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready();
-          next_state = OP_WAIT;
-          _stall = STALL_CAN_ACCEPT;
+          _next->ready(_data);
+          _ready = false;
+          _mem_flag = false;
+          _dram->read(0x01, &_mem_flag);
+          _stall = STALL_MEM;
         }
         else {
           next_state = OP_MEM_WAIT;
@@ -87,7 +92,3 @@ void SimObj::ReadDstProperty::tick(void) {
   update_stats();
 }
 
-
-void SimObj::ReadDstProperty::ready(void) {
-  _ready = true;
-}

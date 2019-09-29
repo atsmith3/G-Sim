@@ -18,10 +18,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-
-class ReadSrcEdges : public Module {
+template<class v_t, class e_t>
+class ReadSrcEdges : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -38,16 +40,15 @@ private:
 
   Memory* _scratchpad;
   op_t _state;
-  bool _ready;
   uint64_t _avg_connectivity;
-  std::vector<int> _edge_list;
-  std::vector<int>::iterator _edge_it;
+  std::vector<uint>* _edge_list;
+  Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
   ReadSrcEdges();
   ReadSrcEdges(Memory* dram);
-  ReadSrcEdges(Memory* dram, uint64_t avg_connectivity);
+  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* _graph);
   ~ReadSrcEdges();
 
   void tick(void);
@@ -55,5 +56,7 @@ public:
 };
 
 } // namespace SimObj
+
+#include "readSrcEdges.tcc"
 
 #endif
