@@ -18,9 +18,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-class WriteVertexProperty : public Module {
+template<class v_t, class e_t>
+class WriteVertexProperty : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -40,14 +43,16 @@ private:
   bool _ready;
   uint64_t _throughput;
 
+  Utility::readGraph<v_t>* _graph;
+  std::queue<uint64_t>* _process;
+
 public:
   bool _mem_flag;
   WriteVertexProperty();
-  WriteVertexProperty(Memory* dram);
+  WriteVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::queue<uint64_t>* process);
   ~WriteVertexProperty();
 
   void tick(void);
-  void ready(void);
 
   void print_stats(void);
   void print_stats_csv(void);

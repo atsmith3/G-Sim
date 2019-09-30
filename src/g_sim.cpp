@@ -8,19 +8,19 @@
 #include "memory.h"
 #include "crossbar.h"
 #include "readSrcProperty.h"
-#include "readSrcEdges.h"
-#include "readDstProperty.h"
-#include "controlAtomicUpdate.h"
-#include "processEdge.h"
-#include "readTempDstProperty.h"
-#include "reduce.h"
-#include "writeTempDstProperty.h"
-
-// Apply Modules
-#include "apply.h"
-#include "readVertexProperty.h"
-#include "readTempVertexProperty.h"
-#include "writeVertexProperty.h"
+//#include "readSrcEdges.h"
+//#include "readDstProperty.h"
+//#include "controlAtomicUpdate.h"
+//#include "processEdge.h"
+//#include "readTempDstProperty.h"
+//#include "reduce.h"
+//#include "writeTempDstProperty.h"
+//
+//// Apply Modules
+//#include "apply.h"
+//#include "readVertexProperty.h"
+//#include "readTempVertexProperty.h"
+//#include "writeVertexProperty.h"
 #include "readGraph.h"
 
 // Utility
@@ -46,9 +46,8 @@ int main(int argc, char** argv) {
 
   GraphMat::BFS<vertex_t, edge_t> bfs;
 
-  std::list<uint64_t>* process = new std::list<uint64_t>;
-  std::list<uint64_t>* apply = new std::list<uint64_t>;
-  std::list<uint64_t>* next_frontier = new std::list<uint64_t>;
+  std::queue<uint64_t>* process = new std::queue<uint64_t>;
+  std::queue<uint64_t>* apply = new std::queue<uint64_t>;
 
   // "Scratchpad memory"
   std::map<uint64_t, vertex_t>* scratchpad_map = new std::map<uint64_t, vertex_t>;
@@ -56,7 +55,7 @@ int main(int argc, char** argv) {
   uint64_t global_tick = 0;
 
   // Setup problem:
-  process->ush_back(1);
+  process->push(1);
   graph.setVertexProperty(1, true);
 
   // Iteration Loop:
@@ -69,6 +68,7 @@ int main(int argc, char** argv) {
 
 
     }
+  std::queue<uint64_t>* next_frontier = new std::queue<uint64_t>;
     
     // Apply Phase
     while(!apply->empty()) {

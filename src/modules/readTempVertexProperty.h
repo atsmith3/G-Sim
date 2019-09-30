@@ -17,10 +17,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-
-class ReadTempVertexProperty : public Module {
+template<class v_t, class e_t>
+class ReadTempVertexProperty : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -43,13 +45,14 @@ private:
 public:
   bool _mem_flag;
   ReadTempVertexProperty();
-  ReadTempVertexProperty(Memory* dram);
+  ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem);
   ~ReadTempVertexProperty();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "readTempVertexProperty.tcc"
 
 #endif

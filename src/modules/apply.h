@@ -18,9 +18,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "graphApp.h"
+
 namespace SimObj {
 
-class Apply : public Module {
+template<class v_t, class e_t>
+class Apply : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -42,13 +45,14 @@ private:
 
 public:
   Apply();
-  Apply(int delay_cycles);
+  Apply(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app);
   ~Apply();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
 
-#endif
+#include "apply.tcc"
+
+#endif // APPLY_H

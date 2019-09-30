@@ -9,9 +9,8 @@
 
 #include <cassert>
 
-#include "writeVertexProperty.h"
 
-
+template<class v_t, class e_t>
 SimObj::WriteVertexProperty::WriteVertexProperty() {
   _dram = NULL;
   _ready = false;
@@ -21,8 +20,11 @@ SimObj::WriteVertexProperty::WriteVertexProperty() {
 }
 
 
-SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram) {
+template<class v_t, class e_t>
+SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::queue<uint64_t>* processs) {
   assert(dram != NULL);
+  assert(graph != NULL);
+  assert(process != NULL);
   _dram = dram;
   _ready = false;
   _mem_flag = false;
@@ -31,11 +33,13 @@ SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram) {
 }
 
 
+template<class v_t, class e_t>
 SimObj::WriteVertexProperty::~WriteVertexProperty() {
   // Do Nothing
 }
 
 
+template<class v_t, class e_t>
 void SimObj::WriteVertexProperty::tick(void) {
   _tick++;
   op_t next_state;
@@ -60,6 +64,9 @@ void SimObj::WriteVertexProperty::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+        // Write to global mem
+        _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
+        _process->push(_data.vertex_id);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
         _throughput++;
@@ -84,11 +91,7 @@ void SimObj::WriteVertexProperty::tick(void) {
 }
 
 
-void SimObj::WriteVertexProperty::ready(void) {
-  _ready = true;
-}
-
-
+template<class v_t, class e_t>
 void SimObj::WriteVertexProperty::print_stats(void) {
   std::cout << "-------------------------------------------------------------------------------\n";
   std::cout << "[ " << _name << " ]\n";
@@ -102,6 +105,8 @@ void SimObj::WriteVertexProperty::print_stats(void) {
   std::cout << "    Cycles:           " << _tick << "\n";
 }
 
+
+template<class v_t, class e_t>
 void SimObj::WriteVertexProperty::print_stats_csv() {
   std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
     << _stall_ticks[STALL_PROCESSING] << ","

@@ -7,10 +7,8 @@
 
 #include <cassert>
 
-#include "readTempVertexProperty.h"
-
-
-SimObj::ReadTempVertexProperty::ReadTempVertexProperty() {
+template<class v_t, class e_t>
+SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty() {
   _dram = NULL;
   _ready = false;
   _mem_flag = false;
@@ -18,8 +16,13 @@ SimObj::ReadTempVertexProperty::ReadTempVertexProperty() {
 }
 
 
-SimObj::ReadTempVertexProperty::ReadTempVertexProperty(Memory* dram) {
+template<class v_t, class e_t>
+SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem) {
   assert(dram != NULL);
+  assert(scratch_mem != NULL);
+  assert(graph != NULL);
+  _graph = graph;
+  _scratch_mem = scratch_mem;
   _dram = dram;
   _ready = false;
   _mem_flag = false;
@@ -27,12 +30,14 @@ SimObj::ReadTempVertexProperty::ReadTempVertexProperty(Memory* dram) {
 }
 
 
-SimObj::ReadTempVertexProperty::~ReadTempVertexProperty() {
+template<class v_t, class e_t>
+SimObj::ReadTempVertexProperty<v_t, e_t>::~ReadTempVertexProperty() {
   // Do Nothing
 }
 
 
-void SimObj::ReadTempVertexProperty::tick(void) {
+template<class v_t, class e_t>
+void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -56,8 +61,14 @@ void SimObj::ReadTempVertexProperty::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+        if(_scartch_mem->find(_data.vertex_id)) {
+          _data.vertex_temp_dst_data = *_scratch_mem[_data.vertex_id];
+        }
+        else {
+          _data.vertex_temp_dst_data = _graph->getInitializer();
+        }
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready(_vertex_id, _edge_id);
+          _next->ready(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
         }

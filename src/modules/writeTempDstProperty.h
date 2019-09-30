@@ -44,13 +44,14 @@ private:
   ControlAtomicUpdate<v_t, e_t>* _cau;
 
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
+  std::queue<uint64_t>* _apply;
 
   uint64_t _edges_written;
 
 public:
   bool _mem_flag;
   WriteTempDstProperty();
-  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem);
+  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply);
   ~WriteTempDstProperty();
 
   void tick(void);

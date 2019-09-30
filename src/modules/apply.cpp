@@ -10,10 +10,8 @@
 
 #include <cassert>
 
-#include "apply.h"
-
-
-SimObj::Apply::Apply() {
+template<class v_t, class e_t>
+SimObj::Apply<v_t, e_t>::Apply() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -21,7 +19,8 @@ SimObj::Apply::Apply() {
   _delay_cycles = 1;
 }
 
-SimObj::Apply::Apply(int delay_cycles) {
+template<class v_t, class e_t>
+SimObj::Apply<v_t, e_t>::Apply(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -29,11 +28,13 @@ SimObj::Apply::Apply(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-SimObj::Apply::~Apply() {
+template<class v_t, class e_t>
+SimObj::Apply<v_t, e_t>::~Apply() {
   // Do Nothing
 }
 
-void SimObj::Apply::tick(void) {
+template<class v_t, class e_t>
+void SimObj::Apply<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -60,7 +61,9 @@ void SimObj::Apply::tick(void) {
         _stall = STALL_PROCESSING;
       }
       else {
-        _next->ready();
+        // Do Apply
+        _app->apply(&_data.vertex_temp_dst_data, &_data.vertex_data);
+        _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -78,9 +81,4 @@ void SimObj::Apply::tick(void) {
 #endif
   _state = next_state;
   update_stats();
-
-}
-
-void SimObj::Apply::ready(void) {
-  _ready = true;
 }
