@@ -13,8 +13,8 @@
 
 namespace GraphMat {
 
-template<class vertex_t, class edge_t>
-class BFS : public GraphApp<vertex_t, edge_t> {
+template<class v_t, class e_t>
+class BFS : public GraphApp<v_t, e_t> {
 protected:
   
 
@@ -26,13 +26,13 @@ public:
   ~BFS() { /* Do Nothing */ }
 
   // Reduction Function
-  void reduce(vertex_t& a, const vertex_t& b);
+  void reduce(v_t& a, const v_t& b);
 
   // Process Edge Function
-  void process_edge(vertex_t& message, const edge_t& edge, const vertex_t& vertex);
+  void process_edge(v_t& message, const e_t& edge, const v_t& vertex);
 
   // Apply
-  void apply(const vertex_t& scratch, vertex_t& dram);
+  void apply(const v_t& scratch, v_t& dram);
 
 }; // class BFS
 

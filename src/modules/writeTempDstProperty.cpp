@@ -8,11 +8,10 @@
 
 #include <cassert>
 
-#include "writeTempDstProperty.h"
-
-
-SimObj::WriteTempDstProperty::WriteTempDstProperty() {
+template<class v_t, class e_t>
+SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
   _scratchpad = NULL;
+  _scratch_mem = NULL;
   _cau = NULL;
   _ready = false;
   _mem_flag = false;
@@ -20,11 +19,14 @@ SimObj::WriteTempDstProperty::WriteTempDstProperty() {
 }
 
 
-SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau) {
+template<class v_t, class e_t>
+SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau) {
   assert(scratchpad != NULL);
   assert(cau != NULL);
+  assert(scratch_mem != NULL);
   _scratchpad = scratchpad;
   _cau = cau;
+  _scartch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -32,12 +34,14 @@ SimObj::WriteTempDstProperty::WriteTempDstProperty(Memory* scratchpad, ControlAt
 }
 
 
-SimObj::WriteTempDstProperty::~WriteTempDstProperty() {
+template<class v_t, class e_t>
+SimObj::WriteTempDstProperty<v_t, e_t>::~WriteTempDstProperty() {
   // Do Nothing
 }
 
 
-void SimObj::WriteTempDstProperty::tick(void) {
+template<class v_t, class e_t>
+void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -45,7 +49,8 @@ void SimObj::WriteTempDstProperty::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
-        // Upstream sent _edge property
+        // Write to "Scratchpad"
+        *_scratch_mem[_data.vertex_id] = _data;
         _ready = false;
         _mem_flag = false;
         _scratchpad->write(0x01, &_mem_flag);
@@ -85,11 +90,9 @@ void SimObj::WriteTempDstProperty::tick(void) {
   update_stats();
 }
 
-void SimObj::WriteTempDstProperty::ready(void) {
-  _ready = true;
-}
 
-void SimObj::WriteTempDstProperty::print_stats(void) {
+template<class v_t, class e_t>
+void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats(void) {
   std::cout << "-------------------------------------------------------------------------------\n";
   std::cout << "[ " << _name << " ]\n";
   std::cout << "  Stalls:\n";
@@ -102,7 +105,9 @@ void SimObj::WriteTempDstProperty::print_stats(void) {
   std::cout << "    Cycles:           " << _tick << "\n";
 }
 
-void SimObj::WriteTempDstProperty::print_stats_csv(void) {
+
+template<class v_t, class e_t>
+void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats_csv(void) {
   std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
     << _stall_ticks[STALL_PROCESSING] << ","
     << _stall_ticks[STALL_PIPE] << ","

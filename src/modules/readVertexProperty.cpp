@@ -7,19 +7,24 @@
 
 #include <cassert>
 
-#include "readVertexProperty.h"
-
-
-SimObj::ReadVertexProperty::ReadVertexProperty() {
+template<class v_t, class e_t>
+SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty() {
   _dram = NULL;
+  _apply = NULL;
+  _graph = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
 }
 
 
-SimObj::ReadVertexProperty::ReadVertexProperty(Memory* dram) {
+template<class v_t, class e_t>
+SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::queue<uint64_t>* apply, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
+  assert(apply != NULL);
+  assert(graph != NULL);
+  _apply = apply;
+  _graph = graph;
   _dram = dram;
   _ready = false;
   _mem_flag = false;
@@ -27,12 +32,14 @@ SimObj::ReadVertexProperty::ReadVertexProperty(Memory* dram) {
 }
 
 
-SimObj::ReadVertexProperty::~ReadVertexProperty() {
+template<class v_t, class e_t>
+SimObj::ReadVertexProperty<v_t, e_t>::~ReadVertexProperty() {
   // Do Nothing
 }
 
 
-void SimObj::ReadVertexProperty::tick(void) {
+template<class v_t, class e_t>
+void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -56,8 +63,15 @@ void SimObj::ReadVertexProperty::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+        // Dequeue from the apply work queue
+        _data.vertex_id = apply->front();
+        apply->pop();
+
+        // Read the global vertex property
+        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
+
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready(_vertex_id, _edge_id);
+          _next->ready(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
         }
@@ -74,7 +88,7 @@ void SimObj::ReadVertexProperty::tick(void) {
     }
     case OP_SEND_DOWNSTREAM : {
       if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready(_vertex_id, _edge_id);
+        _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }

@@ -20,12 +20,13 @@
 namespace SimObj {
 
 
-class ReadVertexProperty : public Module {
+template<class v_t, class e_t>
+class ReadVertexProperty : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
-    OP_FETCH,
     OP_MEM_WAIT,
+    OP_SEND_DOWNSTREAM,
     OP_NUM_OPS
   };
 
@@ -39,12 +40,13 @@ private:
 
   Memory* _dram;
   op_t _state;
-  bool _ready;
+  std::queue<uint64_t>* _apply;
+  Utility::readGraph<v_t> _graph;
 
 public:
   bool _mem_flag;
   ReadVertexProperty();
-  ReadVertexProperty(Memory* dram);
+  ReadVertexProperty(Memory* dram, std::queue<uint64_t>* apply, Utility::readGraph<v_t>* graph);
   ~ReadVertexProperty();
 
   void tick(void);

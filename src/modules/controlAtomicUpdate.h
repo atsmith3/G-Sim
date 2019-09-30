@@ -19,9 +19,12 @@
 #include "module.h"
 #include "memory.h"
 
+#include "readGraph.h"
+
 namespace SimObj {
 
-class ControlAtomicUpdate : public Module {
+template<class v_t, class e_t>
+class ControlAtomicUpdate : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -37,10 +40,8 @@ private:
 #endif
 
   op_t _state;
-  bool _ready;
   bool _op_complete;
-  std::list<uint64_t> _edges;
-  uint64_t _cur_edge;
+  std::list<Utility::pipeline_data<v_t, e_t>> _nodes;
 
   bool dependency();
 
@@ -49,11 +50,11 @@ public:
   ~ControlAtomicUpdate();
 
   void tick(void);
-  void ready(void);
   void receive_message(msg_t msg);
 };
 
 } // namespace SimObj
 
+#include "controlAtomicUpdate.tcc"
 
 #endif

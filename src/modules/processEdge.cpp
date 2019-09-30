@@ -9,10 +9,8 @@
 
 #include <cassert>
 
-#include "processEdge.h"
-
-
-SimObj::ProcessEdge::ProcessEdge() {
+template<class v_t, class e_t>
+SimObj::ProcessEdge<v_t, e_t>::ProcessEdge() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -20,7 +18,8 @@ SimObj::ProcessEdge::ProcessEdge() {
   _delay_cycles = 1;
 }
 
-SimObj::ProcessEdge::ProcessEdge(int delay_cycles) {
+template<class v_t, class e_t>
+SimObj::ProcessEdge<v_t, e_t>::ProcessEdge(int delay_cycles) {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -28,11 +27,13 @@ SimObj::ProcessEdge::ProcessEdge(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-SimObj::ProcessEdge::~ProcessEdge() {
+template<class v_t, class e_t>
+SimObj::ProcessEdge<v_t, e_t>::~ProcessEdge() {
   // Do Nothing
 }
 
-void SimObj::ProcessEdge::tick(void) {
+template<class v_t, class e_t>
+void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -59,7 +60,9 @@ void SimObj::ProcessEdge::tick(void) {
         _stall = STALL_PROCESSING;
       }
       else {
-        _next->ready();
+        // Run the "Process Edge" function
+        _graph_app->process_edge(&_data.message_data, &_data.edge_data, &_data.vertex_data);
+        _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -77,9 +80,5 @@ void SimObj::ProcessEdge::tick(void) {
 #endif
   _state = next_state;
   update_stats();
-
 }
 
-void SimObj::ProcessEdge::ready(void) {
-  _ready = true;
-}

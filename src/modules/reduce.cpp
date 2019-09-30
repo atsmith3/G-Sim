@@ -11,18 +11,20 @@
 
 #include <cassert>
 
-#include "reduce.h"
-
-
-SimObj::Reduce::Reduce() {
+template<class v_t, class e_t>
+SimObj::Reduce<v_t, e_t>::Reduce() {
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
   _counter = 0;
   _delay_cycles = 1;
+  _app = NULL;
 }
 
-SimObj::Reduce::Reduce(int delay_cycles) {
+template<class v_t, class e_t>
+SimObj::Reduce<v_t, e_t>::Reduce(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app) {
+  assert(app != NULL);
+  _app = app;
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -30,11 +32,13 @@ SimObj::Reduce::Reduce(int delay_cycles) {
   _delay_cycles = delay_cycles;
 }
 
-SimObj::Reduce::~Reduce() {
+template<class v_t, class e_t>
+SimObj::Reduce<v_t, e_t>::~Reduce() {
   // Do Nothing
 }
 
-void SimObj::Reduce::tick(void) {
+template<class v_t, class e_t>
+void SimObj::Reduce<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -61,7 +65,8 @@ void SimObj::Reduce::tick(void) {
         _stall = STALL_PROCESSING;
       }
       else {
-        _next->ready();
+        _app->reduce(&_data.vertex_temp_dst_data, &_data.message_data);
+        _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -79,9 +84,4 @@ void SimObj::Reduce::tick(void) {
 #endif
   _state = next_state;
   update_stats();
-
-}
-
-void SimObj::Reduce::ready(void) {
-  _ready = true;
 }

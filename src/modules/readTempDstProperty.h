@@ -20,8 +20,8 @@
 
 namespace SimObj {
 
-
-class ReadTempDstProperty : public Module {
+template<class v_t, class e_t>
+class ReadTempDstProperty : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -39,11 +39,13 @@ private:
   Memory* _scratchpad;
   op_t _state;
   bool _ready;
+  Utility::readGraph<v_t>* _graph;
+  std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
 
 public:
   bool _mem_flag;
   ReadTempDstProperty();
-  ReadTempDstProperty(Memory* scratchpad);
+  ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem);
   ~ReadTempDstProperty();
 
   void tick(void);

@@ -20,7 +20,8 @@
 
 namespace SimObj {
 
-class ProcessEdge : public Module {
+template<class v_t, class e_t>
+class ProcessEdge : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -39,16 +40,18 @@ private:
   uint64_t _counter;
   bool _ready;
   uint64_t _delay_cycles;
+  GraphMat::GraphApp<v_t, e_t>* _graph_app;
 
 public:
   ProcessEdge();
-  ProcessEdge(int delay_cycles);
+  ProcessEdge(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* graph_app);
   ~ProcessEdge();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "processEdge.tcc"
 
 #endif

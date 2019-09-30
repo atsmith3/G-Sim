@@ -10,7 +10,7 @@
 
 namespace GraphMat {
 
-template<class vertex_t, class edge_t>
+template<class v_t, class e_t>
 class GraphApp {
 protected:
   uint64_t iteration;
@@ -23,13 +23,13 @@ public:
   ~GraphApp() { /* Do nothing */ }
 
   // Applies reduction function to a vertex to be written to scratchpad
-  virtual void reduce(vertex_t& a, const vertex_t& b);
+  virtual void reduce(v_t& a, const v_t& b);
 
   // Processes edge
-  virtual void process_edge(vertex_t& message, const edge_t& edge, const vertex_t& vertex);
+  virtual void process_edge(v_t& message, const e_t& edge, const v_t& vertex);
 
   // during the apply phase will update the global memory
-  virtual void apply(const vertex_t& scratch, vertex_t& dram);
+  virtual void apply(const v_t& scratch, v_t& dram);
 
   // Function to do every iteration of the graph application
   virtual void do_every_iteration();

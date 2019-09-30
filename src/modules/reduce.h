@@ -23,7 +23,8 @@
 
 namespace SimObj {
 
-class Reduce : public Module {
+template<class v_t, class e_t>
+class Reduce : public Module<v_t, e_t> {
 private:
   enum op_t {
     OP_WAIT,
@@ -42,10 +43,11 @@ private:
   uint64_t _counter;
   bool _ready;
   uint64_t _delay_cycles;
+  GraphMat::GraphApp<v_t, e_t>* _app;
 
 public:
   Reduce();
-  Reduce(int delay_cycles);
+  Reduce(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app);
   ~Reduce();
 
   void tick(void);
@@ -54,4 +56,6 @@ public:
 
 } // namespace SimObj
 
-#endif
+#include "reduce.tcc"
+
+#endif // REDUCE_H

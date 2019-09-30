@@ -11,7 +11,7 @@
 
 
 template<class v_t, class e_t>
-SimObj::ReadDstProperty::ReadDstProperty() {
+SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty() {
   _dram = NULL;
   _ready = false;
   _mem_flag = false;
@@ -20,7 +20,7 @@ SimObj::ReadDstProperty::ReadDstProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::ReadDstProperty::ReadDstProperty(Memory* dram) {
+SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram) {
   assert(dram != NULL);
   _dram = dram;
   _ready = false;
@@ -30,13 +30,13 @@ SimObj::ReadDstProperty::ReadDstProperty(Memory* dram) {
 
 
 template<class v_t, class e_t>
-SimObj::ReadDstProperty::~ReadDstProperty() {
+SimObj::ReadDstProperty<v_t, e_t>::~ReadDstProperty() {
   // Do Nothing
 }
 
 
 template<class v_t, class e_t>
-void SimObj::ReadDstProperty::tick(void) {
+void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -60,7 +60,8 @@ void SimObj::ReadDstProperty::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        _data.vertex_dst_data = _graph->getVertexProperty(_data.edge_id);
+        _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
+        _data.vertex_dst_data = _graph->getVertexProperty(_data.vertex_dst_id);
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);
           _ready = false;

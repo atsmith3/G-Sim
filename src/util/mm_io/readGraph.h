@@ -29,6 +29,8 @@ class readGraph {
 
     vertex_t getVertexProperty(int nodeInd) { return vertex_property[nodeInd]; }
     void setVertexProperty(int nodeInd, vertex_t vertexProperty) { vertex_property[nodeInd] = vertexProperty; }
+    void setInitilizer(vertex_t initialValue) { initialVertexValue = initialValue; }
+    vertex_t getInitializer() { return initialVertexValue; }
 
     std::queue<uint>* getNeighbors(int nodeInd) {
       uint *startPtr = nodeNeighbors + getNodePtr(nodeInd);
@@ -59,6 +61,7 @@ class readGraph {
     int *numNodes;
     int *numNeighbors;
     int *vertex_property;
+    vertex_t initialVertexValue;
 
     int shouldInit;
 

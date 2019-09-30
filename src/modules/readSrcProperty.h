@@ -45,11 +45,11 @@ private:
   Memory* _dram;
   read_src_op_t _state;
   bool _fetched;
+  std::list<uint64_t>* _process;
+  Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
-  std::list<uint64_t>* _process;
-  Utility::readGraph<v_t>* _graph;
 
   uint64_t _vertex_id;
   ReadSrcProperty();

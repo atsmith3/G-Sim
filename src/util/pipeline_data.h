@@ -16,13 +16,15 @@ namespace Utility {
 template <v_t, e_t>
 struct pipeline_data {
   uint64_t vertex_id;
+  uint64_t vertex_dst_id;
   uint64_t edge_id;
 
   v_t vertex_data;
   v_t vertex_dst_data;
-  e_t edge_data;
+  v_t message_data;
+  v_t vertex_temp_dst_data;
 
-  v_t vertex_temp_data;
+  e_t edge_data;
   e_t edge_temp_data;
 };
 

@@ -20,7 +20,7 @@ void Utility::readGraph<vertex_t>::allocateGraph() {
   nodePtrs = (unsigned int *)malloc((*numNodes + 1) * sizeof(unsigned int));
   vertex_property = (vertex_t *)malloc((*numNodes + 2) * sizeof(vertex_t));
   for(int i = 0 ; i < *numNodes + 1; i ++) {
-    vertex_property[i] = vertex_t();
+    vertex_property[i] = initialVertexValue;
   }
   nodeNeighbors = (unsigned int *)malloc(*numNeighbors * sizeof(unsigned int));
   edgeWeights = (double *)malloc(*numNeighbors * sizeof(double));

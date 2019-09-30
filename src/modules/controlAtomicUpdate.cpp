@@ -9,10 +9,8 @@
 
 #include <cassert>
 
-#include "controlAtomicUpdate.h"
-
-
-SimObj::ControlAtomicUpdate::ControlAtomicUpdate() {
+template<class v_t, class e_t>
+SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate() {
   _state = OP_WAIT;
   _ready = false;
   _op_complete = false;
@@ -20,15 +18,16 @@ SimObj::ControlAtomicUpdate::ControlAtomicUpdate() {
   _edge_id = 0;
 }
 
-
-SimObj::ControlAtomicUpdate::~ControlAtomicUpdate() {
+template<class v_t, class e_t>
+SimObj::ControlAtomicUpdate<v_t, e_t>::~ControlAtomicUpdate() {
   // Do nothing
 }
 
-bool SimObj::ControlAtomicUpdate::dependency() {
+template<class v_t, class e_t>
+bool SimObj::ControlAtomicUpdate<v_t, e_t>::dependency() {
   bool ret = false;
-  for(auto it = _edges.begin(); it != _edges.end(); it++) {
-    if(_edge_id == *it) {
+  for(auto it = _nodes.begin(); it != _nodes.end(); it++) {
+    if(_data.edge_id == *it) {
       ret = true;
       break;
     }
@@ -36,7 +35,8 @@ bool SimObj::ControlAtomicUpdate::dependency() {
   return ret;
 }
 
-void SimObj::ControlAtomicUpdate::tick(void) {
+template<class v_t, class e_t>
+void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -46,8 +46,8 @@ void SimObj::ControlAtomicUpdate::tick(void) {
       if(_ready) {
         _ready = false;
         if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
-          _next->ready(_vertex_id, _edge_id);
-          _edges.push_front(_edge_id);
+          _next->ready(_data);
+          _nodes.push_front(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
         }
@@ -66,8 +66,8 @@ void SimObj::ControlAtomicUpdate::tick(void) {
     case OP_STALL : {
       // Check if an edge was finalized:
       if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready(_vertex_id, _edge_id);
-        _edges.push_front(_edge_id);
+        _next->ready(_data);
+        _nodes.push_front(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -90,8 +90,9 @@ void SimObj::ControlAtomicUpdate::tick(void) {
   update_stats();
 }
 
-void SimObj::ControlAtomicUpdate::receive_message(msg_t msg) {
+template<class v_t, class e_t>
+void SimObj::ControlAtomicUpdate<v_t, e_t>::receive_message(msg_t msg) {
   if(msg == MSG_ATOMIC_OP_COMPLETE) {
-    _edges.pop_back();
+    _nodes.pop_back();
   }
 }
