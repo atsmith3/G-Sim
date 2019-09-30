@@ -56,7 +56,7 @@ public:
   virtual void receive_message(msg_t msg);
   uint64_t get_attr(void); 
   virtual void ready(void);
-  virtual void ready(pipeline_data<v_t, e_t> data);
+  virtual void ready(Utility::pipeline_data<v_t, e_t> data);
   void set_next(Module* next);
   void set_prev(Module* prev);
   virtual void update_stats();

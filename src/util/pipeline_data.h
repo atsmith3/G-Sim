@@ -13,7 +13,7 @@ namespace Utility {
 
 // v_t is the data type of the vertex
 // e_t is the data type of the edge
-template <v_t, e_t>
+template<class v_t, class e_t>
 struct pipeline_data {
   uint64_t vertex_id;
   uint64_t vertex_dst_id;

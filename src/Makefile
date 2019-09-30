@@ -1,5 +1,5 @@
 INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil -IgraphMat
-CPPFLAGS += -std=c++17 -Wall $(INCPATH)
+CPPFLAGS += -std=c++17 -Wall -Wfatal-errors -Werror $(INCPATH)
 CFLAGS += -Wall $(INCPATH)
 #CPPFLAGS += -pg 
 LFLAGS += -lboost_program_options -lstdc++fs -lrt

@@ -25,7 +25,9 @@ private:
   std::vector<Module<v_t, e_t>*> _in_module;
   std::vector<Module<v_t, e_t>*> _out_module;
   
-  uint64_t route(Utility::pipeline_data<v_t, e_t> vertex);
+  uint64_t route(Utility::pipeline_data<v_t, e_t> vertex) {
+    return vertex.vertex_id % _num_ports;
+  }
   
 public:
   Crossbar(uint64_t num_ports);

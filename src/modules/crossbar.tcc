@@ -23,14 +23,14 @@ SimObj::Crossbar<v_t, e_t>::~Crossbar() {
 }
 
 template<class v_t, class e_t>
-void SimObj::Crossbar<v_t, e_t>::connect_input(Module* in_module, uint64_t port_num) {
+void SimObj::Crossbar<v_t, e_t>::connect_input(Module<v_t, e_t>* in_module, uint64_t port_num) {
   assert(port_num < _num_ports);
   assert(in_module != NULL);
   _in_module[port_num] = in_module;
 }
 
 template<class v_t, class e_t>
-void SimObj::Crossbar<v_t, e_t>::connect_output(Module* out_module, uint64_t port_num) {
+void SimObj::Crossbar<v_t, e_t>::connect_output(Module<v_t, e_t>* out_module, uint64_t port_num) {
   assert(port_num < _num_ports);
   assert(out_module != NULL);
   _out_module[port_num] = out_module;
@@ -68,9 +68,4 @@ Utility::pipeline_data<v_t, e_t> SimObj::Crossbar<v_t, e_t>::get_data(uint64_t p
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::tick() {
   // Do Nothing
-}
-
-template<class v_t, class e_t>
-uint64_t SimObj::Crossbar<v_t, e_t>::route(Utility::pipline_data<v_t, e_t> vertex) {
-  return vertex.vertex_id % _num_ports;
 }

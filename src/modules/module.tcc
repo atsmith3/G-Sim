@@ -57,12 +57,12 @@ void SimObj::Module<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
 }
 
 template<class v_t, class e_t>
-void SimObj::Module<v_t, e_t>::set_next(SimObj::Module* next) {
+void SimObj::Module<v_t, e_t>::set_next(SimObj::Module<v_t, e_t>* next) {
   _next = next;
 }
   
 template<class v_t, class e_t>
-void SimObj::Module<v_t, e_t>::set_prev(SimObj::Module* prev) {
+void SimObj::Module<v_t, e_t>::set_prev(SimObj::Module<v_t, e_t>* prev) {
   _prev = prev;
 }
 
