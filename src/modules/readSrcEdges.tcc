@@ -12,38 +12,29 @@
 template<class v_t, class e_t>
 SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges() {
   _scratchpad = NULL;
+  _graph = NULL;
   _state = OP_WAIT;
   _ready = false;
   _mem_flag = false;
-  _avg_connectivity = 1;
 }
 
 
 template<class v_t, class e_t>
-SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* _graph) {
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* graph) {
   assert(scratchpad != NULL);
+  assert(graph != NULL);
   _scratchpad = scratchpad;
+  _graph = graph;
   _state = OP_WAIT;
   _ready = false;
   _mem_flag = false;
-  _avg_connectivity = 1;
-}
-
-
-template<class v_t, class e_t>
-SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, uint64_t avg_connectivity) {
-  assert(scratchpad != NULL);
-  _scratchpad = scratchpad;
-  _state = OP_WAIT;
-  _ready = false;
-  _mem_flag = false;
-  _avg_connectivity = avg_connectivity;
 }
 
 
 template<class v_t, class e_t>
 SimObj::ReadSrcEdges<v_t, e_t>::~ReadSrcEdges() {
-  //Do Nothing
+  _scratchpad = NULL;
+  _graph = NULL;
 }
 
 
@@ -58,7 +49,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
       if(_ready) {
         // Upstream sent vertex & vertex property
         _ready = false;
-        if(!_edge_list->end()) {
+        if(!_edge_list->empty()) {
           _mem_flag = false;
           _scratchpad->read(0x01, &_mem_flag);
           _stall = STALL_MEM;
@@ -118,7 +109,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 
 template<class v_t, class e_t>

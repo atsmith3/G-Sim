@@ -8,7 +8,7 @@
 #include "memory.h"
 #include "crossbar.h"
 #include "readSrcProperty.h"
-//#include "readSrcEdges.h"
+#include "readSrcEdges.h"
 //#include "readDstProperty.h"
 //#include "controlAtomicUpdate.h"
 //#include "processEdge.h"
@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
   SimObj::Memory scratchpad(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
 
   SimObj::ReadSrcProperty<vertex_t, edge_t> p1(&mem, process, &graph);
+  SimObj::ReadSrcEdges<vertex_t, edge_t> p2(&scratchpad, &graph);
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter; iteration++) {

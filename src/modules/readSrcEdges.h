@@ -14,6 +14,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <queue>
 
 #include "module.h"
 #include "memory.h"
@@ -38,21 +39,25 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+
   Memory* _scratchpad;
   op_t _state;
-  uint64_t _avg_connectivity;
-  std::vector<uint>* _edge_list;
+  std::queue<uint>* _edge_list;
   Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
   ReadSrcEdges();
-  ReadSrcEdges(Memory* dram);
-  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* _graph);
+  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* graph);
   ~ReadSrcEdges();
 
   void tick(void);
-  void ready(void);
+  void ready(Utility::pipeline_data<v_t, e_t> data);
 };
 
 } // namespace SimObj
