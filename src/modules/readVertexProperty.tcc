@@ -34,7 +34,9 @@ SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::queu
 
 template<class v_t, class e_t>
 SimObj::ReadVertexProperty<v_t, e_t>::~ReadVertexProperty() {
-  // Do Nothing
+  _dram = NULL;
+  _apply = NULL;
+  _graph = NULL;
 }
 
 
@@ -64,8 +66,8 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         // Dequeue from the apply work queue
-        _data.vertex_id = apply->front();
-        apply->pop();
+        _data.vertex_id = _apply->front();
+        _apply->pop();
 
         // Read the global vertex property
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
@@ -108,6 +110,6 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 

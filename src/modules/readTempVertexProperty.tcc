@@ -10,6 +10,8 @@
 template<class v_t, class e_t>
 SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty() {
   _dram = NULL;
+  _scratch_mem = NULL;
+  _graph = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -17,7 +19,7 @@ SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem) {
+SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem) {
   assert(dram != NULL);
   assert(scratch_mem != NULL);
   assert(graph != NULL);
@@ -32,7 +34,9 @@ SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, s
 
 template<class v_t, class e_t>
 SimObj::ReadTempVertexProperty<v_t, e_t>::~ReadTempVertexProperty() {
-  // Do Nothing
+  _dram = NULL;
+  _scratch_mem = NULL;
+  _graph = NULL;
 }
 
 
@@ -61,8 +65,8 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        if(_scartch_mem->find(_data.vertex_id)) {
-          _data.vertex_temp_dst_data = *_scratch_mem[_data.vertex_id];
+        if(_scratch_mem->find(_data.vertex_id) != _scratch_mem->end()) {
+          _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
         }
         else {
           _data.vertex_temp_dst_data = _graph->getInitializer();
@@ -85,7 +89,7 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
     }
     case OP_SEND_DOWNSTREAM : {
       if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready();
+        _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
       }
@@ -105,6 +109,6 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 

@@ -11,8 +11,10 @@
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty::WriteVertexProperty() {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty() {
   _dram = NULL;
+  _process = NULL;
+  _graph = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -21,10 +23,12 @@ SimObj::WriteVertexProperty::WriteVertexProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::queue<uint64_t>* processs) {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
   assert(graph != NULL);
   assert(process != NULL);
+  _graph = graph;
+  _process = process;
   _dram = dram;
   _ready = false;
   _mem_flag = false;
@@ -34,13 +38,15 @@ SimObj::WriteVertexProperty::WriteVertexProperty(Memory* dram, Utility::readGrap
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty::~WriteVertexProperty() {
-  // Do Nothing
+SimObj::WriteVertexProperty<v_t, e_t>::~WriteVertexProperty() {
+  _dram = NULL;
+  _process = NULL;
+  _graph = NULL;
 }
 
 
 template<class v_t, class e_t>
-void SimObj::WriteVertexProperty::tick(void) {
+void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
 
@@ -87,12 +93,12 @@ void SimObj::WriteVertexProperty::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 
 
 template<class v_t, class e_t>
-void SimObj::WriteVertexProperty::print_stats(void) {
+void SimObj::WriteVertexProperty<v_t, e_t>::print_stats(void) {
   std::cout << "-------------------------------------------------------------------------------\n";
   std::cout << "[ " << _name << " ]\n";
   std::cout << "  Stalls:\n";
@@ -107,7 +113,7 @@ void SimObj::WriteVertexProperty::print_stats(void) {
 
 
 template<class v_t, class e_t>
-void SimObj::WriteVertexProperty::print_stats_csv() {
+void SimObj::WriteVertexProperty<v_t, e_t>::print_stats_csv() {
   std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
     << _stall_ticks[STALL_PROCESSING] << ","
     << _stall_ticks[STALL_PIPE] << ","

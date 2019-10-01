@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <queue>
 
 #include "module.h"
 #include "memory.h"
@@ -37,11 +38,17 @@ private:
     {2, "OP_SEND_DOWNSTREAM"},
     {3, "OP_NUM_OPS"}};
 #endif
+  
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_data;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
 
   Memory* _dram;
   op_t _state;
   std::queue<uint64_t>* _apply;
-  Utility::readGraph<v_t> _graph;
+  Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
@@ -50,10 +57,11 @@ public:
   ~ReadVertexProperty();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "readVertexProperty.tcc"
 
 #endif
 

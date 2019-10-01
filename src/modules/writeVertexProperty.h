@@ -14,6 +14,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <queue>
 
 #include "module.h"
 #include "memory.h"
@@ -38,9 +39,16 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+  using Module<v_t, e_t>::_name;
+  using Module<v_t, e_t>::_stall_ticks;
+
   Memory* _dram;
   op_t _state;
-  bool _ready;
   uint64_t _throughput;
 
   Utility::readGraph<v_t>* _graph;
@@ -49,7 +57,7 @@ private:
 public:
   bool _mem_flag;
   WriteVertexProperty();
-  WriteVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::queue<uint64_t>* process);
+  WriteVertexProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph);
   ~WriteVertexProperty();
 
   void tick(void);
@@ -59,6 +67,8 @@ public:
 };
 
 } // namespace SimObj
+
+#include "writeVertexProperty.tcc"
 
 #endif
 

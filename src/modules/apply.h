@@ -18,7 +18,7 @@
 #include "module.h"
 #include "memory.h"
 
-#include "graphApp.h"
+#include "graphMat.h"
 
 namespace SimObj {
 
@@ -38,10 +38,18 @@ private:
     {4, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+  using Module<v_t, e_t>::_name;
+  using Module<v_t, e_t>::_stall_ticks;
+
   op_t _state;
   uint64_t _counter;
-  bool _ready;
   uint64_t _delay_cycles;
+  GraphMat::GraphApp<v_t, e_t>* _app;
 
 public:
   Apply();
