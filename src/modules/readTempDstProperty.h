@@ -36,9 +36,14 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+
   Memory* _scratchpad;
   op_t _state;
-  bool _ready;
   Utility::readGraph<v_t>* _graph;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
 
@@ -49,9 +54,10 @@ public:
   ~ReadTempDstProperty();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj
+
+#include "readTempDstProperty.tcc"
 
 #endif

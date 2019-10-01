@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
+#include <queue>
 
 #include "module.h"
 #include "memory.h"
@@ -38,9 +39,16 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+  using Module<v_t, e_t>::_name;
+  using Module<v_t, e_t>::_stall_ticks;
+
   Memory* _scratchpad;
   op_t _state;
-  bool _ready;
   ControlAtomicUpdate<v_t, e_t>* _cau;
 
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
@@ -51,11 +59,10 @@ private:
 public:
   bool _mem_flag;
   WriteTempDstProperty();
-  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply);
+  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply);
   ~WriteTempDstProperty();
 
   void tick(void);
-  void ready(void);
   void print_stats(void);
   void print_stats_csv(void);
 };

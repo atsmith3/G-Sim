@@ -13,6 +13,8 @@
 template<class v_t, class e_t>
 SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty() {
   _scratchpad = NULL;
+  _graph = NULL;
+  _scratch_mem = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -22,7 +24,11 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty() {
 template<class v_t, class e_t>
 SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem) {
   assert(scratchpad != NULL);
+  assert(graph != NULL);
+  assert(scratch_mem != NULL);
   _scratchpad = scratchpad;
+  _graph = graph;
+  _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -31,7 +37,9 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, U
 
 template<class v_t, class e_t>
 SimObj::ReadTempDstProperty<v_t, e_t>::~ReadTempDstProperty() {
-  // Do Nothing
+  _scratchpad = NULL;
+  _graph = NULL;
+  _scratch_mem = NULL;
 }
 
 
@@ -63,8 +71,8 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           // Read from "scratchpad map holding temp values"
           //Check if it exists in the map:
-          if(_scratch_mem->find(_data.vertex_dst_id)) {
-            _data.vertex_temp_dst_data = *_scratch_mem[_data.vertex_dst_id];
+          if(_scratch_mem->find(_data.vertex_dst_id) != _scratch_mem->end()) {
+            _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
           }
           else {
             _data.vertex_temp_dst_data = _graph->getInitializer();
@@ -94,6 +102,6 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 

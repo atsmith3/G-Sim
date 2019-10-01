@@ -34,7 +34,7 @@ SimObj::Reduce<v_t, e_t>::Reduce(int delay_cycles, GraphMat::GraphApp<v_t, e_t>*
 
 template<class v_t, class e_t>
 SimObj::Reduce<v_t, e_t>::~Reduce() {
-  // Do Nothing
+  _app = NULL;
 }
 
 template<class v_t, class e_t>
@@ -65,7 +65,7 @@ void SimObj::Reduce<v_t, e_t>::tick(void) {
         _stall = STALL_PROCESSING;
       }
       else {
-        _app->reduce(&_data.vertex_temp_dst_data, &_data.message_data);
+        _app->reduce(_data.vertex_temp_dst_data, _data.message_data);
         _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
@@ -83,5 +83,5 @@ void SimObj::Reduce<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }

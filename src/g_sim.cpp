@@ -10,12 +10,12 @@
 #include "readSrcProperty.h"
 #include "readSrcEdges.h"
 #include "readDstProperty.h"
-//#include "controlAtomicUpdate.h"
+#include "controlAtomicUpdate.h"
 #include "processEdge.h"
-//#include "readTempDstProperty.h"
-//#include "reduce.h"
-//#include "writeTempDstProperty.h"
-//
+#include "readTempDstProperty.h"
+#include "reduce.h"
+#include "writeTempDstProperty.h"
+
 //// Apply Modules
 //#include "apply.h"
 //#include "readVertexProperty.h"
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
   std::queue<uint64_t>* apply = new std::queue<uint64_t>;
 
   // "Scratchpad memory"
-  //std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>* scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>;
+  std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>* scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>;
 
   uint64_t global_tick = 0;
 
@@ -67,6 +67,10 @@ int main(int argc, char** argv) {
   SimObj::ReadSrcEdges<vertex_t, edge_t> p2(&scratchpad, &graph);
   SimObj::ReadDstProperty<vertex_t, edge_t> p3(&mem, &graph);
   SimObj::ProcessEdge<vertex_t, edge_t> p4(1, &bfs);
+  SimObj::ControlAtomicUpdate<vertex_t, edge_t> p5;
+  SimObj::ReadTempDstProperty<vertex_t, edge_t> p6(&scratchpad, &graph, scratchpad_map);
+  SimObj::Reduce p7(1, &bfs);
+  SimObj::WriteTempDstProperty p8(&scratchpad, &p5, scratchpad_map, apply);
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter; iteration++) {

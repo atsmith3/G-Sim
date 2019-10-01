@@ -19,7 +19,8 @@
 #include <map>
 
 #include "module.h"
-#include "memory.h"
+
+#include "graphMat.h"
 
 namespace SimObj {
 
@@ -39,9 +40,14 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+
   op_t _state;
   uint64_t _counter;
-  bool _ready;
   uint64_t _delay_cycles;
   GraphMat::GraphApp<v_t, e_t>* _app;
 
@@ -51,7 +57,6 @@ public:
   ~Reduce();
 
   void tick(void);
-  void ready(void);
 };
 
 } // namespace SimObj

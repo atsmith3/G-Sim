@@ -13,6 +13,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
   _scratchpad = NULL;
   _scratch_mem = NULL;
   _cau = NULL;
+  _apply = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -20,7 +21,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate* cau, std::map<uint64_t, Utility::pipeline_dev<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply) {
+SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply) {
   assert(scratchpad != NULL);
   assert(cau != NULL);
   assert(scratch_mem != NULL);
@@ -28,7 +29,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
   _apply = apply;
   _scratchpad = scratchpad;
   _cau = cau;
-  _scartch_mem = scratch_mem;
+  _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -38,7 +39,10 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
 
 template<class v_t, class e_t>
 SimObj::WriteTempDstProperty<v_t, e_t>::~WriteTempDstProperty() {
-  // Do Nothing
+  _scratchpad = NULL;
+  _scratch_mem = NULL;
+  _cau = NULL;
+  _apply = NULL;
 }
 
 
@@ -51,8 +55,6 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
-        // Write to "Scratchpad"
-        *_scratch_mem[_data.vertex_id] = _data;
         _ready = false;
         _mem_flag = false;
         _scratchpad->write(0x01, &_mem_flag);
@@ -68,7 +70,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        *_scratch_mem[_data.vertex_id] = _data;
+        _scratch_mem->insert_or_assign(_data.vertex_id, _data);
         _apply->push(_data.vertex_dst_id);
         _edges_written++;
         _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
@@ -91,7 +93,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 
 

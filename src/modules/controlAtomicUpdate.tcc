@@ -14,8 +14,6 @@ SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate() {
   _state = OP_WAIT;
   _ready = false;
   _op_complete = false;
-  _vertex_id = 0;
-  _edge_id = 0;
 }
 
 template<class v_t, class e_t>
@@ -27,7 +25,7 @@ template<class v_t, class e_t>
 bool SimObj::ControlAtomicUpdate<v_t, e_t>::dependency() {
   bool ret = false;
   for(auto it = _nodes.begin(); it != _nodes.end(); it++) {
-    if(_data.edge_id == *it) {
+    if(_data.edge_id == it->edge_id) {
       ret = true;
       break;
     }
@@ -87,7 +85,7 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 
 template<class v_t, class e_t>

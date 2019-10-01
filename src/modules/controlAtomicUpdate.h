@@ -39,6 +39,12 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+
   op_t _state;
   bool _op_complete;
   std::list<Utility::pipeline_data<v_t, e_t>> _nodes;
