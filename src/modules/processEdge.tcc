@@ -19,7 +19,9 @@ SimObj::ProcessEdge<v_t, e_t>::ProcessEdge() {
 }
 
 template<class v_t, class e_t>
-SimObj::ProcessEdge<v_t, e_t>::ProcessEdge(int delay_cycles) {
+SimObj::ProcessEdge<v_t, e_t>::ProcessEdge(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* graph_app) {
+  assert(graph_app != NULL);
+  _graph_app = graph_app;
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -29,7 +31,7 @@ SimObj::ProcessEdge<v_t, e_t>::ProcessEdge(int delay_cycles) {
 
 template<class v_t, class e_t>
 SimObj::ProcessEdge<v_t, e_t>::~ProcessEdge() {
-  // Do Nothing
+  _graph_app = NULL;
 }
 
 template<class v_t, class e_t>
@@ -61,7 +63,7 @@ void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
       }
       else {
         // Run the "Process Edge" function
-        _graph_app->process_edge(&_data.message_data, &_data.edge_data, &_data.vertex_data);
+        _graph_app->process_edge(_data.message_data, _data.edge_data, _data.vertex_data);
         _next->ready(_data);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
@@ -79,6 +81,6 @@ void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 

@@ -19,6 +19,7 @@ public:
   std::vector<Edge<edge_t>> edge_list;
   vertex_t property;
   uint64_t id;
+  uint64_t curr_edge;
 
   // Constructor
   Vertex(uint64_t vertex_id, vertex_t vertex_property);

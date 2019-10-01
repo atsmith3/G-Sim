@@ -9,9 +9,9 @@
 #include "crossbar.h"
 #include "readSrcProperty.h"
 #include "readSrcEdges.h"
-//#include "readDstProperty.h"
+#include "readDstProperty.h"
 //#include "controlAtomicUpdate.h"
-//#include "processEdge.h"
+#include "processEdge.h"
 //#include "readTempDstProperty.h"
 //#include "reduce.h"
 //#include "writeTempDstProperty.h"
@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
 
   SimObj::ReadSrcProperty<vertex_t, edge_t> p1(&mem, process, &graph);
   SimObj::ReadSrcEdges<vertex_t, edge_t> p2(&scratchpad, &graph);
+  SimObj::ReadDstProperty<vertex_t, edge_t> p3(&mem, &graph);
+  SimObj::ProcessEdge<vertex_t, edge_t> p4(1, &bfs);
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter; iteration++) {

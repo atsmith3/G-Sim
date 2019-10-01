@@ -13,6 +13,7 @@
 template<class v_t, class e_t>
 SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty() {
   _dram = NULL;
+  _graph = NULL;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
@@ -20,8 +21,10 @@ SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram) {
+SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
+  assert(graph != NULL);
+  _graph = graph;
   _dram = dram;
   _ready = false;
   _mem_flag = false;
@@ -31,7 +34,8 @@ SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram) {
 
 template<class v_t, class e_t>
 SimObj::ReadDstProperty<v_t, e_t>::~ReadDstProperty() {
-  // Do Nothing
+  _graph = NULL;
+  _dram = NULL;
 }
 
 
@@ -90,6 +94,6 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
   }
 #endif
   _state = next_state;
-  update_stats();
+  this->update_stats();
 }
 
