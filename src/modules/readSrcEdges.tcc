@@ -74,19 +74,21 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
           _data.edge_id = _edge_list->front();
           _edge_list->pop();
           _data.edge_data = _graph->getEdgeWeight(_data.edge_id);
-          _next->ready(_data);
           if(!_edge_list->empty()) {
             _mem_flag = false;
             _scratchpad->read(0x01, &_mem_flag);
             _stall = STALL_MEM;
             next_state = OP_MEM_WAIT;
+            _data.last_edge = false;
           }
           else {
             delete _edge_list;
             _edge_list = NULL;
             next_state = OP_WAIT;
             _stall = STALL_CAN_ACCEPT;
+            _data.last_edge = true;
           }
+          _next->ready(_data);
         }
         else {
           next_state = OP_MEM_WAIT;

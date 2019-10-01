@@ -26,6 +26,9 @@ struct pipeline_data {
 
   e_t edge_data;
   e_t edge_temp_data;
+
+  bool last_vertex;
+  bool last_edge;
 };
 
 }; // namepsace Utility

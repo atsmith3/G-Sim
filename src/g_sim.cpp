@@ -122,21 +122,32 @@ int main(int argc, char** argv) {
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter; iteration++) {
     // Processing Phase 
-    while(!process->empty()) {
+    while(!p8.complete()) {
       global_tick++;
-
-
-
-
+      p1.tick();
+      p2.tick();
+      p3.tick();
+      p4.tick();
+      p5.tick();
+      p6.tick();
+      p7.tick();
+      p8.tick();
+      mem.tick();
+      scratchpad.tick();
     }
+    p8.flush();
     
     // Apply Phase
-    while(!apply->empty()) {
+    while(!a4.complete()) {
       global_tick++;
-
-
-
+      a1.tick();
+      a2.tick();
+      a3.tick();
+      a4.tick();
+      mem.tick();
+      scratchpad.tick();
     }
+    a4.flush();
   }
 
   return 0;

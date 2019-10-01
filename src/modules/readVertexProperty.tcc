@@ -48,8 +48,19 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(true) {
-        // Upstream sent vertex & vertex property
+      if(true && !_apply->empty()) {
+        // Dequeue from the apply work queue
+        _data.vertex_id = _apply->front();
+        _apply->pop();
+        _data.last_edge = false;
+        _data.last_vertex = false;
+
+        if(_apply->empty()) {
+          _data.last_vertex = true;
+        }
+
+        // Read the global vertex property
+        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _ready = false;
         _mem_flag = false;
         _dram->read(0x01, &_mem_flag);
@@ -65,12 +76,6 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        // Dequeue from the apply work queue
-        _data.vertex_id = _apply->front();
-        _apply->pop();
-
-        // Read the global vertex property
-        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
 
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);

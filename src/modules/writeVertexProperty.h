@@ -50,6 +50,7 @@ private:
   Memory* _dram;
   op_t _state;
   uint64_t _throughput;
+  bool _complete;
 
   Utility::readGraph<v_t>* _graph;
   std::queue<uint64_t>* _process;
@@ -61,6 +62,9 @@ public:
   ~WriteVertexProperty();
 
   void tick(void);
+
+  bool complete();
+  void flush();
 
   void print_stats(void);
   void print_stats_csv(void);

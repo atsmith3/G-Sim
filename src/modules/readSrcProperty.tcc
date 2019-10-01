@@ -48,54 +48,62 @@ SimObj::ReadSrcProperty<v_t, e_t>::~ReadSrcProperty() {
 template<class v_t, class e_t>
 void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   this->_tick++;
-  read_src_op_t next_state;
+  op_t next_state;
 
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(_fetched && this->_next->is_stalled() == STALL_CAN_ACCEPT) {
-        this->_next->ready(this->_data);
+      if(_fetched && _next->is_stalled() == STALL_CAN_ACCEPT) {
+        _next->ready(_data);
         _fetched = false;
         next_state = OP_WAIT;
-        this->_stall = STALL_PROCESSING;
+        _stall = STALL_PROCESSING;
       }
-      else if(!_fetched) {
+      else if(!_fetched && !_process->empty()) {
+        // Dequeue from the work queue
+        _data.vertex_id = _process->front();
+        _process->pop();
+        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
+        _data.edge_id = 0;
+
+        if(_process->empty()) {
+          _data.last_vertex = true;
+        }
+        else {
+          _data.last_vertex = false;
+        }
+
         _mem_flag = false;
         _dram->read(0x100, &_mem_flag);
-        this->_stall = STALL_MEM;
+        _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
       else {
         next_state = OP_WAIT;
-        this->_stall = STALL_PIPE;
+        _stall = STALL_PIPE;
       }
       break;
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        // Dequeue from the work queue
-        this->_data.vertex_id = _process->front();
-        _process->pop();
-        this->_data.vertex_data = _graph->getVertexProperty(this->_data.vertex_id);
-        this->_data.edge_id = 0;
 
-        if(this->_next->is_stalled() == STALL_CAN_ACCEPT) {
-          this->_next->ready(this->_data);
+        if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          _next->ready(_data);
           _fetched = false;
           _mem_flag = false;
-          this->_dram->read(0x100, &_mem_flag);
-          this->_stall = STALL_MEM;
+          _dram->read(0x100, &_mem_flag);
+          _stall = STALL_MEM;
           next_state = OP_MEM_WAIT;
         }
         else {
           next_state = OP_WAIT;
-          this->_stall = STALL_PIPE;
+          _stall = STALL_PIPE;
           _fetched = true;
         }
       }
       else {
         next_state = OP_MEM_WAIT;
-        this->_stall = STALL_MEM;
+        _stall = STALL_MEM;
       }
       break;
     }

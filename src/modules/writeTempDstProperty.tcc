@@ -16,6 +16,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
   _apply = NULL;
   _ready = false;
   _mem_flag = false;
+  _complete = false;
   _state = OP_WAIT;
 }
 
@@ -32,6 +33,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
   _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
+  _complete = false;
   _state = OP_WAIT;
   _edges_written = 0;
 }
@@ -76,6 +78,9 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
         _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        if(_data.last_vertex && _data.last_edge) {
+          _complete = true;
+        }
       }
       else {
         next_state = OP_MEM_WAIT;
@@ -119,4 +124,16 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats_csv(void) {
     << _stall_ticks[STALL_PIPE] << ","
     << _stall_ticks[STALL_MEM] << ","
     << _edges_written << ",\n";
+}
+
+
+template<class v_t, class e_t>
+bool SimObj::WriteTempDstProperty<v_t, e_t>::complete() {
+  return _complete;
+}
+
+
+template<class v_t, class e_t>
+void SimObj::WriteTempDstProperty<v_t, e_t>::flush() {
+  _complete = false;
 }

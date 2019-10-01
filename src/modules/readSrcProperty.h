@@ -29,7 +29,7 @@ namespace SimObj {
 template<class v_t, class e_t>
 class ReadSrcProperty : public Module<v_t, e_t> {
 private:
-  enum read_src_op_t {
+  enum op_t {
     OP_WAIT,
     OP_MEM_WAIT,
     OP_NUM_OPS
@@ -42,8 +42,14 @@ private:
     {2, "OP_NUM_OPS"}};
 #endif
 
+  using Module<v_t, e_t>::_tick;
+  using Module<v_t, e_t>::_ready;
+  using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_next;
+  using Module<v_t, e_t>::_data;
+
   Memory* _dram;
-  read_src_op_t _state;
+  op_t _state;
   bool _fetched;
   std::queue<uint64_t>* _process;
   Utility::readGraph<v_t>* _graph;

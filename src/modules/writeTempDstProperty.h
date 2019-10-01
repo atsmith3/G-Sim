@@ -56,11 +56,16 @@ private:
 
   uint64_t _edges_written;
 
+  bool _complete;
+
 public:
   bool _mem_flag;
   WriteTempDstProperty();
   WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply);
   ~WriteTempDstProperty();
+  
+  bool complete();
+  void flush();
 
   void tick(void);
   void print_stats(void);
