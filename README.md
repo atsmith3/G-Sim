@@ -1,33 +1,8 @@
 # G-Sim
-> G-Sim is a functional simulator for the [Graphicionado](http://mrmgroup.cs.princeton.edu/papers/taejun_micro16.pdf) Graph Processing Accelerator. It uses the [GraphMat](https://pdfs.semanticscholar.org/b513/711621e81d0abd042e0877ca751581a993f5.pdf) API to run an arbitrary application on the platform.
+G-Sim is a functional simulator for the [Graphicionado](http://mrmgroup.cs.princeton.edu/papers/taejun_micro16.pdf) Graph Processing Accelerator. It uses the [GraphMat](https://pdfs.semanticscholar.org/b513/711621e81d0abd042e0877ca751581a993f5.pdf) framework to run an arbitrary application on the platform.
 
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
-
-## Installation
-
-OS X & Linux:
-
-
-## Usage example
-
-
-## Development setup
-
-Linux:
-
-Setup Docker:
-
-Download Matrix Market Graphs
-
-```sh
-cd src && make
-```
-
-## Release History
-
-* 0.0.1
-    * In development
+<!--[![Build Status][travis-image]][travis-url]
+[![Downloads Stats][npm-downloads]][npm-url] -->
 
 ## Meta
 
@@ -46,8 +21,8 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 5. Create a new Pull Request
 
 <!-- Markdown link & img dfn's -->
-[npm-url]: https://npmjs.org/package/datadog-metrics
-[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
+<!--[npm-url]: https://npmjs.org/package/datadog-metrics-->
+<!--[npm-downloads]: https://img.shields.io/-->
+<!--[travis-image]: https://img.shields.io/-->
+<!--[travis-url]: -->
 <!-- [wiki]: https://github.com/yourname/yourproject/wiki -->
