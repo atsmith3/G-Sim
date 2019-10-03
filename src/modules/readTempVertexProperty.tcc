@@ -66,7 +66,7 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_scratch_mem->find(_data.vertex_id) != _scratch_mem->end()) {
-          _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
+          _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_id)->second.vertex_temp_dst_data;
         }
         else {
           _data.vertex_temp_dst_data = _graph->getInitializer();

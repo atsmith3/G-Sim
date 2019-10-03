@@ -27,7 +27,6 @@ private:
   enum op_t {
     OP_WAIT,
     OP_MEM_WAIT,
-    OP_SEND_DOWNSTREAM,
     OP_NUM_OPS
   };
 
@@ -35,8 +34,7 @@ private:
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
     {1, "OP_MEM_WAIT"},
-    {2, "OP_SEND_DOWNSTREAM"},
-    {3, "OP_NUM_OPS"}};
+    {2, "OP_NUM_OPS"}};
 #endif
   
   using Module<v_t, e_t>::_tick;

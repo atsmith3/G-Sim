@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
   Utility::readGraph<vertex_t> graph(opt);
   graph.setInitializer(false);
   graph.readMatrixMarket(opt.graph_path.c_str());
+  graph.printGraph();
 
   GraphMat::BFS<vertex_t, edge_t> bfs;
 
@@ -56,8 +57,8 @@ int main(int argc, char** argv) {
   uint64_t global_tick = 0;
 
   // Setup problem:
-  process->push(1);
-  graph.setVertexProperty(1, true);
+  process->push(0);
+  graph.setVertexProperty(0, true);
 
   // Pipeline Modules
   SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
@@ -121,6 +122,7 @@ int main(int argc, char** argv) {
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
+    std::cout << "Iteration: " << iteration << " Process Queue Size " << process->size() << "\n";
     // Processing Phase 
     while(!p8.complete()) {
       global_tick++;

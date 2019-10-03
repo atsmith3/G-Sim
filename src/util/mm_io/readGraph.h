@@ -39,6 +39,13 @@ class readGraph {
       while (startPtr != endPtr) retval->push(*(startPtr++));
       return retval;
     }
+    std::queue<uint>* getEdges(int nodeInd) {
+      uint start = getNodePtr(nodeInd);
+      uint end = getNodePtr(nodeInd+1);
+      std::queue<uint> *retval = new std::queue<uint>;
+      while (start != end) retval->push(start++);
+      return retval;
+    }
     std::queue<uint>* getIncomingNeighbors(int nodeInd) {
       uint *startPtr = nodeIncomingNeighbors + getNodeIncomingPtr(nodeInd);
       uint *endPtr = nodeIncomingNeighbors + getNodeIncomingPtr(nodeInd+1);

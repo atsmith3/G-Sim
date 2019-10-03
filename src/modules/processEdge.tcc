@@ -60,15 +60,20 @@ void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
       if(_counter < _delay_cycles) {
         next_state = OP_COUNT;
         _stall = STALL_PROCESSING;
+        _counter++;
       }
       else {
-        // Run the "Process Edge" function
-        _graph_app->process_edge(_data.message_data, _data.edge_data, _data.vertex_data);
-        _next->ready(_data);
-        next_state = OP_WAIT;
-        _stall = STALL_CAN_ACCEPT;
+        if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          _graph_app->process_edge(_data.message_data, _data.edge_data, _data.vertex_data);
+          _next->ready(_data);
+          next_state = OP_WAIT;
+          _stall = STALL_CAN_ACCEPT;
+        }
+        else {
+          next_state = OP_COUNT;
+          _stall = STALL_PIPE;
+        }
       }
-      _counter++;
       break;
     }
     default : {

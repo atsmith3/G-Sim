@@ -73,14 +73,16 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         // Write to global mem
-        _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
-        _process->push(_data.vertex_id);
+        if(_data.updated) {
+          _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
+          _process->push(_data.vertex_id);
+          _throughput++;
+        }
         if(_data.last_vertex) {
           _complete = true;
         }
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
-        _throughput++;
       }
       else {
         next_state = OP_MEM_WAIT;

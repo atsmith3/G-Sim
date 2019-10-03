@@ -32,7 +32,7 @@ public:
   void process_edge(v_t& message, const e_t& edge, const v_t& vertex);
 
   // Apply
-  void apply(const v_t& scratch, v_t& dram);
+  bool apply(const v_t& scratch, v_t& dram);
 
 }; // class BFS
 

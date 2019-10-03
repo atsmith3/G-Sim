@@ -83,7 +83,7 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
       nodePtr[++curJ] = *numNeighbors;
     } else {
       //fprintf(stderr, " Test Else \n");
-      for(int i=1; i<M; i++) {
+      for(int i=1; i<M+1; i++) {
         for(int ind=0; ind<nz; ind++) {
           if(n%PRINT_STEP == 0) fprintf(stderr, "[readMatrixMarket] postprocessing %i, %i/%i\n", i, ind, nz);
           if(I[ind] == i) {
@@ -149,10 +149,12 @@ void Utility::readGraph<v_t>::printNodePtrs(void) {
 
 template<class v_t>
 void Utility::readGraph<v_t>::printGraph(void) {
-  for(int i = 1 ; i < *numNodes; i++) {
-    fprintf(stderr, "[readGraph DEBUG] Node: %u\n", i);
+  for(int i = 0 ; i < *numNodes; i++) {
+    std::cerr << "Node: " << i << "\n";
+    std::cerr << "  Property: " << getVertexProperty(i) << "\n";
     for(int j = getNodePtr(i); j < getNodePtr(i+1); j++) {
-      fprintf(stderr, "                  Edge: %lf\n", edgeWeights[j]);
+      std::cerr << "    Edge " << j << " weight " << getEdgeWeight(j) << "\n";
+      std::cerr << "      Neighbor: " << getNodeNeighbor(j) << "\n";
     }
   }
 }

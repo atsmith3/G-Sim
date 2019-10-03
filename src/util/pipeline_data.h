@@ -30,6 +30,8 @@ struct pipeline_data {
   bool last_vertex;
   bool last_edge;
 
+  bool updated;
+
   pipeline_data() {
     vertex_id = 0;
     vertex_dst_id = 0;
@@ -45,6 +47,8 @@ struct pipeline_data {
 
     last_vertex = false;
     last_edge = false;
+
+    updated = false;
   }
 };
 

@@ -29,7 +29,7 @@ public:
   virtual void process_edge(v_t& message, const e_t& edge, const v_t& vertex);
 
   // during the apply phase will update the global memory
-  virtual void apply(const v_t& scratch, v_t& dram);
+  virtual bool apply(const v_t& scratch, v_t& dram);
 
   // Function to do every iteration of the graph application
   virtual void do_every_iteration();

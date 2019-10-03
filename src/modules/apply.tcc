@@ -23,6 +23,7 @@ SimObj::Apply<v_t, e_t>::Apply() {
 template<class v_t, class e_t>
 SimObj::Apply<v_t, e_t>::Apply(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app) {
   assert(app != NULL);
+  _app = app;
   _state = OP_WAIT;
   _stall = STALL_CAN_ACCEPT;
   _ready = false;
@@ -61,15 +62,21 @@ void SimObj::Apply<v_t, e_t>::tick(void) {
       if(_counter < _delay_cycles) {
         next_state = OP_COUNT;
         _stall = STALL_PROCESSING;
+        _counter++;
       }
       else {
-        // Do Apply
-        _app->apply(_data.vertex_temp_dst_data, _data.vertex_data);
-        _next->ready(_data);
-        next_state = OP_WAIT;
-        _stall = STALL_CAN_ACCEPT;
+        if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          // Do Apply
+          _data.updated = _app->apply(_data.vertex_temp_dst_data, _data.vertex_data);
+          _next->ready(_data);
+          next_state = OP_WAIT;
+          _stall = STALL_CAN_ACCEPT;
+        }
+        else {
+          next_state = OP_COUNT;
+          _stall = STALL_PIPE;
+        }
       }
-      _counter++;
       break;
     }
     default : {

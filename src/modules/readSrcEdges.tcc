@@ -118,5 +118,5 @@ template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _ready = true;
   _data = data;
-  _edge_list = _graph->getNeighbors(data.vertex_id);
+  _edge_list = _graph->getEdges(data.vertex_id);
 }

@@ -68,10 +68,8 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
         _data.vertex_dst_data = _graph->getVertexProperty(_data.vertex_dst_id);
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);
-          _ready = false;
-          _mem_flag = false;
-          _dram->read(0x01, &_mem_flag);
-          _stall = STALL_MEM;
+          _stall = STALL_CAN_ACCEPT;
+          next_state = OP_WAIT;
         }
         else {
           next_state = OP_MEM_WAIT;
