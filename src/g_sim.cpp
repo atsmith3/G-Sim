@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
   a4.set_name("WriteVertexProperty");
 
   // Iteration Loop:
-  for(uint64_t iteration = 0; iteration < opt.num_iter; iteration++) {
+  for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
     // Processing Phase 
     while(!p8.complete()) {
       global_tick++;

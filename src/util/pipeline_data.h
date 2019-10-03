@@ -29,6 +29,23 @@ struct pipeline_data {
 
   bool last_vertex;
   bool last_edge;
+
+  pipeline_data() {
+    vertex_id = 0;
+    vertex_dst_id = 0;
+    edge_id = 0;
+
+    vertex_data = v_t();
+    vertex_dst_data = v_t();
+    message_data = v_t();
+    vertex_temp_dst_data = v_t();
+
+    edge_data = e_t();
+    edge_temp_data = e_t();
+
+    last_vertex = false;
+    last_edge = false;
+  }
 };
 
 }; // namepsace Utility

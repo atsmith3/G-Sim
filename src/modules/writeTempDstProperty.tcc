@@ -72,7 +72,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        _scratch_mem->insert_or_assign(_data.vertex_id, _data);
+        _scratch_mem->insert_or_assign(_data.vertex_dst_id, _data);
         _apply->push(_data.vertex_dst_id);
         _edges_written++;
         _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
