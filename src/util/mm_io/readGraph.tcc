@@ -17,7 +17,7 @@ extern "C" {
 template<class v_t>
 void Utility::readGraph<v_t>::allocateGraph() {
   // Initialize node pointers
-  nodePtrs = (unsigned int *)malloc((*numNodes + 1) * sizeof(unsigned int));
+  nodePtrs = (unsigned int *)malloc((*numNodes + 2) * sizeof(unsigned int)); // Dummy for zero, plus extra at the end for M+1 bounds
   vertex_property = (v_t *)malloc((*numNodes + 1) * sizeof(v_t));
   for(int i = 0 ; i < *numNodes + 1; i ++) {
     vertex_property[i] = initialVertexValue;
@@ -47,6 +47,23 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
       exit(-1);
     }
 
+    // Check values: no vertices should be zero or > M
+    for(int j=0; j<nz; j++){
+      if((I[j] <= 0) || (J[j] <= 0)) {
+        fprintf(stderr, "[readMatrixMarket] ERROR: matrix file contains an unsupported 0 vertex at %i\n", j);
+        assert(false);
+      }
+      if(I[j] > nz) {
+          fprintf(stderr, "[readMatrixMarket] ERROR: matrix file contains an out-of-bounds vertex (%i > (nz=%i)) at position %i\n", I[j], nz, j);
+        assert(false);
+      }
+      if(J[j] > nz) {
+          fprintf(stderr, "[readMatrixMarket] ERROR: matrix file contains an out-of-bounds vertex (%i > (nz=%i)) at position %i\n", I[j], nz, j);
+        assert(false);
+      }
+    }
+
+
     *numNodes = M;
     *numNeighbors = nz;
 
@@ -64,6 +81,7 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
     double *edgeWeight = edgeWeights;
     int n = 0;
     *nodePtr = n;
+    nodePtr[0] = 0; // initialize the first pointer to the start of the edge list
     if(jIsInorder) {
       //fprintf(stderr, "Test If\n");
       int curJ = 0;
@@ -83,7 +101,7 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
       nodePtr[++curJ] = *numNeighbors;
     } else {
       //fprintf(stderr, " Test Else \n");
-      for(int i=1; i<M+1; i++) {
+      for(int i=0; i<=M; i++) {
         for(int ind=0; ind<nz; ind++) {
           if(n%PRINT_STEP == 0) fprintf(stderr, "[readMatrixMarket] postprocessing %i, %i/%i\n", i, ind, nz);
           if(I[ind] == i) {
@@ -107,14 +125,14 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
     unsigned int idx_cnt = 0;
 
     std::map<int, std::set<int> > incomingNodes;
-    for(int nodeInd = 1; nodeInd < M; nodeInd++) {
+    for(int nodeInd = 0; nodeInd <= M; nodeInd++) {
       if(nodeInd%PRINT_STEP == 0) fprintf(stderr, "[readMatrixMarket] postpostprocessing %i/%i\n", nodeInd, M);
       for(unsigned int neighborInd = nodePtrs[nodeInd]; neighborInd < nodePtrs[nodeInd+1]; neighborInd++) {
         int neighbor = nodeNeighbors[neighborInd];
         incomingNodes[neighbor].insert(nodeInd);
       }
     }
-    for(int nodeInd = 1; nodeInd < M; nodeInd++) {
+    for(int nodeInd = 0; nodeInd <= M; nodeInd++) {
       if(nodeInd%PRINT_STEP == 0) fprintf(stderr, "[readMatrixMarket] postpostpostprocessing %i/%i\n", nodeInd, M);
       nodeIncomingPtrs[nodeInd] = p;
       p += incomingNodes[nodeInd].size();
@@ -122,8 +140,19 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
         nodeIncomingNeighbors[idx_cnt++] = neighborInd;
       }
     }
-    nodeIncomingPtrs[0] = 0; // this 0th node is a placeholder, but for sanity we need to set this.
+    assert(nodeIncomingPtrs[0] == 0);
     nodeIncomingPtrs[M] = p;
+
+
+    // check some stuff
+    for(int j = 0; j < M+2; j++) {
+      assert((nodePtrs[j] >=0) && (nodePtrs[j] <=((unsigned int)nz)));
+      assert((nodeIncomingPtrs[j] >=0) && (nodeIncomingPtrs[j] <=((unsigned int)nz)));
+    }
+    for(int j = 0; j < nz; j++) {
+      assert((nodeNeighbors[j] >=1) && (nodeNeighbors[j] <= ((unsigned int)M)));
+      assert((nodeIncomingNeighbors[j] >=1) && (nodeIncomingNeighbors[j] <= ((unsigned int)M)));
+    }
 
     free(val);
     free(J);
@@ -149,7 +178,7 @@ void Utility::readGraph<v_t>::printNodePtrs(void) {
 
 template<class v_t>
 void Utility::readGraph<v_t>::printGraph(void) {
-  for(int i = 0 ; i < *numNodes; i++) {
+  for(int i = 1 ; i <= *numNodes; i++) {
     std::cerr << "Node: " << i << "\n";
     std::cerr << "  Property: " << getVertexProperty(i) << "\n";
     for(int j = getNodePtr(i); j < getNodePtr(i+1); j++) {
