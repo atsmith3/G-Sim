@@ -42,11 +42,11 @@ void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
   std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
   std::cerr << "   " << name << " Queue: [ ";
   int i = 0;
-  for(auto it = q->begin(); it != q->end() && i < 50; it++) {
+  for(auto it = q->begin(); it != q->end() && i < 20; it++) {
     std::cerr << *it << ", ";
     i++;
   }
-  if(i < 50) {
+  if(i < 20) {
     std::cerr << "]\n";
   }
   else {
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
 #ifdef DEBUG
-    print_queue("Process", process, iteration);
+    //print_queue("Process", process, iteration);
     //graph.printVertexProperties();
 #endif
     // Processing Phase 
@@ -178,8 +178,9 @@ int main(int argc, char** argv) {
     a4.flush();
   }
 #ifdef DEBUG
-  graph.printVertexProperties(1000);
-  std::cout << global_tick;
+  p8.print_stats();
+  graph.printVertexProperties(30);
+  std::cout << global_tick << "\n";
 #endif
 
   return 0;
