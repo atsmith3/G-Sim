@@ -38,9 +38,9 @@ typedef bool vertex_t;
 // The edge type
 typedef double edge_t;
 
-void print_queue(std::list<uint64_t>* q, int iteration) {
-  std::cerr << "Iteration: " << iteration << " Process Queue Size " << q->size() << "\n";
-  std::cerr << "   Process Queue: [ ";
+void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
+  std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size() << "\n";
+  std::cerr << "   " << name << " Queue: [ ";
   for(auto it = q->begin(); it != q->end(); it++) {
     std::cerr << *it << ", ";
   }
@@ -134,10 +134,11 @@ int main(int argc, char** argv) {
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
 #ifdef DEBUG
-    print_queue(process, iteration);
+    print_queue("Process", process, iteration);
     graph.printVertexProperties();
 #endif
     // Processing Phase 
+    p1.ready();
     while(!p8.complete()) {
       global_tick++;
       p1.tick();
@@ -152,8 +153,12 @@ int main(int argc, char** argv) {
       scratchpad.tick();
     }
     p8.flush();
+#ifdef DEBUG
+    print_queue("Apply", apply, iteration);
+#endif
     
     // Apply Phase
+    a1.ready();
     while(!a4.complete()) {
       global_tick++;
       a1.tick();

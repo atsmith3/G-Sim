@@ -44,6 +44,9 @@ void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
+#ifdef DEBUG
+        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#endif
         _ready = false;
         _counter = 0;
         next_state = OP_COUNT;

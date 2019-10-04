@@ -48,6 +48,9 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
+#ifdef DEBUG
+        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#endif
         _ready = false;
         if(!_edge_list->empty()) {
           _mem_flag = false;

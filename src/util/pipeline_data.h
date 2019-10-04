@@ -9,6 +9,8 @@
 #ifndef PIPELINE_DATA_H
 #define PIPELINE_DATA_H
 
+#include <iostream>
+
 namespace Utility {
 
 // v_t is the data type of the vertex
@@ -51,6 +53,15 @@ struct pipeline_data {
     updated = false;
   }
 };
+
+template<class v_t, class e_t>
+std::ostream& operator<<(std::ostream& out, const pipeline_data<v_t, e_t>& obj) {
+  out << "{ vertex_id:" << obj.vertex_id << ", vertex_dst_id:" << obj.vertex_dst_id << ", edge_id:" << obj.edge_id; 
+  out << ", vertex_data:" << obj.vertex_data << ", vertex_dst_data:" << obj.vertex_dst_data << ", message_data:" << obj.message_data << ", vertex_temp_dst_data:" << obj.vertex_temp_dst_data;
+  out << ", edge_data:" << obj.edge_data << ", edge_temp_data:" << obj.edge_temp_data;
+  out << ", last_vertex:" << obj.last_vertex << ", last_edge:" << obj.last_edge << ", updated:" << obj.updated << " }";
+  return out;
+}
 
 }; // namepsace Utility
 

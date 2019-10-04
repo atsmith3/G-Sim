@@ -42,6 +42,9 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
+#ifdef DEBUG
+        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#endif
         _ready = false;
         if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);
@@ -51,7 +54,7 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
         }
         else {
           next_state = OP_STALL;
-          _stall = STALL_PROCESSING;
+          _stall = STALL_PIPE;
         }
       }
       else {

@@ -53,13 +53,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(_fetched && _next->is_stalled() == STALL_CAN_ACCEPT) {
-        _next->ready(_data);
-        _fetched = false;
-        next_state = OP_WAIT;
-        _stall = STALL_PROCESSING;
-      }
-      else if(!_fetched && !_process->empty()) {
+      if(_ready && !_process->empty()) {
         // Dequeue from the work queue
         _data.vertex_id = _process->front();
         _process->pop_front();
@@ -68,6 +62,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
 
         if(_process->empty()) {
           _data.last_vertex = true;
+          _ready = false;
         }
         else {
           _data.last_vertex = false;
@@ -80,25 +75,20 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
       }
       else {
         next_state = OP_WAIT;
-        _stall = STALL_PIPE;
+        _stall = STALL_CAN_ACCEPT;
       }
       break;
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);
-          _fetched = false;
-          _mem_flag = false;
-          _dram->read(0x100, &_mem_flag);
-          _stall = STALL_MEM;
-          next_state = OP_MEM_WAIT;
+          _stall = STALL_CAN_ACCEPT;
+          next_state = OP_WAIT;
         }
         else {
-          next_state = OP_WAIT;
+          next_state = OP_MEM_WAIT;
           _stall = STALL_PIPE;
-          _fetched = true;
         }
       }
       else {

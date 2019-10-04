@@ -48,7 +48,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(true && !_apply->empty()) {
+      if(_ready && !_apply->empty()) {
         // Dequeue from the apply work queue
         _data.vertex_id = _apply->front();
         _apply->pop_front();
@@ -57,11 +57,11 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
 
         if(_apply->empty()) {
           _data.last_vertex = true;
+          _ready = false;
         }
 
         // Read the global vertex property
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
-        _ready = false;
         _mem_flag = false;
         _dram->read(0x01, &_mem_flag);
         _stall = STALL_MEM;
