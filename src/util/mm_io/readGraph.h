@@ -57,7 +57,7 @@ class readGraph {
     void printEdgeWeights(void);
     void printGraph(void);
     void printNodePtrs(void);
-    void printVertexProperties(void);
+    void printVertexProperties(int num);
 
   private:
     unsigned int *nodePtrs;

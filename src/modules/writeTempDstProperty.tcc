@@ -57,7 +57,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready && !_complete) {
-#ifdef DEBUG
+#ifdef MODULE_DEBUG
         std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
 #endif
         _ready = false;

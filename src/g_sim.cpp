@@ -39,12 +39,19 @@ typedef bool vertex_t;
 typedef double edge_t;
 
 void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
-  std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size() << "\n";
+  std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
   std::cerr << "   " << name << " Queue: [ ";
-  for(auto it = q->begin(); it != q->end(); it++) {
+  int i = 0;
+  for(auto it = q->begin(); it != q->end() && i < 50; it++) {
     std::cerr << *it << ", ";
+    i++;
   }
-  std::cerr << "]\n";
+  if(i < 50) {
+    std::cerr << "]\n";
+  }
+  else {
+    std::cerr << "...\n";
+  }
 }
 
 int main(int argc, char** argv) {
@@ -54,7 +61,7 @@ int main(int argc, char** argv) {
   graph.setInitializer(false);
   graph.readMatrixMarket(opt.graph_path.c_str());
 #ifdef DEBUG
-  graph.printGraph();
+  //graph.printGraph();
 #endif
 
   GraphMat::BFS<vertex_t, edge_t> bfs;
@@ -135,7 +142,7 @@ int main(int argc, char** argv) {
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
 #ifdef DEBUG
     print_queue("Process", process, iteration);
-    graph.printVertexProperties();
+    //graph.printVertexProperties();
 #endif
     // Processing Phase 
     p1.ready();
@@ -170,6 +177,10 @@ int main(int argc, char** argv) {
     }
     a4.flush();
   }
+#ifdef DEBUG
+  graph.printVertexProperties(1000);
+  std::cout << global_tick;
+#endif
 
   return 0;
 }

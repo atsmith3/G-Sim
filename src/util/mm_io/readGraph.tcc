@@ -189,9 +189,9 @@ void Utility::readGraph<v_t>::printGraph(void) {
 }
 
 template<class v_t>
-void Utility::readGraph<v_t>::printVertexProperties(void) {
+void Utility::readGraph<v_t>::printVertexProperties(int num) {
   std::cerr << "[ ";
-  for(int i = 1; i <= *numNodes; i++) {
+  for(int i = 1; i <= *numNodes && i < num; i++) {
     std::cerr << getVertexProperty(i) << ", ";
   }
   std::cerr << "]\n";

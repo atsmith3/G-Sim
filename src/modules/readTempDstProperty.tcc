@@ -53,7 +53,7 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef DEBUG
+#ifdef MODULE_DEBUG
         std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
 #endif
         _ready = false;
