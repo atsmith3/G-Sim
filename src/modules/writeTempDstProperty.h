@@ -13,7 +13,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
-#include <queue>
+#include <list>
 
 #include "module.h"
 #include "memory.h"
@@ -52,7 +52,7 @@ private:
   ControlAtomicUpdate<v_t, e_t>* _cau;
 
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
-  std::queue<uint64_t>* _apply;
+  std::list<uint64_t>* _apply;
 
   uint64_t _edges_written;
 
@@ -61,7 +61,7 @@ private:
 public:
   bool _mem_flag;
   WriteTempDstProperty();
-  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply);
+  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply);
   ~WriteTempDstProperty();
   
   bool complete();

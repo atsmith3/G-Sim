@@ -17,7 +17,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
-#include <queue>
+#include <list>
 
 #include "module.h"
 #include "memory.h"
@@ -51,7 +51,7 @@ private:
   Memory* _dram;
   op_t _state;
   bool _fetched;
-  std::queue<uint64_t>* _process;
+  std::list<uint64_t>* _process;
   Utility::readGraph<v_t>* _graph;
 
 public:
@@ -59,7 +59,7 @@ public:
 
   uint64_t _vertex_id;
   ReadSrcProperty();
-  ReadSrcProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph);
+  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph);
   ~ReadSrcProperty();
 
   void tick(void);

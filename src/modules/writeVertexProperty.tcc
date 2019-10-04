@@ -24,7 +24,7 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph) {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
   assert(graph != NULL);
   assert(process != NULL);
@@ -75,7 +75,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
         // Write to global mem
         if(_data.updated) {
           _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
-          _process->push(_data.vertex_id);
+          _process->push_back(_data.vertex_id);
           _throughput++;
         }
         if(_data.last_vertex) {
@@ -94,7 +94,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
 
     }
   }
-#ifdef DEBUG
+#if 0
   if(_state != next_state) {
     std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }

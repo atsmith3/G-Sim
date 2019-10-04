@@ -54,10 +54,10 @@ class readGraph {
       return retval;
     }
 
-    // debug
     void printEdgeWeights(void);
     void printGraph(void);
     void printNodePtrs(void);
+    void printVertexProperties(void);
 
   private:
     unsigned int *nodePtrs;

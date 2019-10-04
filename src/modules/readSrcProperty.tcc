@@ -24,7 +24,7 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph) {
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
   assert(process != NULL);
   assert(graph != NULL);
@@ -62,7 +62,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
       else if(!_fetched && !_process->empty()) {
         // Dequeue from the work queue
         _data.vertex_id = _process->front();
-        _process->pop();
+        _process->pop_front();
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _data.edge_id = 0;
 
@@ -111,7 +111,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
 
     }
   }
-#ifdef DEBUG
+#if 0
   if(_state != next_state) {
     std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << this->_tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }

@@ -189,6 +189,15 @@ void Utility::readGraph<v_t>::printGraph(void) {
 }
 
 template<class v_t>
+void Utility::readGraph<v_t>::printVertexProperties(void) {
+  std::cerr << "[ ";
+  for(int i = 1; i <= *numNodes; i++) {
+    std::cerr << getVertexProperty(i) << ", ";
+  }
+  std::cerr << "]\n";
+}
+
+template<class v_t>
 void Utility::readGraph<v_t>::writeBin(std::string binFname) {
   fprintf(stderr, "[writeBin] writing binary\n");
   std::ofstream binFile;

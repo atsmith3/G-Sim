@@ -19,7 +19,7 @@ SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::queue<uint64_t>* apply, Utility::readGraph<v_t>* graph) {
+SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph) {
   assert(dram != NULL);
   assert(apply != NULL);
   assert(graph != NULL);
@@ -51,7 +51,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
       if(true && !_apply->empty()) {
         // Dequeue from the apply work queue
         _data.vertex_id = _apply->front();
-        _apply->pop();
+        _apply->pop_front();
         _data.last_edge = false;
         _data.last_vertex = false;
 
@@ -96,7 +96,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
 
     }
   }
-#ifdef DEBUG
+#if 0
   if(_state != next_state) {
     std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }

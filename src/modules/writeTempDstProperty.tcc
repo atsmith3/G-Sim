@@ -22,7 +22,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
 
 
 template<class v_t, class e_t>
-SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::queue<uint64_t>* apply) {
+SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply) {
   assert(scratchpad != NULL);
   assert(cau != NULL);
   assert(scratch_mem != NULL);
@@ -73,7 +73,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         _scratch_mem->insert_or_assign(_data.vertex_dst_id, _data);
-        _apply->push(_data.vertex_dst_id);
+        _apply->push_back(_data.vertex_dst_id);
         _edges_written++;
         _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
         next_state = OP_WAIT;
@@ -92,7 +92,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
 
     }
   }
-#ifdef DEBUG
+#if 0
   if(_state != next_state) {
     std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }

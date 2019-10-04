@@ -38,6 +38,15 @@ typedef bool vertex_t;
 // The edge type
 typedef double edge_t;
 
+void print_queue(std::list<uint64_t>* q, int iteration) {
+  std::cerr << "Iteration: " << iteration << " Process Queue Size " << q->size() << "\n";
+  std::cerr << "   Process Queue: [ ";
+  for(auto it = q->begin(); it != q->end(); it++) {
+    std::cerr << *it << ", ";
+  }
+  std::cerr << "]\n";
+}
+
 int main(int argc, char** argv) {
   Utility::Options opt;
   opt.parse(argc, argv);
@@ -50,8 +59,8 @@ int main(int argc, char** argv) {
 
   GraphMat::BFS<vertex_t, edge_t> bfs;
 
-  std::queue<uint64_t>* process = new std::queue<uint64_t>;
-  std::queue<uint64_t>* apply = new std::queue<uint64_t>;
+  std::list<uint64_t>* process = new std::list<uint64_t>;
+  std::list<uint64_t>* apply = new std::list<uint64_t>;
 
   // "Scratchpad memory"
   std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>* scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<vertex_t, edge_t>>;
@@ -59,7 +68,7 @@ int main(int argc, char** argv) {
   uint64_t global_tick = 0;
 
   // Setup problem:
-  process->push(1);
+  process->push_back(1);
   graph.setVertexProperty(1, true);
 
   // Pipeline Modules
@@ -124,7 +133,10 @@ int main(int argc, char** argv) {
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
-    std::cout << "Iteration: " << iteration << " Process Queue Size " << process->size() << "\n";
+#ifdef DEBUG
+    print_queue(process, iteration);
+    graph.printVertexProperties();
+#endif
     // Processing Phase 
     while(!p8.complete()) {
       global_tick++;
@@ -153,9 +165,6 @@ int main(int argc, char** argv) {
     }
     a4.flush();
   }
-#ifdef DEBUG
-  graph.printGraph();
-#endif
 
   return 0;
 }

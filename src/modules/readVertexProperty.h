@@ -13,7 +13,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
-#include <queue>
+#include <list>
 
 #include "module.h"
 #include "memory.h"
@@ -45,13 +45,13 @@ private:
 
   Memory* _dram;
   op_t _state;
-  std::queue<uint64_t>* _apply;
+  std::list<uint64_t>* _apply;
   Utility::readGraph<v_t>* _graph;
 
 public:
   bool _mem_flag;
   ReadVertexProperty();
-  ReadVertexProperty(Memory* dram, std::queue<uint64_t>* apply, Utility::readGraph<v_t>* graph);
+  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph);
   ~ReadVertexProperty();
 
   void tick(void);

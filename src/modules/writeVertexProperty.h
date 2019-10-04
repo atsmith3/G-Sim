@@ -14,7 +14,7 @@
 #include <vector>
 #include <cstdint>
 #include <map>
-#include <queue>
+#include <list>
 
 #include "module.h"
 #include "memory.h"
@@ -53,12 +53,12 @@ private:
   bool _complete;
 
   Utility::readGraph<v_t>* _graph;
-  std::queue<uint64_t>* _process;
+  std::list<uint64_t>* _process;
 
 public:
   bool _mem_flag;
   WriteVertexProperty();
-  WriteVertexProperty(Memory* dram, std::queue<uint64_t>* process, Utility::readGraph<v_t>* graph);
+  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph);
   ~WriteVertexProperty();
 
   void tick(void);
