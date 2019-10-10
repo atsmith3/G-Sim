@@ -50,19 +50,19 @@ private:
   Crossbar<v_t, e_t>* crossbar;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratchpad_map;
 
-  SimObj::ReadSrcProperty<vertex_t, edge_t>* p1(&mem, process, &graph);
-  SimObj::ReadSrcEdges<vertex_t, edge_t>* p2(&scratchpad, &graph);
-  SimObj::ReadDstProperty<vertex_t, edge_t>* p3(&mem, &graph);
-  SimObj::ProcessEdge<vertex_t, edge_t>* p4(1, &bfs);
+  SimObj::ReadSrcProperty<vertex_t, edge_t>* p1;
+  SimObj::ReadSrcEdges<vertex_t, edge_t>* p2;
+  SimObj::ReadDstProperty<vertex_t, edge_t>* p3;
+  SimObj::ProcessEdge<vertex_t, edge_t>* p4;
   SimObj::ControlAtomicUpdate<vertex_t, edge_t>* p5;
-  SimObj::ReadTempDstProperty<vertex_t, edge_t>* p6(&scratchpad, &graph, scratchpad_map);
-  SimObj::Reduce<vertex_t, edge_t>* p7(1, &bfs);
-  SimObj::WriteTempDstProperty<vertex_t, edge_t>* p8(&scratchpad, &p5, scratchpad_map, apply);
+  SimObj::ReadTempDstProperty<vertex_t, edge_t>* p6;
+  SimObj::Reduce<vertex_t, edge_t>* p7;
+  SimObj::WriteTempDstProperty<vertex_t, edge_t>* p8;
 
-  SimObj::ReadVertexProperty<vertex_t, edge_t>* a1(&mem, apply, &graph);
-  SimObj::ReadTempVertexProperty<vertex_t, edge_t>* a2(&scratchpad, &graph, scratchpad_map);
-  SimObj::Apply<vertex_t, edge_t>* a3(1, &bfs);
-  SimObj::WriteVertexProperty<vertex_t, edge_t>* a4(&mem, process, &graph);
+  SimObj::ReadVertexProperty<vertex_t, edge_t>* a1;
+  SimObj::ReadTempVertexProperty<vertex_t, edge_t>* a2;
+  SimObj::Apply<vertex_t, edge_t>* a3;
+  SimObj::WriteVertexProperty<vertex_t, edge_t>* a4;
 
 
   uint64_t _tick;
@@ -84,8 +84,8 @@ public:
   bool process_complete();
   bool apply_complete();
 
-  void flush_process();
-  void flush_apply();
+  void process_ready();
+  void apply_ready();
 
   void print_stats();
 

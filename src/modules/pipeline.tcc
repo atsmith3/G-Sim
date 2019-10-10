@@ -71,7 +71,94 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   a2->set_name("ReadTempVertexProperty " + std::to_string(pipeline_id));
   a3->set_name("Apply " + std::to_string(pipeline_id));
   a4->set_name("WriteVertexProperty " + std::to_string(pipeline_id));
-  
+}
 
+template<class v_t, class e_t>
+SimObj::Pipeline<v_t, e_t>::~Pipeline() {
+  delete scratchpad_map;
+  scratchpad_map = NULL;
+  delete scratchpad;
+  scratchpad = NULL;
+  delete apply;
+  apply = NULL;
+
+  delete p1;
+  p1 = NULL;
+  delete p2;
+  p2 = NULL;
+  delete p3;
+  p3 = NULL;
+  delete p4;
+  p4 = NULL;
+  delete p5;
+  p5 = NULL;
+  delete p6;
+  p6 = NULL;
+  delete p7;
+  p7 = NULL;
+  delete p8;
+  p8 = NULL;
+
+  delete a1;
+  a1 = NULL;
+  delete a2;
+  a2 = NULL;
+  delete a3;
+  a3 = NULL;
+  delete a4;
+  a4 = NULL;
+
+  process = NULL;
+  crossbar = NULL;
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::tick_process() {
+  _tick++;
+  p1->tick();
+  p2->tick();
+  p3->tick();
+  p4->tick();
+  p5->tick();
+  p6->tick();
+  p7->tick();
+  p8->tick();
+  scratchpad->tick();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::tick_apply() {
+  _tick++;
+  a1->tick();
+  a2->tick();
+  a3->tick();
+  a4->tick();
+  scratchpad->tick();
+}
+
+template<class v_t, class e_t>
+bool SimObj::Pipeline<v_t, e_t>::process_complete() {
+  return p8->complete();
+}
+
+template<class v_t, class e_t>
+bool SimObj::Pipeline<v_t, e_t>::apply_complete() {
+  return a4->complete();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::process_ready() {
+  p8->flush();
+  p1->ready();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::apply_ready() {
+  a4->flush();
+  a1->ready();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::print_stats() {
 
 }
