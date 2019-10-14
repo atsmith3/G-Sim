@@ -4,31 +4,31 @@ template<class v_t, class e_t>
 SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar) {
   // Assert inputs are OK
   assert(graph != NULL);
-  assert(applicaton != NULL);
+  assert(application != NULL);
   assert(mem != NULL);
   assert(crossbar != NULL);
 
   // Allocate Scratchpad
   scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>;
-  SimObj::Memory* scratchpad = new SimObj::Memory(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests)
+  scratchpad = new SimObj::Memory(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
 
   // Allocate apply queue
   apply = new std::list<uint64_t>;
 
   // Allocate Pipeline Modules
-  p1 = new SimObj::ReadSrcProperty<vertex_t, edge_t>(mem, process, graph);
-  p2 = new SimObj::ReadSrcEdges<vertex_t, edge_t>(scratchpad, graph);
-  p3 = new SimObj::ReadDstProperty<vertex_t, edge_t>(mem, graph);
-  p4 = new SimObj::ProcessEdge<vertex_t, edge_t>(1, application);
-  p5 = new SimObj::ControlAtomicUpdate<vertex_t, edge_t>;
-  p6 = new SimObj::ReadTempDstProperty<vertex_t, edge_t>(scratchpad, graph, scratchpad_map);
-  p7 = new SimObj::Reduce<vertex_t, edge_t>(1, application);
-  p8 = new SimObj::WriteTempDstProperty<vertex_t, edge_t>(scratchpad, p5, scratchpad_map, apply);
+  p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph);
+  p2 = new SimObj::ReadSrcEdges<v_t, e_t>(scratchpad, graph);
+  p3 = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph);
+  p4 = new SimObj::ProcessEdge<v_t, e_t>(1, application);
+  p5 = new SimObj::ControlAtomicUpdate<v_t, e_t>;
+  p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);
+  p7 = new SimObj::Reduce<v_t, e_t>(1, application);
+  p8 = new SimObj::WriteTempDstProperty<v_t, e_t>(scratchpad, p5, scratchpad_map, apply);
 
-  a1 = new SimObj::ReadVertexProperty<vertex_t, edge_t>(mem, apply, graph);
-  a2 = new SimObj::ReadTempVertexProperty<vertex_t, edge_t>(scratchpad, graph, scratchpad_map);
-  a3 = new SimObj::Apply<vertex_t, edge_t>(1, bfs);
-  a4 = new SimObj::WriteVertexProperty<vertex_t, edge_t>(mem, process, graph);
+  a1 = new SimObj::ReadVertexProperty<v_t, e_t>(mem, apply, graph);
+  a2 = new SimObj::ReadTempVertexProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);
+  a3 = new SimObj::Apply<v_t, e_t>(1, application);
+  a4 = new SimObj::WriteVertexProperty<v_t, e_t>(mem, process, graph);
   
   // Connect Pipeline
   p1->set_next(&p2);
