@@ -1,12 +1,13 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar) {
+SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar) {
   // Assert inputs are OK
   assert(graph != NULL);
   assert(application != NULL);
   assert(mem != NULL);
   assert(crossbar != NULL);
+  assert(process != NULL);
 
   // Allocate Scratchpad
   scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>;
@@ -31,30 +32,30 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   a4 = new SimObj::WriteVertexProperty<v_t, e_t>(mem, process, graph);
   
   // Connect Pipeline
-  p1->set_next(&p2);
+  p1->set_next(p2);
   p1->set_prev(NULL);
-  p2->set_next(&p3);
-  p2->set_prev(&p1);
-  p3->set_next(&p4);
-  p3->set_prev(&p2);
-  p4->set_next(&p5);
-  p4->set_prev(&p3);
-  p5->set_next(&p6);
-  p5->set_prev(&p4);
-  p6->set_next(&p7);
-  p6->set_prev(&p5);
-  p7->set_next(&p8);
-  p7->set_prev(&p6);
+  p2->set_next(p3);
+  p2->set_prev(p1);
+  p3->set_next(p4);
+  p3->set_prev(p2);
+  p4->set_next(p5);
+  p4->set_prev(p3);
+  p5->set_next(p6);
+  p5->set_prev(p4);
+  p6->set_next(p7);
+  p6->set_prev(p5);
+  p7->set_next(p8);
+  p7->set_prev(p6);
   p8->set_next(NULL);
-  p8->set_prev(&p7);
+  p8->set_prev(p7);
 
   a1->set_prev(NULL);
-  a1->set_next(&a2);
-  a2->set_prev(&a1);
-  a2->set_next(&a3);
-  a3->set_prev(&a2);
-  a3->set_next(&a4);
-  a4->set_prev(&a3);
+  a1->set_next(a2);
+  a2->set_prev(a1);
+  a2->set_next(a3);
+  a3->set_prev(a2);
+  a3->set_next(a4);
+  a4->set_prev(a3);
   a4->set_next(NULL);
 
   // Name Modules

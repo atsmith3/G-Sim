@@ -55,10 +55,15 @@ int main(int argc, char** argv) {
   GraphMat::BFS<vertex_t, edge_t> bfs;
 
   std::list<uint64_t>* process = new std::list<uint64_t>;
-  std::vector<SimObj::Pipeline<vertex_t, edge_t>>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>>;
+  std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
 
   SimObj::Crossbar<vertex_t, edge_t>* crossbar = new SimObj::Crossbar<vertex_t, edge_t>(opt.num_pipelines);
   SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
+
+  for(uint64_t i = 0; i < opt.num_pipelines; i++) {
+    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, &mem, crossbar);
+    tile->push_back(temp);
+  }
 
   uint64_t global_tick = 0;
   bool complete = false;
@@ -70,40 +75,36 @@ int main(int argc, char** argv) {
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
 #ifdef DEBUG
-    //print_queue("Process", process, iteration);
+    print_queue("Process", process, iteration);
     //graph.printVertexProperties();
 #endif
     // Processing Phase 
-    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>& a) {a.process_ready();});
+    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->process_ready();});
     complete = false;
     while(!complete) {
       global_tick++;
-      for(auto it = tile->begin(); it != tile->end(); it++) {
-        it->tick_process();
-      }
+      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
       crossbar->tick();
       mem.tick();
-      complete = true;
-      std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>& a) mutable {
-        if(!a.process_complete()) complete = false;
+      complete = false;
+      std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+        if(a->process_complete()) complete = true;
       });
     }
 #ifdef DEBUG
-    print_queue("Apply", apply, iteration);
+    //print_queue("Apply", apply, iteration);
 #endif
     
     // Apply Phase
-    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>& a) {a.apply_ready();});
+    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->apply_ready();});
     complete = false;
     while(!complete) {
       global_tick++;
-      for(auto it = tile->begin(); it != tile->end(); it++) {
-        it->tick_apply();
-      }
+      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
       mem.tick();
-      complete = true;
-      std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>& a) mutable {
-        if(!a.apply_complete()) complete = false;
+      complete = false;
+      std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+        if(a->apply_complete()) complete = true;
       });
     }
   }
@@ -111,6 +112,10 @@ int main(int argc, char** argv) {
   graph.printVertexProperties(30);
   std::cout << global_tick << "\n";
 #endif
+
+  for(uint64_t i = 0; i < opt.num_pipelines; i++) {
+    delete tile->operator[](i);
+  }
 
   return 0;
 }

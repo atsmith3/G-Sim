@@ -53,9 +53,9 @@ public:
   Memory(uint64_t access_latency, uint64_t write_latency, uint64_t num_simultaneous_requests);
   ~Memory();
 
-  virtual void tick(void);
-  virtual void write(uint64_t addr, bool* complete);
-  virtual void read(uint64_t addr, bool* complete);
+  void tick(void);
+  void write(uint64_t addr, bool* complete);
+  void read(uint64_t addr, bool* complete);
 };
 
 } // namespace SimObj

@@ -49,7 +49,7 @@ protected:
 
 public:
   Module();
-  ~Module();
+  virtual ~Module();
 
   stall_t is_stalled(void);
   virtual void tick(void);
