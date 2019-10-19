@@ -71,6 +71,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
         // Wait for upstream to send vertex
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _has_work = false;
       }
       break;
     }
@@ -80,6 +81,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
           _next->ready(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
+          _has_work = false;
         }
         else {
           next_state = OP_MEM_WAIT;

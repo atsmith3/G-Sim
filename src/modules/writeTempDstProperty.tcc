@@ -81,6 +81,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
         _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _has_work = false;
         if(_data.last_vertex && _data.last_edge) {
           _complete = true;
         }

@@ -73,6 +73,7 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
           _next->ready(_data);
           _stall = STALL_CAN_ACCEPT;
           next_state = OP_WAIT;
+          _has_work = false;
         }
         else {
           next_state = OP_MEM_WAIT;

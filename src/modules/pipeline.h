@@ -67,6 +67,7 @@ private:
 
 
   uint64_t _tick;
+  int _id;
 
 public:
   // Constructor:
@@ -87,6 +88,7 @@ public:
   void apply_ready();
 
   void print_stats();
+  void print_debug();
 
 }; // class Pipeline
 

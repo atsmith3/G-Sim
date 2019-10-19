@@ -15,6 +15,7 @@ SimObj::Module<v_t, e_t>::Module() {
   _stall_ticks.resize(STALL_NUM_TYPES, 0);
   _next = NULL;
   _prev = NULL;
+  _has_work = false;
 }
 
 
@@ -47,6 +48,7 @@ uint64_t SimObj::Module<v_t, e_t>::get_attr(void) {
 template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::ready(void) {
   _ready = true;
+  _has_work = true;
 }
 
 template<class v_t, class e_t>
@@ -54,6 +56,7 @@ void SimObj::Module<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   // Does Nothing
   _data = data;
   _ready = true;
+  _has_work = true;
 }
 
 template<class v_t, class e_t>
@@ -77,6 +80,11 @@ void SimObj::Module<v_t, e_t>::update_stats() {
 template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::set_name(std::string name) {
   _name = name;
+}
+
+template<class v_t, class e_t>
+bool SimObj::Module<v_t, e_t>::busy() {
+  return _has_work;
 }
 
 template<class v_t, class e_t>

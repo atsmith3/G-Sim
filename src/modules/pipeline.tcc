@@ -12,6 +12,7 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   // Allocate Scratchpad
   scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>;
   scratchpad = new SimObj::Memory(opt.scratchpad_read_latency, opt.scratchpad_write_latency, opt.scratchpad_num_simultaneous_requests);
+  _id = pipeline_id;
 
   // Allocate apply queue
   apply = new std::list<uint64_t>;
@@ -139,12 +140,13 @@ void SimObj::Pipeline<v_t, e_t>::tick_apply() {
 
 template<class v_t, class e_t>
 bool SimObj::Pipeline<v_t, e_t>::process_complete() {
-  return p8->complete();
+  return (!p1->busy() && !p2->busy() && !p3->busy() && !p4->busy() &&
+          !p5->busy() && !p6->busy() && !p7->busy() && !p8->busy());
 }
 
 template<class v_t, class e_t>
 bool SimObj::Pipeline<v_t, e_t>::apply_complete() {
-  return a4->complete();
+  return (!a1->busy() && !a2->busy() && !a3->busy() && !a4->busy());
 }
 
 template<class v_t, class e_t>
@@ -157,6 +159,12 @@ template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::apply_ready() {
   a4->flush();
   a1->ready();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::print_debug() {
+  std::cout << "[ Pipeline " << _id << " ] " << " p1.busy() " << p1->busy() << ", p2.busy() " << p2->busy() << ", p3.busy() " << p3->busy();
+  std::cout << ", p4.busy() " << p4->busy() << ", p5.busy() " << p5->busy() << ", p6.busy() " << p6->busy() << ", p7.busy() " << p7->busy() << ", p8.busy() " << p8->busy() << "\n";
 }
 
 template<class v_t, class e_t>

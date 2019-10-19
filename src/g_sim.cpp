@@ -84,11 +84,12 @@ int main(int argc, char** argv) {
     while(!complete) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
+      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
       mem.tick();
-      complete = false;
+      complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
-        if(a->process_complete()) complete = true;
+        if(!a->process_complete()) complete = false;
       });
     }
 #ifdef DEBUG
@@ -102,9 +103,9 @@ int main(int argc, char** argv) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
       mem.tick();
-      complete = false;
+      complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
-        if(a->apply_complete()) complete = true;
+        if(!a->apply_complete()) complete = false;
       });
     }
   }

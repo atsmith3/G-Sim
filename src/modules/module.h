@@ -46,6 +46,7 @@ protected:
 
   Utility::pipeline_data<v_t, e_t> _data;
   bool _ready;
+  bool _has_work;     // Flag for determine if there is still work left in the pipeline stages
 
 public:
   Module();
@@ -63,6 +64,7 @@ public:
   virtual void print_stats();
   virtual void print_stats_csv();
   virtual void set_name(std::string name);
+  virtual bool busy();
 
 #ifdef DEBUG
   void set_stall(stall_t stall);

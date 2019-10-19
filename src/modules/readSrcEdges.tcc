@@ -90,6 +90,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
             next_state = OP_WAIT;
             _stall = STALL_CAN_ACCEPT;
             _data.last_edge = true;
+            _has_work = false;
           }
           _next->ready(_data);
         }
@@ -120,6 +121,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
 template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _ready = true;
+  _has_work = true;
   _data = data;
   _edge_list = _graph->getEdges(data.vertex_id);
 }

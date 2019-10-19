@@ -46,6 +46,7 @@ private:
   using Module<v_t, e_t>::_next;
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
+  using Module<v_t, e_t>::_has_work;
 
   op_t _state;
   uint64_t _counter;

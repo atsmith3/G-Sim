@@ -46,6 +46,7 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_stall_ticks;
+  using Module<v_t, e_t>::_has_work;
 
   Memory* _dram;
   op_t _state;
