@@ -30,6 +30,11 @@ SimObj::stall_t SimObj::Module<v_t, e_t>::is_stalled(void) {
 }
 
 template<class v_t, class e_t>
+SimObj::stall_t SimObj::Module<v_t, e_t>::is_stalled(Utility::pipeline_data<v_t, e_t> data) {
+  return _stall;
+}
+
+template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::tick(void) {
   _tick++;
 }

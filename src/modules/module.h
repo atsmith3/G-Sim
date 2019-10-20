@@ -52,7 +52,8 @@ public:
   Module();
   virtual ~Module();
 
-  stall_t is_stalled(void);
+  virtual stall_t is_stalled(void);
+  virtual stall_t is_stalled(Utility::pipeline_data<v_t, e_t> data);
   virtual void tick(void);
   virtual void receive_message(msg_t msg);
   uint64_t get_attr(void); 

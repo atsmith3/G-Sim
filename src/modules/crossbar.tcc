@@ -37,35 +37,37 @@ void SimObj::Crossbar<v_t, e_t>::connect_output(Module<v_t, e_t>* out_module, ui
 }
 
 template<class v_t, class e_t>
-bool SimObj::Crossbar<v_t, e_t>::send_data(Utility::pipeline_data<v_t, e_t> data) {
-  if(_msg_queue[route(data)].size() >= _max_queue_size) {
-    // Message cannot be delivered:
-    return false;
-  }
-  else {
-    // Message can be delivered:
-    _msg_queue[route(data)].push(data);
-    return true;
-  }
-  return false;
+void SimObj::Crossbar<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
+  _msg_queue[route(data)].push(data);
 }
 
 template<class v_t, class e_t>
-bool SimObj::Crossbar<v_t, e_t>::has_data(uint64_t port_num) {
-  assert(port_num < _num_ports);
-  return !_msg_queue[port_num].empty();
-}
-
-template<class v_t, class e_t>
-Utility::pipeline_data<v_t, e_t> SimObj::Crossbar<v_t, e_t>::get_data(uint64_t port_num) {
-  assert(port_num < _num_ports);
-  assert(!_msg_queue[port_num].empty());
-  Utility::pipeline_data<v_t, e_t> ret = _msg_queue[port_num].front();
-  _msg_queue[port_num].pop();
-  return ret;
+bool SimObj::Crossbar<v_t, e_t>::is_stalled(Utility::pipeline_data<v_t, e_t> data) {
+  if(_msg_queue[route(data)].size() < _max_queue_size) {
+    return STALL_CAN_ACCEPT;
+  }
+  return STALL_PIPE;
 }
 
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::tick() {
-  // Do Nothing
+  /* Loop over message Queues, signal a module as ready if the queue !empty and
+   * the corresponding pipeline stage can accept data. */
+  for(uint64_t pipeline_id = 0; pipeline_id < _max_queue_size; pipeline_id++) {
+    if(_out_module[pipeline_id]->is_stalled() == STALL_CAN_ACCEPT && !_msg_queue[pipeline_id].empty()) {
+      Utility::pipeline_data<v_t, e_t> ret = _msg_queue[port_num].front();
+      _msg_queue[port_num].pop();
+      _out_module[pipeline_id]->ready(ret);
+    }
+  }
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::busy() {
+  for(auto it = _msg_queue.begin(); it != _msg_queue.end(); it++) {
+    if(!it->empty()) {
+      return true;
+    }
+  }
+  return false;
 }
