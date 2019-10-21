@@ -51,6 +51,7 @@ private:
   op_t _state;
   std::queue<uint>* _edge_list;
   Utility::readGraph<v_t>* _graph;
+  bool _data_set;
 
 public:
   bool _mem_flag;

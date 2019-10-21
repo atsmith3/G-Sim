@@ -35,10 +35,13 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   // Connect Pipeline
   p1->set_next(p2);
   p1->set_prev(NULL);
-  p2->set_next(p3);
+  p2->set_next(crossbar);
   p2->set_prev(p1);
+  // Crossbar goes here:
+  crossbar->connect_input(p2, pipeline_id);
+  crossbar->connect_output(p3, pipeline_id);
   p3->set_next(p4);
-  p3->set_prev(p2);
+  p3->set_prev(crossbar);
   p4->set_next(p5);
   p4->set_prev(p3);
   p5->set_next(p6);
@@ -151,20 +154,20 @@ bool SimObj::Pipeline<v_t, e_t>::apply_complete() {
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::process_ready() {
-  p8->flush();
   p1->ready();
 }
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::apply_ready() {
-  a4->flush();
   a1->ready();
 }
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::print_debug() {
   std::cout << "[ Pipeline " << _id << " ] " << " p1.busy() " << p1->busy() << ", p2.busy() " << p2->busy() << ", p3.busy() " << p3->busy();
-  std::cout << ", p4.busy() " << p4->busy() << ", p5.busy() " << p5->busy() << ", p6.busy() " << p6->busy() << ", p7.busy() " << p7->busy() << ", p8.busy() " << p8->busy() << "\n";
+  std::cout << ", p4.busy() " << p4->busy() << ", p5.busy() " << p5->busy() << ", p6.busy() " << p6->busy() << ", p7.busy() " << p7->busy() << ", p8.busy() " << p8->busy();
+  std::cout << "\n";
+  p5->debug();
 }
 
 template<class v_t, class e_t>

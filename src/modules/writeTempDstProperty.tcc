@@ -16,7 +16,6 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
   _apply = NULL;
   _ready = false;
   _mem_flag = false;
-  _complete = false;
   _state = OP_WAIT;
 }
 
@@ -33,7 +32,6 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
   _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
-  _complete = false;
   _state = OP_WAIT;
   _edges_written = 0;
 }
@@ -56,7 +54,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(_ready && !_complete) {
+      if(_ready) {
 #ifdef MODULE_DEBUG
         std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
 #endif
@@ -70,6 +68,7 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
         // Wait for upstream to send _edge
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _has_work = false;
       }
       break;
     }
@@ -78,13 +77,15 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
         _scratch_mem->insert_or_assign(_data.vertex_dst_id, _data);
         _apply->push_back(_data.vertex_dst_id);
         _edges_written++;
-        _cau->receive_message(MSG_ATOMIC_OP_COMPLETE);
+        Utility::pipeline_data<v_t, e_t> temp_data = _cau->signal();
+#ifdef DEBUG
+        assert(temp_data.vertex_id == _data.vertex_id);
+        assert(temp_data.edge_id == _data.edge_id);
+        assert(temp_data.vertex_dst_id == _data.vertex_dst_id);
+#endif
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
         _has_work = false;
-        if(_data.last_vertex && _data.last_edge) {
-          _complete = true;
-        }
       }
       else {
         next_state = OP_MEM_WAIT;
@@ -128,16 +129,4 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats_csv(void) {
     << _stall_ticks[STALL_PIPE] << ","
     << _stall_ticks[STALL_MEM] << ","
     << _edges_written << ",\n";
-}
-
-
-template<class v_t, class e_t>
-bool SimObj::WriteTempDstProperty<v_t, e_t>::complete() {
-  return _complete;
-}
-
-
-template<class v_t, class e_t>
-void SimObj::WriteTempDstProperty<v_t, e_t>::flush() {
-  _complete = false;
 }

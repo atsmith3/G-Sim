@@ -53,6 +53,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
 #endif
         _ready = false;
         if(!_edge_list->empty()) {
+          _data_set = false;
           _mem_flag = false;
           _scratchpad->read(0x01, &_mem_flag);
           _stall = STALL_MEM;
@@ -73,11 +74,16 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+        if(_data_set == false) {
           _data.edge_id = _edge_list->front();
           _edge_list->pop();
           _data.edge_data = _graph->getEdgeWeight(_data.edge_id);
+          _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
+          _data_set = true;
+        }
+        if(_next->is_stalled(_data) == STALL_CAN_ACCEPT) {
           if(!_edge_list->empty()) {
+            _data_set = false;
             _mem_flag = false;
             _scratchpad->read(0x01, &_mem_flag);
             _stall = STALL_MEM;

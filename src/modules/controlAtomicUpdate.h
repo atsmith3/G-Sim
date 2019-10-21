@@ -58,7 +58,8 @@ public:
   ~ControlAtomicUpdate();
 
   void tick(void);
-  void receive_message(msg_t msg);
+  Utility::pipeline_data<v_t, e_t> signal();
+  void debug(void);
 };
 
 } // namespace SimObj

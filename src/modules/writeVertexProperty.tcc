@@ -19,7 +19,6 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty() {
   _mem_flag = false;
   _state = OP_WAIT;
   _throughput = 0;
-  _complete = false;
 }
 
 
@@ -35,7 +34,6 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::li
   _mem_flag = false;
   _state = OP_WAIT;
   _throughput = 0;
-  _complete = false;
 }
 
 
@@ -55,7 +53,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
-      if(_ready && !_complete) {
+      if(_ready) {
         // Upstream sent _edge property
         _ready = false;
         _mem_flag = false;
@@ -67,6 +65,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
         // Wait for upstream to send _edge
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _has_work = false;
       }
       break;
     }
@@ -77,9 +76,6 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
           _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
           _process->push_back(_data.vertex_id);
           _throughput++;
-        }
-        if(_data.last_vertex) {
-          _complete = true;
         }
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
@@ -129,14 +125,3 @@ void SimObj::WriteVertexProperty<v_t, e_t>::print_stats_csv() {
     << _throughput << ",\n";
 }
 
-
-template<class v_t, class e_t>
-bool SimObj::WriteVertexProperty<v_t, e_t>::complete() {
-  return _complete;
-}
-
-
-template<class v_t, class e_t>
-void SimObj::WriteVertexProperty<v_t, e_t>::flush() {
-  _complete = false;
-}

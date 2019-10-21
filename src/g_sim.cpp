@@ -84,14 +84,14 @@ int main(int argc, char** argv) {
     while(!complete) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
-      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
       mem.tick();
       complete = true;
-      std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
-        if(!a->process_complete()) complete = false;
+      std::for_each(tile->begin(), tile->end(), [&complete, crossbar](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+        if(!a->process_complete() || crossbar->busy()) complete = false;
       });
     }
+    //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
 #ifdef DEBUG
     //print_queue("Apply", apply, iteration);
 #endif

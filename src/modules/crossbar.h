@@ -28,9 +28,6 @@ private:
   uint64_t route(Utility::pipeline_data<v_t, e_t> vertex) {
     return vertex.vertex_dst_id % _num_ports;
   }
-
-  using Module<v_t, e_t> _tick;
-  using Module<v_t, e_t> _stall;
   
 public:
   Crossbar(uint64_t num_ports);
@@ -39,7 +36,9 @@ public:
   void connect_input(Module<v_t, e_t>* in_module, uint64_t port_num);
   void connect_output(Module<v_t, e_t>* out_module, uint64_t port_num);
 
-  Utility::pipeline_data<v_t, e_t> get_data(uint64_t port_num);
+  stall_t is_stalled(Utility::pipeline_data<v_t, e_t> data);
+  void ready(Utility::pipeline_data<v_t, e_t> data);
+  bool busy();
 
   void tick();
 };

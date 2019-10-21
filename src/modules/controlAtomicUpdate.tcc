@@ -51,6 +51,7 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
           _nodes.push_front(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
+          _has_work = false;
         }
         else {
           next_state = OP_STALL;
@@ -67,9 +68,13 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
     // If there is a dep stall the pipe until the edge completes
     case OP_STALL : {
       // Check if an edge was finalized:
+      //std::cout << "Dependency: " << dependency() << " Queue Size: " << _nodes.size() << "\n";
       if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
         _next->ready(_data);
         _nodes.push_front(_data);
+#ifdef DEBUG
+          assert(_nodes.size() < 4);
+#endif
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
         _has_work = false;
@@ -94,8 +99,18 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
 }
 
 template<class v_t, class e_t>
-void SimObj::ControlAtomicUpdate<v_t, e_t>::receive_message(msg_t msg) {
-  if(msg == MSG_ATOMIC_OP_COMPLETE) {
-    _nodes.pop_back();
+Utility::pipeline_data<v_t, e_t> SimObj::ControlAtomicUpdate<v_t, e_t>::signal(void) {
+  Utility::pipeline_data<v_t, e_t> ret = _nodes.back();
+  _nodes.pop_back();
+  return ret;
+}
+
+
+template<class v_t, class e_t>
+void SimObj::ControlAtomicUpdate<v_t, e_t>::debug(void) {
+  std::cout << "[";
+  for(auto it = _nodes.begin(); it != _nodes.end(); it++) {
+    std::cout << *it << ",";
   }
+  std::cout << "]\n";
 }

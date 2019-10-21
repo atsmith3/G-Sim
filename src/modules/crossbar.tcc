@@ -10,7 +10,7 @@
 template<class v_t, class e_t>
 SimObj::Crossbar<v_t, e_t>::Crossbar(uint64_t num_ports) {
   assert(num_ports > 0);
-  _max_queue_size = 2;
+  _max_queue_size = 1;
   _num_ports = num_ports;
   _msg_queue.resize(num_ports);
   _in_module.resize(num_ports);
@@ -42,7 +42,7 @@ void SimObj::Crossbar<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
 }
 
 template<class v_t, class e_t>
-bool SimObj::Crossbar<v_t, e_t>::is_stalled(Utility::pipeline_data<v_t, e_t> data) {
+SimObj::stall_t SimObj::Crossbar<v_t, e_t>::is_stalled(Utility::pipeline_data<v_t, e_t> data) {
   if(_msg_queue[route(data)].size() < _max_queue_size) {
     return STALL_CAN_ACCEPT;
   }
@@ -53,17 +53,18 @@ template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::tick() {
   /* Loop over message Queues, signal a module as ready if the queue !empty and
    * the corresponding pipeline stage can accept data. */
-  for(uint64_t pipeline_id = 0; pipeline_id < _max_queue_size; pipeline_id++) {
+  for(uint64_t pipeline_id = 0; pipeline_id < _msg_queue.size(); pipeline_id++) {
     if(_out_module[pipeline_id]->is_stalled() == STALL_CAN_ACCEPT && !_msg_queue[pipeline_id].empty()) {
-      Utility::pipeline_data<v_t, e_t> ret = _msg_queue[port_num].front();
-      _msg_queue[port_num].pop();
+      Utility::pipeline_data<v_t, e_t> ret = _msg_queue[pipeline_id].front();
+      _msg_queue[pipeline_id].pop();
+      //std::cout << "Queue[" << pipeline_id << "] Size = " << _msg_queue[pipeline_id].size() << "\n";
       _out_module[pipeline_id]->ready(ret);
     }
   }
 }
 
 template<class v_t, class e_t>
-void SimObj::Crossbar<v_t, e_t>::busy() {
+bool SimObj::Crossbar<v_t, e_t>::busy() {
   for(auto it = _msg_queue.begin(); it != _msg_queue.end(); it++) {
     if(!it->empty()) {
       return true;
