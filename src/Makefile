@@ -1,4 +1,4 @@
-INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil -IgraphMat
+INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil -IgraphMat -Imodules/memory/DRAMSim2
 CPPFLAGS += -std=c++17 -Wall -Wfatal-errors -Werror $(INCPATH)
 CFLAGS += -Wall $(INCPATH)
 #CPPFLAGS += -pg 
