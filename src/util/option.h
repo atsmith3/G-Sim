@@ -56,6 +56,7 @@ namespace Utility {
       unsigned long long int avg_connectivity = 1;
       int shouldInit = 0; // Used for the readGraph
       std::string graph_path = "";
+      std::string result = "vertex_properties.out";
 
       bool parse(long long int argc, char** argv)
       {
@@ -98,6 +99,7 @@ namespace Utility {
           sim.add_options()
             ("should_init", po::value<int>(&shouldInit), "graph needs to be initialized")
             ("graph_path", po::value<std::string>(&graph_path), "path to mat market format graph")
+            ("vertex_properties", po::value<std::string>(&result), "name for the output file containing vertex values for verification")
           ;
 
 

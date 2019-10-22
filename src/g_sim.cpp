@@ -91,7 +91,6 @@ int main(int argc, char** argv) {
         if(!a->process_complete() || crossbar->busy()) complete = false;
       });
     }
-    //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
 #ifdef DEBUG
     //print_queue("Apply", apply, iteration);
 #endif
@@ -102,6 +101,7 @@ int main(int argc, char** argv) {
     while(!complete) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
+      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       mem.tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
@@ -117,6 +117,8 @@ int main(int argc, char** argv) {
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
     delete tile->operator[](i);
   }
+
+  graph.writeVertexPropertyToFile(opt.result);
 
   return 0;
 }

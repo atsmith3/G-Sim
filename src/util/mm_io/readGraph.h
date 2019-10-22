@@ -59,6 +59,15 @@ class readGraph {
     void printNodePtrs(void);
     void printVertexProperties(int num);
 
+    void writeVertexPropertyToFile(std::string name) {
+      std::ofstream out;
+      out.open(name, std::ios::out);
+      for(int i = 0; i < *numNodes + 1; i++) {
+        out << vertex_property[i] << "\n";
+      }
+      out.close();
+    }
+
   private:
     unsigned int *nodePtrs;
     unsigned int *nodeNeighbors;
