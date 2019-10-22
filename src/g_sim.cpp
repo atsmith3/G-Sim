@@ -6,6 +6,7 @@
 
 // Process Modules
 #include "memory.h"
+#include "modules/memory/DRAMSim2/DRAMSim.h"
 #include "crossbar.h"
 
 // Pipeline Class
