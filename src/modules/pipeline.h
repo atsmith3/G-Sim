@@ -90,6 +90,11 @@ public:
   void print_stats();
   void print_debug();
 
+  // Stats Interface:
+  uint64_t apply_size() {
+    return apply->size();
+  }
+
 }; // class Pipeline
 
 }; // namespace SimObj

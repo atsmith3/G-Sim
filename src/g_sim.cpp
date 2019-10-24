@@ -6,7 +6,6 @@
 
 // Process Modules
 #include "memory.h"
-#include "modules/memory/DRAMSim2/DRAMSim.h"
 #include "crossbar.h"
 
 // Pipeline Class
@@ -68,6 +67,7 @@ int main(int argc, char** argv) {
 
   uint64_t global_tick = 0;
   bool complete = false;
+  uint64_t edges_processed = 0;
 
   // Setup problem:
   process->push_back(1);
@@ -95,6 +95,11 @@ int main(int argc, char** argv) {
 #ifdef DEBUG
     //print_queue("Apply", apply, iteration);
 #endif
+
+    // Accumulate the edges processed each iteration
+    std::for_each(tile->begin(), tile->end(), [&edges_processed](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+      edges_processed += a->apply_size();
+    });
     
     // Apply Phase
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->apply_ready();});
@@ -112,7 +117,7 @@ int main(int argc, char** argv) {
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);
-  std::cout << global_tick << "\n";
+  std::cout << "Global Ticks, " << global_tick << ", Edges Processed, " << edges_processed << ", Throughput (Edges/Cycle), " << (float)edges_processed/(float)global_tick << "\n";
 #endif
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {

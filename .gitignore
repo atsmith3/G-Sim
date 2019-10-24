@@ -8,3 +8,4 @@
 *.bin
 *.mtx
 src/output
+src/graphs
