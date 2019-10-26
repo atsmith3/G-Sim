@@ -47,7 +47,7 @@ namespace Utility {
       // Scratchpad options
       unsigned long long int dram_read_latency = 5;
       unsigned long long int dram_write_latency = 30;
-      unsigned long long int dram_num_simultaneous_requests = 4;
+      unsigned long long int dram_num_simultaneous_requests = 1000;
       unsigned long long int dram_data_width = 256;
 
       // Simultaion Options

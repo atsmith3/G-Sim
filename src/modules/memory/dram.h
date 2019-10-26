@@ -17,8 +17,11 @@ namespace SimObj {
 
 class DRAM : public Memory {
 private:
-  std::vector<unsigned int> _action;
-  std::queue<unsigned int> _req_queue;
+  std::queue<std::pair<uint64_t, bool*>> _write_queue;
+  std::queue<std::pair<uint64_t, bool*>> _read_queue;
+
+  DRAMSim::TransactionCompleteCB *write_cb;
+  DRAMSim::TransactionCompleteCB *read_cb;
 
   DRAMSim::MultiChannelMemorySystem *_mem;
 

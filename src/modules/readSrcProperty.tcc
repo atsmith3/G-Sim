@@ -57,6 +57,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
         // Dequeue from the work queue
         _data.vertex_id = _process->front();
         _process->pop_front();
+        _data.vertex_id_addr = _graph->getVertexAddress(_data.vertex_id);
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _data.edge_id = 0;
 

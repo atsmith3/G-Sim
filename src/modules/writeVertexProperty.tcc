@@ -57,7 +57,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
         // Upstream sent _edge property
         _ready = false;
         _mem_flag = false;
-        _dram->write(0x01, &_mem_flag);
+        _dram->write(_data.vertex_id_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }

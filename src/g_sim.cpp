@@ -6,6 +6,7 @@
 
 // Process Modules
 #include "memory.h"
+#include "dram.h"
 #include "crossbar.h"
 
 // Pipeline Class
@@ -58,10 +59,10 @@ int main(int argc, char** argv) {
   std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
 
   SimObj::Crossbar<vertex_t, edge_t>* crossbar = new SimObj::Crossbar<vertex_t, edge_t>(opt.num_pipelines);
-  SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
+  SimObj::Memory* mem = new SimObj::DRAM;
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
-    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, &mem, crossbar);
+    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, mem, crossbar);
     tile->push_back(temp);
   }
 
@@ -85,8 +86,9 @@ int main(int argc, char** argv) {
     while(!complete) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
+      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
-      mem.tick();
+      mem->tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete, crossbar](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->process_complete() || crossbar->busy()) complete = false;
@@ -108,7 +110,7 @@ int main(int argc, char** argv) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
       //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
-      mem.tick();
+      mem->tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->apply_complete()) complete = false;

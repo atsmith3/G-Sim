@@ -121,8 +121,6 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
     //fprintf(stderr, "Test \n");
     //assert((nodeNeighbors)[0] == (nodeNeighbors)[1] == 0);
 
-    allocateGraph();
-
     unsigned int p = 0;
     unsigned int idx_cnt = 0;
 
