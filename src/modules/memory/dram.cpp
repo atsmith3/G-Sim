@@ -18,6 +18,7 @@ SimObj::DRAM::DRAM() {
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
   _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
+	_mem->RegisterCallbacks(read_cb, write_cb, NULL);
 }
 
 SimObj::DRAM::DRAM(uint64_t access_latency, uint64_t write_latency, uint64_t num_simultaneous_requests) {
@@ -28,6 +29,7 @@ SimObj::DRAM::DRAM(uint64_t access_latency, uint64_t write_latency, uint64_t num
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
   _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
+	_mem->RegisterCallbacks(read_cb, write_cb, NULL);
 }
 
 SimObj::DRAM::~DRAM() {
@@ -41,7 +43,7 @@ void SimObj::DRAM::tick(void) {
 }
   
 void SimObj::DRAM::write(uint64_t addr, bool* complete) {
-  if(_mem->addTransaction(false, addr)) {
+  if(_mem->addTransaction(true, addr)) {
     std::pair<uint64_t, bool*> transaction = std::make_pair(addr, complete);
     _write_queue.push(transaction);
     return;

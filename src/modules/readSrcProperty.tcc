@@ -70,7 +70,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
         }
 
         _mem_flag = false;
-        _dram->read(0x100, &_mem_flag);
+        _dram->read(_data.vertex_id_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
