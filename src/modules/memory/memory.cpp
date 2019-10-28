@@ -103,3 +103,7 @@ void SimObj::Memory::read(uint64_t addr, bool* complete) {
   _req_queue.push(req);
 }
 
+void SimObj::Memory::print_stats() {
+
+}
+

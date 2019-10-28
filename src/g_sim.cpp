@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     while(!complete) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
-      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
+      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
       mem->tick();
       complete = true;
@@ -121,6 +121,8 @@ int main(int argc, char** argv) {
   graph.printVertexProperties(30);
   std::cout << "Global Ticks, " << global_tick << ", Edges Processed, " << edges_processed << ", Throughput (Edges/Cycle), " << (float)edges_processed/(float)global_tick << "\n";
 #endif
+
+  mem->print_stats();
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
     delete tile->operator[](i);

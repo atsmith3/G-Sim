@@ -43,18 +43,24 @@ void SimObj::DRAM::tick(void) {
 }
   
 void SimObj::DRAM::write(uint64_t addr, bool* complete) {
+#ifdef DEBUG
+  //std::cout << "DRAM Write Issued @ " << _tick << " with address: " << std::hex << addr << "\n";
+#endif
   if(_mem->addTransaction(true, addr)) {
     std::pair<uint64_t, bool*> transaction = std::make_pair(addr, complete);
-    _write_queue.push(transaction);
+    _write_queue.push_front(transaction);
     return;
   }
   assert(1==0); // Shouldnt reach here?
 }
 
 void SimObj::DRAM::read(uint64_t addr, bool* complete) {
+#ifdef DEBUG
+  //std::cout << "DRAM Read  Issued @ " << _tick << " with address: " << std::hex << addr << "\n";
+#endif
   if(_mem->addTransaction(false, addr)) {
     std::pair<uint64_t, bool*> transaction = std::make_pair(addr, complete);
-    _read_queue.push(transaction);
+    _read_queue.push_front(transaction);
     return;
   }
   assert(1==0); // Shouldnt reach here?
@@ -62,22 +68,36 @@ void SimObj::DRAM::read(uint64_t addr, bool* complete) {
 
 void SimObj::DRAM::read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle) {
   //Dequeue the transaction pair from the list of outstanding transactions:
-  std::pair<uint64_t, bool*> transaction = _read_queue.front();
+  for(auto it = _read_queue.rbegin(); it != _read_queue.rend(); it++) {
+    if(it->first == address) {
+      // Set the complete flag to true
+      *(it->second) = true;
+      // Remove the transaction from the queue of pending xactions
+      _read_queue.erase(std::next(it).base());
+      return;
+    }
+  }
 #ifdef DEBUG
-  // Verify the addr of the transaction and the DRAM read are the same
-  assert(transaction.first == address);
+  assert(false); 
 #endif
-  _read_queue.pop();
-  *transaction.second = true;
 }
 
 void SimObj::DRAM::write_complete(unsigned int id, uint64_t address, uint64_t clock_cycle) {
   //Dequeue the transaction pair from the list of outstanding transactions:
-  std::pair<uint64_t, bool*> transaction = _write_queue.front();
+  for(auto it = _write_queue.rbegin(); it != _write_queue.rend(); it++) {
+    if(it->first == address) {
+      // Set the complete flag to true
+      *(it->second) = true;
+      // Remove the transaction from the queue of pending xactions
+      _write_queue.erase(std::next(it).base());
+      return;
+    }
+  }
 #ifdef DEBUG
-  // Verify the addr of the transaction and the DRAM read are the same
-  assert(transaction.first == address);
+  assert(false);
 #endif
-  _write_queue.pop();
-  *transaction.second = true;
+}
+
+void SimObj::DRAM::print_stats() {
+  _mem->printStats(true);
 }

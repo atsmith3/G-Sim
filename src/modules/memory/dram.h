@@ -8,7 +8,7 @@
 #ifndef _DRAM_H
 #define _DRAM_H
 
-#include <queue>
+#include <list>
 #include <vector>
 #include "DRAMSim.h"
 #include "memory.h"
@@ -17,8 +17,8 @@ namespace SimObj {
 
 class DRAM : public Memory {
 private:
-  std::queue<std::pair<uint64_t, bool*>> _write_queue;
-  std::queue<std::pair<uint64_t, bool*>> _read_queue;
+  std::list<std::pair<uint64_t, bool*>> _write_queue;
+  std::list<std::pair<uint64_t, bool*>> _read_queue;
 
   DRAMSim::TransactionCompleteCB *write_cb;
   DRAMSim::TransactionCompleteCB *read_cb;
@@ -37,6 +37,7 @@ public:
   // DRAMSim2 Callbacks:
   void read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
   void write_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
+  void print_stats();
 }; // class DRAM
 
 } // namespace SimObj
