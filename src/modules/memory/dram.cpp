@@ -14,7 +14,9 @@ SimObj::DRAM::DRAM() {
   _tick = 0;
   _access_latency = 0;
   _write_latency = 0;
-  _num_simultaneous_requests = 1;
+  sequential_write_counter = 0;
+  sequential_read_counter = 0;
+  buffer_size = 16;
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
   _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
@@ -25,7 +27,9 @@ SimObj::DRAM::DRAM(uint64_t access_latency, uint64_t write_latency, uint64_t num
   _tick = 0;
   _access_latency = access_latency;
   _write_latency = write_latency;
-  _num_simultaneous_requests = num_simultaneous_requests;
+  sequential_write_counter = 0;
+  sequential_read_counter = 0;
+  buffer_size = 16;
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
   _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
@@ -42,24 +46,46 @@ void SimObj::DRAM::tick(void) {
   _mem->update();
 }
   
-void SimObj::DRAM::write(uint64_t addr, bool* complete) {
+void SimObj::DRAM::write(uint64_t addr, bool* complete, bool sequential) {
 #ifdef DEBUG
   //std::cout << "DRAM Write Issued @ " << _tick << " with address: " << std::hex << addr << "\n";
 #endif
+#if 0
+  if(sequential) {
+    // check if the sequential read buffer has data:
+    if(sequential_write_counter < buffer_size) {
+      // Can directly complete the req:
+      *complete = true;
+      sequential_write_counter++;
+      return;
+    }
+  }
+#endif
   if(_mem->addTransaction(true, addr)) {
-    std::pair<uint64_t, bool*> transaction = std::make_pair(addr, complete);
+    std::tuple<uint64_t, bool*, bool> transaction = std::make_tuple(addr, complete, sequential);
     _write_queue.push_front(transaction);
     return;
   }
   assert(1==0); // Shouldnt reach here?
 }
 
-void SimObj::DRAM::read(uint64_t addr, bool* complete) {
+void SimObj::DRAM::read(uint64_t addr, bool* complete, bool sequential) {
 #ifdef DEBUG
   //std::cout << "DRAM Read  Issued @ " << _tick << " with address: " << std::hex << addr << "\n";
 #endif
+#if 0
+  if(sequential) {
+    // check if the sequential read buffer has data:
+    if(sequential_read_counter < buffer_size) {
+      // Can directly complete the req:
+      *complete = true;
+      sequential_read_counter++;
+      return;
+    }
+  }
+#endif
   if(_mem->addTransaction(false, addr)) {
-    std::pair<uint64_t, bool*> transaction = std::make_pair(addr, complete);
+    std::tuple<uint64_t, bool*, bool> transaction = std::make_tuple(addr, complete, sequential);
     _read_queue.push_front(transaction);
     return;
   }
@@ -68,12 +94,15 @@ void SimObj::DRAM::read(uint64_t addr, bool* complete) {
 
 void SimObj::DRAM::read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle) {
   //Dequeue the transaction pair from the list of outstanding transactions:
-  for(auto it = _read_queue.rbegin(); it != _read_queue.rend(); it++) {
-    if(it->first == address) {
+  for(auto it = _read_queue.begin(); it != _read_queue.end(); it++) {
+    if(std::get<0>(*it) == address) {
       // Set the complete flag to true
-      *(it->second) = true;
+      *(std::get<1>(*it)) = true;
+      if(std::get<2>(*it) == true) {
+        sequential_read_counter = 0;
+      }
       // Remove the transaction from the queue of pending xactions
-      _read_queue.erase(std::next(it).base());
+      _read_queue.erase(it);
       return;
     }
   }
@@ -84,12 +113,15 @@ void SimObj::DRAM::read_complete(unsigned int id, uint64_t address, uint64_t clo
 
 void SimObj::DRAM::write_complete(unsigned int id, uint64_t address, uint64_t clock_cycle) {
   //Dequeue the transaction pair from the list of outstanding transactions:
-  for(auto it = _write_queue.rbegin(); it != _write_queue.rend(); it++) {
-    if(it->first == address) {
+  for(auto it = _write_queue.begin(); it != _write_queue.end(); it++) {
+    if(std::get<0>(*it) == address) {
       // Set the complete flag to true
-      *(it->second) = true;
+      *(std::get<1>(*it)) = true;
+      if(std::get<2>(*it) == true) {
+        sequential_write_counter = 0;
+      }
       // Remove the transaction from the queue of pending xactions
-      _write_queue.erase(std::next(it).base());
+      _write_queue.erase(it);
       return;
     }
   }

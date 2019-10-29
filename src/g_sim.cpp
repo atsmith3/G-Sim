@@ -28,18 +28,18 @@ typedef bool vertex_t;
 typedef double edge_t;
 
 void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
-  std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
-  std::cerr << "   " << name << " Queue: [ ";
+  std::cout << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
+  std::cout << "   " << name << " Queue: [ ";
   int i = 0;
   for(auto it = q->begin(); it != q->end() && i < 20; it++) {
-    std::cerr << *it << ", ";
+    std::cout << *it << ", ";
     i++;
   }
   if(i < 20) {
-    std::cerr << "]\n";
+    std::cout << "]\n";
   }
   else {
-    std::cerr << "...\n";
+    std::cout << "...\n";
   }
 }
 

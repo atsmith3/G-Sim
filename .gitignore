@@ -9,3 +9,4 @@
 *.mtx
 src/output
 src/graphs
+src/modules/memory/DRAMSim2

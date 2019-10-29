@@ -93,12 +93,12 @@ void SimObj::Memory::tick(void) {
   }
 }
   
-void SimObj::Memory::write(uint64_t addr, bool* complete) {
+void SimObj::Memory::write(uint64_t addr, bool* complete, bool sequential) {
   SimObj::MemRequest req(complete, _access_latency + _write_latency, MEM_WRITE);
   _req_queue.push(req);
 }
 
-void SimObj::Memory::read(uint64_t addr, bool* complete) {
+void SimObj::Memory::read(uint64_t addr, bool* complete, bool sequential) {
   SimObj::MemRequest req(complete, _access_latency, MEM_READ);
   _req_queue.push(req);
 }

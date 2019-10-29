@@ -9,6 +9,7 @@
 #define _DRAM_H
 
 #include <list>
+#include <tuple>
 #include <vector>
 #include "DRAMSim.h"
 #include "memory.h"
@@ -17,13 +18,17 @@ namespace SimObj {
 
 class DRAM : public Memory {
 private:
-  std::list<std::pair<uint64_t, bool*>> _write_queue;
-  std::list<std::pair<uint64_t, bool*>> _read_queue;
+  std::list<std::tuple<uint64_t, bool*, bool>> _write_queue;
+  std::list<std::tuple<uint64_t, bool*, bool>> _read_queue;
 
   DRAMSim::TransactionCompleteCB *write_cb;
   DRAMSim::TransactionCompleteCB *read_cb;
 
   DRAMSim::MultiChannelMemorySystem *_mem;
+
+  int sequential_write_counter;
+  int sequential_read_counter;
+  int buffer_size;
 
 public:
   DRAM(void);
@@ -31,8 +36,8 @@ public:
   ~DRAM();
 
   void tick(void);
-  void write(uint64_t addr, bool* complete);
-  void read(uint64_t addr, bool* complete);
+  void write(uint64_t addr, bool* complete, bool sequential=true);
+  void read(uint64_t addr, bool* complete, bool sequential=true);
 
   // DRAMSim2 Callbacks:
   void read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);

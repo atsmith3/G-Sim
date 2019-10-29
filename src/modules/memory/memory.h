@@ -55,8 +55,8 @@ public:
   virtual ~Memory();
 
   virtual void tick(void);
-  virtual void write(uint64_t addr, bool* complete);
-  virtual void read(uint64_t addr, bool* complete);
+  virtual void write(uint64_t addr, bool* complete, bool sequential=true);
+  virtual void read(uint64_t addr, bool* complete, bool sequential=true);
   virtual void print_stats();
 };
 
