@@ -63,7 +63,7 @@ void SimObj::DRAM::write(uint64_t addr, bool* complete, bool sequential) {
 #endif
   if(_mem->addTransaction(true, addr)) {
     std::tuple<uint64_t, bool*, bool> transaction = std::make_tuple(addr, complete, sequential);
-    _write_queue.push_front(transaction);
+    _write_queue.push_back(transaction);
     return;
   }
   assert(1==0); // Shouldnt reach here?
@@ -86,7 +86,7 @@ void SimObj::DRAM::read(uint64_t addr, bool* complete, bool sequential) {
 #endif
   if(_mem->addTransaction(false, addr)) {
     std::tuple<uint64_t, bool*, bool> transaction = std::make_tuple(addr, complete, sequential);
-    _read_queue.push_front(transaction);
+    _read_queue.push_back(transaction);
     return;
   }
   assert(1==0); // Shouldnt reach here?

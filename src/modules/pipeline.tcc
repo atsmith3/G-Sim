@@ -167,7 +167,7 @@ void SimObj::Pipeline<v_t, e_t>::print_debug() {
   std::cout << "[ Pipeline " << _id << " ] " << " p1.busy() " << p1->busy() << ", p2.busy() " << p2->busy() << ", p3.busy() " << p3->busy();
   std::cout << ", p4.busy() " << p4->busy() << ", p5.busy() " << p5->busy() << ", p6.busy() " << p6->busy() << ", p7.busy() " << p7->busy() << ", p8.busy() " << p8->busy();
   std::cout << ", a1.busy() " << a1->busy() << ", a2.busy() " << a2->busy() << ", a3.busy() " << a3->busy() << ", a4.busy() " << a4->busy();
-  std::cout << "\n";
+  std::cout << "\n" << std::flush;
 }
 
 template<class v_t, class e_t>

@@ -1,6 +1,10 @@
 INCPATH = -I. -Imodules/memory -Imodules/crossbar -Imodules -Iutil/mm_io -Iutil -IgraphMat -Imodules/memory/DRAMSim2
 CPPFLAGS += -std=c++17 -Wall -Wfatal-errors -Werror $(INCPATH)
 CFLAGS += -Wall $(INCPATH)
+
+ifdef DRAMSIM2
+CPPFLAGS += -DDRAMSIM2
+endif
 #CPPFLAGS += -pg 
 LFLAGS += -lboost_program_options -lstdc++fs -lrt -ldramsim
 LPATH = -L/usr/local/bin -L./modules/memory/DRAMSim2
