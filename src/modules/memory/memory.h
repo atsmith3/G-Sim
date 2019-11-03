@@ -58,6 +58,7 @@ public:
   virtual void write(uint64_t addr, bool* complete, bool sequential=true);
   virtual void read(uint64_t addr, bool* complete, bool sequential=true);
   virtual void print_stats();
+  virtual void reset();
 };
 
 } // namespace SimObj

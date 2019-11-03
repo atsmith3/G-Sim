@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
     print_queue("Process", process, iteration);
     //graph.printVertexProperties();
 #endif
+    mem->reset();
     // Processing Phase 
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->process_ready();});
     complete = false;

@@ -107,3 +107,6 @@ void SimObj::Memory::print_stats() {
 
 }
 
+void SimObj::Memory::reset() {
+  // Do Nothing
+}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-inputGraphs=('soc_Slashdot0902') #'hollywood_2009')
+inputGraphs=('soc_Slashdot0902' 'hollywood_2009')
 numPipelines=('1' '2' '4' '6' '8' '10' '12' '14' '16' '18' '20' '22' '24' '26' '28')
 for graph in "${inputGraphs[@]}"
   do
