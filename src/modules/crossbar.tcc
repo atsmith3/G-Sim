@@ -39,6 +39,7 @@ void SimObj::Crossbar<v_t, e_t>::connect_output(Module<v_t, e_t>* out_module, ui
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _msg_queue[route(data)].push(data);
+  _output_items[route(data)]++;
 }
 
 template<class v_t, class e_t>
@@ -71,4 +72,40 @@ bool SimObj::Crossbar<v_t, e_t>::busy() {
     }
   }
   return false;
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::clear_stats() {
+  for(auto & element : _input_items) {
+    element = 0;
+  }
+  for(auto & element : _output_items) {
+    element = 0;
+  }
+  _items_processed = 0;
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::print_stats() {
+  std::cout << "-------------------------------------------------------------------------------\n";
+  std::cout << "[ " << _name << " ]\n";
+  std::cout << "  Input Distribution:\n";
+  std::cout << "    ";
+  for(auto & element : _input_items) {
+    std::cout << element << ", ";
+  }
+  std::cout << "\n";
+  std::cout << "  Output Distribution:\n";
+  std::cout << "    ";
+  for(auto & element : _output_items) {
+    std::cout << element << ", ";
+  }
+  std::cout << "\n";
+  std::cout << "  Performance:\n";
+  std::cout << "    Items Processed:  " << _items_processed << "\n";
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::print_stats_csv() {
+  
 }

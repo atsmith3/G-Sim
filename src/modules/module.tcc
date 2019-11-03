@@ -54,6 +54,7 @@ template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::ready(void) {
   _ready = true;
   _has_work = true;
+  _items_processed++;
 }
 
 template<class v_t, class e_t>
@@ -62,6 +63,7 @@ void SimObj::Module<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _data = data;
   _ready = true;
   _has_work = true;
+  _items_processed++;
 }
 
 template<class v_t, class e_t>
@@ -101,6 +103,8 @@ void SimObj::Module<v_t, e_t>::print_stats() {
   std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
   std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
   std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
+  std::cout << "  Performance:\n";
+  std::cout << "    Items Processed:  " << _items_processed << "\n";
 }
 
 template<class v_t, class e_t>
@@ -108,7 +112,17 @@ void SimObj::Module<v_t, e_t>::print_stats_csv() {
   std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
     << _stall_ticks[STALL_PROCESSING] << ","
     << _stall_ticks[STALL_PIPE] << ","
-    << _stall_ticks[STALL_MEM] << "\n";
+    << _stall_ticks[STALL_MEM] << ","
+    << _items_processed << "\n";
+}
+
+template<class v_t, class e_t>
+void SimObj::Module<v_t, e_t>::clear_stats() {
+  for(auto it = _stall_ticks.begin(); it != _stall_ticks.end(); it++) {
+    *it = 0;
+  }
+  _stall_count = 0;
+  _items_processed = 0;
 }
 
 #ifdef DEBUG

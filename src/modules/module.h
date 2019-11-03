@@ -39,6 +39,7 @@ protected:
   stall_t _stall;
   uint64_t _stall_count;
   std::vector<uint64_t> _stall_ticks;
+  uint64_t _items_processed;
   
   // Neighbors
   Module* _next;
@@ -66,6 +67,7 @@ public:
   virtual void print_stats_csv();
   virtual void set_name(std::string name);
   virtual bool busy();
+  virtual void clear_stats();
 
 #ifdef DEBUG
   void set_stall(stall_t stall);
