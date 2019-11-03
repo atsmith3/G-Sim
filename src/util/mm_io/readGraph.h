@@ -28,6 +28,7 @@ class readGraph {
     double getEdgeWeight(int neighborInd) { return edgeWeights[neighborInd]; }
 
     v_t getVertexProperty(int nodeInd) { return vertex_property[nodeInd]; }
+    uint64_t getVertexAddress(int nodeInd) { return (uint64_t)&vertex_property[nodeInd]; }
     void setVertexProperty(int nodeInd, v_t vertexProperty) { vertex_property[nodeInd] = vertexProperty; }
     void setInitializer(v_t initialValue) { initialVertexValue = initialValue; }
     v_t getInitializer() { return initialVertexValue; }

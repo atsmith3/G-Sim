@@ -6,6 +6,7 @@
 
 // Process Modules
 #include "memory.h"
+#include "dram.h"
 #include "crossbar.h"
 
 // Pipeline Class
@@ -27,18 +28,18 @@ typedef bool vertex_t;
 typedef double edge_t;
 
 void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
-  std::cerr << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
-  std::cerr << "   " << name << " Queue: [ ";
+  std::cout << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
+  std::cout << "   " << name << " Queue: [ ";
   int i = 0;
   for(auto it = q->begin(); it != q->end() && i < 20; it++) {
-    std::cerr << *it << ", ";
+    std::cout << *it << ", ";
     i++;
   }
   if(i < 20) {
-    std::cerr << "]\n";
+    std::cout << "]\n" << std::flush;
   }
   else {
-    std::cerr << "...\n";
+    std::cout << "...\n" << std::flush;
   }
 }
 
@@ -58,15 +59,22 @@ int main(int argc, char** argv) {
   std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
 
   SimObj::Crossbar<vertex_t, edge_t>* crossbar = new SimObj::Crossbar<vertex_t, edge_t>(opt.num_pipelines);
-  SimObj::Memory mem(opt.dram_read_latency, opt.dram_write_latency, opt.dram_num_simultaneous_requests);
+#ifdef DRAMSIM2
+  SimObj::Memory* mem = new SimObj::DRAM;
+#else
+  SimObj::Memory* mem = new SimObj::Memory(1,1,1000);
+#endif
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
-    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, &mem, crossbar);
+    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, mem, crossbar);
     tile->push_back(temp);
   }
 
   uint64_t global_tick = 0;
   bool complete = false;
+  uint64_t edges_processed = 0;
+  uint64_t edges_process_phase = 0;
+  uint64_t apply_size = 0;
 
   // Setup problem:
   process->push_back(1);
@@ -81,11 +89,12 @@ int main(int argc, char** argv) {
     // Processing Phase 
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->process_ready();});
     complete = false;
-    while(!complete) {
+    while(!complete || (process->size() != 0)) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
+      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
-      mem.tick();
+      mem->tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete, crossbar](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->process_complete() || crossbar->busy()) complete = false;
@@ -94,25 +103,39 @@ int main(int argc, char** argv) {
 #ifdef DEBUG
     //print_queue("Apply", apply, iteration);
 #endif
+
+    // Accumulate the edges processed each iteration
+    edges_process_phase = 0;
+    std::for_each(tile->begin(), tile->end(), [&edges_process_phase](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+      edges_process_phase += a->apply_size();
+    });
+    std::cout << "Iteration: " << iteration << " Apply Size: " << edges_process_phase << "\n";
+    edges_processed += edges_process_phase;
     
     // Apply Phase
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->apply_ready();});
     complete = false;
-    while(!complete) {
+    while(!complete || (apply_size != 0)) {
       global_tick++;
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
       //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
-      mem.tick();
+      mem->tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->apply_complete()) complete = false;
+      });
+      apply_size = 0;
+      std::for_each(tile->begin(), tile->end(), [&apply_size](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
+        apply_size += a->apply_size();
       });
     }
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);
-  std::cout << global_tick << "\n";
+  std::cout << "Global Ticks, " << global_tick << ", Edges Processed, " << edges_processed << ", Throughput (Edges/Cycle), " << (float)edges_processed/(float)global_tick << "\n";
 #endif
+
+  mem->print_stats();
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
     delete tile->operator[](i);

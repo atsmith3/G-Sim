@@ -18,7 +18,9 @@ namespace Utility {
 template<class v_t, class e_t>
 struct pipeline_data {
   uint64_t vertex_id;
+  uint64_t vertex_id_addr;
   uint64_t vertex_dst_id;
+  uint64_t vertex_dst_id_addr;
   uint64_t edge_id;
 
   v_t vertex_data;

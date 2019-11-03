@@ -54,7 +54,9 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
 #endif
         _ready = false;
         _mem_flag = false;
-        _dram->read(0x01, &_mem_flag);
+        _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
+        _data.vertex_dst_id_addr = _graph->getVertexAddress(_data.vertex_dst_id);
+        _dram->read(_data.vertex_dst_id_addr, &_mem_flag, false);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -67,7 +69,6 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
         _data.vertex_dst_data = _graph->getVertexProperty(_data.vertex_dst_id);
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
           _next->ready(_data);

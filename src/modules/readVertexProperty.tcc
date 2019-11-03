@@ -51,6 +51,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
       if(_ready && !_apply->empty()) {
         // Dequeue from the apply work queue
         _data.vertex_id = _apply->front();
+        _data.vertex_id_addr = _graph->getVertexAddress(_data.vertex_id_addr);
         _apply->pop_front();
         _data.last_edge = false;
         _data.last_vertex = false;
@@ -63,7 +64,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
         // Read the global vertex property
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _mem_flag = false;
-        _dram->read(0x01, &_mem_flag);
+        _dram->read(_data.vertex_id_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }

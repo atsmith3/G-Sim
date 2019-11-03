@@ -102,7 +102,7 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
     } else {
       //fprintf(stderr, " Test Else \n");
       for(int i=0; i<=M; i++) {
-        for(int ind=0; ind<nz; ind++) {
+        for(int ind=0; ind < nz; ind++) {
           if(n%PRINT_STEP == 0) fprintf(stderr, "[readMatrixMarket] postprocessing %i, %i/%i\n", i, ind, nz);
           if(I[ind] == i) {
             *(nodeNeighbor++) = J[ind];
@@ -123,6 +123,8 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
 
     unsigned int p = 0;
     unsigned int idx_cnt = 0;
+    memset(nodeIncomingNeighbors, 0, (*numNeighbors)*sizeof(unsigned int));
+    memset(nodeIncomingPtrs, 0, (*numNodes + 1)*sizeof(unsigned int));
 
     std::map<int, std::set<int> > incomingNodes;
     for(int nodeInd = 0; nodeInd <= M; nodeInd++) {
@@ -141,13 +143,13 @@ void Utility::readGraph<v_t>::readMatrixMarket(const char *mmInputFile) {
       }
     }
     assert(nodeIncomingPtrs[0] == 0);
-    nodeIncomingPtrs[M] = p;
+    nodeIncomingPtrs[M+1] = p;
 
 
     // check some stuff
     for(int j = 0; j < M+2; j++) {
-      assert((nodePtrs[j] >=0) && (nodePtrs[j] <=((unsigned int)nz)));
-      assert((nodeIncomingPtrs[j] >=0) && (nodeIncomingPtrs[j] <=((unsigned int)nz)));
+      assert((nodePtrs[j] >=0) && (nodePtrs[j] <= ((unsigned int)nz)));
+      assert((nodeIncomingPtrs[j] >=0) && (nodeIncomingPtrs[j] <= ((unsigned int)nz)));
     }
     for(int j = 0; j < nz; j++) {
       assert((nodeNeighbors[j] >=1) && (nodeNeighbors[j] <= ((unsigned int)M)));
@@ -171,7 +173,7 @@ void Utility::readGraph<v_t>::printEdgeWeights(void) {
 template<class v_t>
 void Utility::readGraph<v_t>::printNodePtrs(void) {
   fprintf(stderr, "[readGraph DEBUG] nodePtrs:\n");
-  for(int i = 1; i <* numNodes; i++) {
+  for(int i = 1; i < *numNodes; i++) {
     fprintf(stderr, "                  node %u: %u\n", i, nodePtrs[i]);
   }
 }
