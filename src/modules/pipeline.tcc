@@ -172,5 +172,50 @@ void SimObj::Pipeline<v_t, e_t>::print_debug() {
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::print_stats() {
+  std::cout << "------Pipeline " << _id << "--------------\n";
+  p1->print_stats();
+  p2->print_stats();
+  p3->print_stats();
+  p4->print_stats();
+  p5->print_stats();
+  p6->print_stats();
+  p7->print_stats();
+  p8->print_stats();
+  a1->print_stats();
+  a2->print_stats();
+  a3->print_stats();
+  a4->print_stats();
+}
 
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::print_stats_csv() {
+  std::cout << "------Pipeline " << _id << "--------------\n";
+  p1->print_stats_csv();
+  p2->print_stats_csv();
+  p3->print_stats_csv();
+  p4->print_stats_csv();
+  p5->print_stats_csv();
+  p6->print_stats_csv();
+  p7->print_stats_csv();
+  p8->print_stats_csv();
+  a1->print_stats_csv();
+  a2->print_stats_csv();
+  a3->print_stats_csv();
+  a4->print_stats_csv();
+}
+
+template<class v_t, class e_t>
+void SimObj::Pipeline<v_t, e_t>::clear_stats() {
+  p1->clear_stats();
+  p2->clear_stats();
+  p3->clear_stats();
+  p4->clear_stats();
+  p5->clear_stats();
+  p6->clear_stats();
+  p7->clear_stats();
+  p8->clear_stats();
+  a1->clear_stats();
+  a2->clear_stats();
+  a3->clear_stats();
+  a4->clear_stats();
 }

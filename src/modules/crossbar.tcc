@@ -15,6 +15,8 @@ SimObj::Crossbar<v_t, e_t>::Crossbar(uint64_t num_ports) {
   _msg_queue.resize(num_ports);
   _in_module.resize(num_ports);
   _out_module.resize(num_ports);
+  _input_items.resize(num_ports);
+  _output_items.resize(num_ports);
 }
 
 template<class v_t, class e_t>
@@ -107,5 +109,14 @@ void SimObj::Crossbar<v_t, e_t>::print_stats() {
 
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::print_stats_csv() {
-  
+  std::cout << _name << ",";
+  std::cout << "input_distribution,";
+  for(auto & element : _input_items) {
+    std::cout << element << ",";
+  }
+  std::cout << "output_distribution,";
+  for(auto & element : _output_items) {
+    std::cout << element << ",";
+  }
+  std::cout << "performance," << _items_processed << "\n";
 }

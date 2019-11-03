@@ -82,6 +82,10 @@ int main(int argc, char** argv) {
 
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
+    // Reset all the stats Counters:
+    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->clear_stats();});
+    crossbar->clear_stats();
+
 #ifdef DEBUG
     print_queue("Process", process, iteration);
     //graph.printVertexProperties();
@@ -129,6 +133,10 @@ int main(int argc, char** argv) {
         apply_size += a->apply_size();
       });
     }
+
+    // Print all the stats counters:
+    std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_stats();});
+    crossbar->print_stats();
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);

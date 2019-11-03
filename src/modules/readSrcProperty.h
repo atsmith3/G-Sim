@@ -55,10 +55,6 @@ private:
   std::list<uint64_t>* _process;
   Utility::readGraph<v_t>* _graph;
 
-  // Stats:
-  uint64_t _items_processed;
-  uint64_t _
-
 public:
   bool _mem_flag;
 
