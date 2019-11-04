@@ -11,7 +11,7 @@
 
 // Pipeline Class
 #include "pipeline.h"
-#include "module.h"
+#include "log.h"
 
 // Utility
 #include "option.h"

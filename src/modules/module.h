@@ -18,8 +18,6 @@
 
 namespace SimObj {
 
-Utility::Log sim_out("simulator_output.log");
-
 enum stall_t {
   STALL_CAN_ACCEPT,
   STALL_PROCESSING,

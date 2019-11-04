@@ -29,4 +29,10 @@ public:
 
 }; // namespace Utility
 
+namespace SimObj {
+
+inline Utility::Log sim_out("simulator_output.log");
+
+}; // namespace SimObj
+
 #endif // LOGGER_H
