@@ -14,8 +14,11 @@
 #include <cstdint>
 
 #include "pipeline_data.h"
+#include "log.h"
 
 namespace SimObj {
+
+Utility::Log sim_out("simulator_output.log");
 
 enum stall_t {
   STALL_CAN_ACCEPT,

@@ -89,34 +89,34 @@ void SimObj::Crossbar<v_t, e_t>::clear_stats() {
 
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::print_stats() {
-  std::cout << "-------------------------------------------------------------------------------\n";
-  std::cout << "[ " << _name << " ]\n";
-  std::cout << "  Input Distribution:\n";
-  std::cout << "    ";
+  sim_out.write("-------------------------------------------------------------------------------\n");
+  sim_out.write("[ " + _name + " ]\n");
+  sim_out.write("  Input Distribution:\n");
+  sim_out.write("    ");
   for(auto & element : _input_items) {
-    std::cout << element << ", ";
+    sim_out.write(std::to_string(element) + ", ");
   }
-  std::cout << "\n";
-  std::cout << "  Output Distribution:\n";
-  std::cout << "    ";
+  sim_out.write("\n");
+  sim_out.write("  Output Distribution:\n");
+  sim_out.write("    ");
   for(auto & element : _output_items) {
-    std::cout << element << ", ";
+    sim_out.write(std::to_string(element) + ", ");
   }
-  std::cout << "\n";
-  std::cout << "  Performance:\n";
-  std::cout << "    Items Processed:  " << _items_processed << "\n";
+  sim_out.write("\n");
+  sim_out.write("  Performance:\n");
+  sim_out.write("    Items Processed:  " + std::to_string(_items_processed) + "\n");
 }
 
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::print_stats_csv() {
-  std::cout << _name << ",";
-  std::cout << "input_distribution,";
+  sim_out.write(_name + ",");
+  sim_out.write("input_distribution,");
   for(auto & element : _input_items) {
-    std::cout << element << ",";
+    sim_out.write(std::to_string(element) + ",");
   }
-  std::cout << "output_distribution,";
+  sim_out.write("output_distribution,");
   for(auto & element : _output_items) {
-    std::cout << element << ",";
+    sim_out.write(std::to_string(element) + ",");
   }
-  std::cout << "performance," << _items_processed << "\n";
+  sim_out.write("performance," + std::to_string(_items_processed) + "\n");
 }
