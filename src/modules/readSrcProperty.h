@@ -48,6 +48,7 @@ private:
   using Module<v_t, e_t>::_next;
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_has_work;
+  using Module<v_t, e_t>::_items_processed;
 
   Memory* _dram;
   op_t _state;

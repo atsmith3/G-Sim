@@ -15,6 +15,8 @@ SimObj::Crossbar<v_t, e_t>::Crossbar(uint64_t num_ports) {
   _msg_queue.resize(num_ports);
   _in_module.resize(num_ports);
   _out_module.resize(num_ports);
+  _input_items.resize(num_ports);
+  _output_items.resize(num_ports);
 }
 
 template<class v_t, class e_t>
@@ -39,6 +41,7 @@ void SimObj::Crossbar<v_t, e_t>::connect_output(Module<v_t, e_t>* out_module, ui
 template<class v_t, class e_t>
 void SimObj::Crossbar<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _msg_queue[route(data)].push(data);
+  _output_items[route(data)]++;
 }
 
 template<class v_t, class e_t>
@@ -71,4 +74,49 @@ bool SimObj::Crossbar<v_t, e_t>::busy() {
     }
   }
   return false;
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::clear_stats() {
+  for(auto & element : _input_items) {
+    element = 0;
+  }
+  for(auto & element : _output_items) {
+    element = 0;
+  }
+  _items_processed = 0;
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::print_stats() {
+  sim_out.write("-------------------------------------------------------------------------------\n");
+  sim_out.write("[ " + _name + " ]\n");
+  sim_out.write("  Input Distribution:\n");
+  sim_out.write("    ");
+  for(auto & element : _input_items) {
+    sim_out.write(std::to_string(element) + ", ");
+  }
+  sim_out.write("\n");
+  sim_out.write("  Output Distribution:\n");
+  sim_out.write("    ");
+  for(auto & element : _output_items) {
+    sim_out.write(std::to_string(element) + ", ");
+  }
+  sim_out.write("\n");
+  sim_out.write("  Performance:\n");
+  sim_out.write("    Items Processed:  " + std::to_string(_items_processed) + "\n");
+}
+
+template<class v_t, class e_t>
+void SimObj::Crossbar<v_t, e_t>::print_stats_csv() {
+  sim_out.write(_name + ",");
+  sim_out.write("input_distribution,");
+  for(auto & element : _input_items) {
+    sim_out.write(std::to_string(element) + ",");
+  }
+  sim_out.write("output_distribution,");
+  for(auto & element : _output_items) {
+    sim_out.write(std::to_string(element) + ",");
+  }
+  sim_out.write("performance," + std::to_string(_items_processed) + "\n");
 }

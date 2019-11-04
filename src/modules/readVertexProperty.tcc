@@ -55,6 +55,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
         _apply->pop_front();
         _data.last_edge = false;
         _data.last_vertex = false;
+        _items_processed++;
 
         if(_apply->empty()) {
           _data.last_vertex = true;
