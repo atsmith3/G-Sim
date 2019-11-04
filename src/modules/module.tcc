@@ -54,6 +54,7 @@ template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::ready(void) {
   _ready = true;
   _has_work = true;
+  _items_processed++;
 }
 
 template<class v_t, class e_t>
@@ -62,6 +63,7 @@ void SimObj::Module<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _data = data;
   _ready = true;
   _has_work = true;
+  _items_processed++;
 }
 
 template<class v_t, class e_t>
@@ -94,21 +96,34 @@ bool SimObj::Module<v_t, e_t>::busy() {
 
 template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::print_stats() {
-  std::cout << "-------------------------------------------------------------------------------\n";
-  std::cout << "[ " << _name << " ]\n";
-  std::cout << "  Stalls:\n";
-  std::cout << "    STALL_CAN_ACCEPT: " << _stall_ticks[STALL_CAN_ACCEPT] << " cycles\n";
-  std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
-  std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
-  std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
+  sim_out.write("-------------------------------------------------------------------------------\n");
+  sim_out.write("[ " + _name + " ]\n");
+  sim_out.write("  Stalls:\n");
+  sim_out.write("    STALL_CAN_ACCEPT: " + std::to_string(_stall_ticks[STALL_CAN_ACCEPT]) + " cycles\n");
+  sim_out.write("    STALL_PROCESSING: " + std::to_string(_stall_ticks[STALL_PROCESSING]) + " cycles\n");
+  sim_out.write("    STALL_PIPE:       " + std::to_string(_stall_ticks[STALL_PIPE]) + " cycles\n");
+  sim_out.write("    STALL_MEM:        " + std::to_string(_stall_ticks[STALL_MEM]) + " cycles\n");
+  sim_out.write("  Performance:\n");
+  sim_out.write("    Items Processed:  " + std::to_string(_items_processed) + "\n");
 }
 
 template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::print_stats_csv() {
-  std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
-    << _stall_ticks[STALL_PROCESSING] << ","
-    << _stall_ticks[STALL_PIPE] << ","
-    << _stall_ticks[STALL_MEM] << "\n";
+  sim_out.write(_name + "," 
+    + std::to_string(_stall_ticks[STALL_CAN_ACCEPT]) + ","
+    + std::to_string(_stall_ticks[STALL_PROCESSING]) + ","
+    + std::to_string(_stall_ticks[STALL_PIPE]) + ","
+    + std::to_string(_stall_ticks[STALL_MEM]) + ","
+    + std::to_string(_items_processed) + "\n");
+}
+
+template<class v_t, class e_t>
+void SimObj::Module<v_t, e_t>::clear_stats() {
+  for(auto it = _stall_ticks.begin(); it != _stall_ticks.end(); it++) {
+    *it = 0;
+  }
+  _stall_count = 0;
+  _items_processed = 0;
 }
 
 #ifdef DEBUG

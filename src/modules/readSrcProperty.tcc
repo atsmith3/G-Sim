@@ -60,6 +60,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
         _data.vertex_id_addr = _graph->getVertexAddress(_data.vertex_id);
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _data.edge_id = 0;
+        _items_processed++;
 
         if(_process->empty()) {
           _data.last_vertex = true;

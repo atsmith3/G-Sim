@@ -87,6 +87,8 @@ public:
   void process_ready();
   void apply_ready();
 
+  void clear_stats();
+  void print_stats_csv();
   void print_stats();
   void print_debug();
 

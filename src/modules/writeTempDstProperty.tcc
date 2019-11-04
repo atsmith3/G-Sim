@@ -109,24 +109,26 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
 
 template<class v_t, class e_t>
 void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats(void) {
-  std::cout << "-------------------------------------------------------------------------------\n";
-  std::cout << "[ " << _name << " ]\n";
-  std::cout << "  Stalls:\n";
-  std::cout << "    STALL_CAN_ACCEPT: " << _stall_ticks[STALL_CAN_ACCEPT] << " cycles\n";
-  std::cout << "    STALL_PROCESSING: " << _stall_ticks[STALL_PROCESSING] << " cycles\n";
-  std::cout << "    STALL_PIPE:       " << _stall_ticks[STALL_PIPE] << " cycles\n";
-  std::cout << "    STALL_MEM:        " << _stall_ticks[STALL_MEM] << " cycles\n";
-  std::cout << "  Performance:\n";
-  std::cout << "    Edges:            " << _edges_written << "\n";
-  std::cout << "    Cycles:           " << _tick << "\n";
+  sim_out.write("-------------------------------------------------------------------------------\n");
+  sim_out.write("[ " + _name + " ]\n");
+  sim_out.write("  Stalls:\n");
+  sim_out.write("    STALL_CAN_ACCEPT: " + std::to_string(_stall_ticks[STALL_CAN_ACCEPT]) + " cycles\n");
+  sim_out.write("    STALL_PROCESSING: " + std::to_string(_stall_ticks[STALL_PROCESSING]) + " cycles\n");
+  sim_out.write("    STALL_PIPE:       " + std::to_string(_stall_ticks[STALL_PIPE]) + " cycles\n");
+  sim_out.write("    STALL_MEM:        " + std::to_string(_stall_ticks[STALL_MEM]) + " cycles\n");
+  sim_out.write("  Performance:\n");
+  sim_out.write("    Edges:            " + std::to_string(_edges_written) + "\n");
+  sim_out.write("    Cycles:           " + std::to_string(_tick) + "\n");
 }
 
 
 template<class v_t, class e_t>
 void SimObj::WriteTempDstProperty<v_t, e_t>::print_stats_csv(void) {
-  std::cout << _name << "," << _stall_ticks[STALL_CAN_ACCEPT] << ","
-    << _stall_ticks[STALL_PROCESSING] << ","
-    << _stall_ticks[STALL_PIPE] << ","
-    << _stall_ticks[STALL_MEM] << ","
-    << _edges_written << ",\n";
+  sim_out.write(_name + "," 
+    + std::to_string(_stall_ticks[STALL_CAN_ACCEPT]) + ","
+    + std::to_string(_stall_ticks[STALL_PROCESSING]) + ","
+    + std::to_string(_stall_ticks[STALL_PIPE]) + ","
+    + std::to_string(_stall_ticks[STALL_MEM]) + ","
+    + std::to_string(_edges_written) + ","
+    + std::to_string(_tick) + "\n");
 }
