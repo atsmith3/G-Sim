@@ -45,6 +45,7 @@ private:
   using Module<v_t, e_t>::_tick;
   using Module<v_t, e_t>::_ready;
   using Module<v_t, e_t>::_stall;
+  using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_next;
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_has_work;

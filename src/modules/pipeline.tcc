@@ -120,25 +120,25 @@ SimObj::Pipeline<v_t, e_t>::~Pipeline() {
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::tick_process() {
   _tick++;
-  p1->tick();
-  p2->tick();
-  p3->tick();
-  p4->tick();
-  p5->tick();
-  p6->tick();
-  p7->tick();
-  p8->tick();
   scratchpad->tick();
+  p8->tick();
+  p7->tick();
+  p6->tick();
+  p5->tick();
+  p4->tick();
+  p3->tick();
+  p2->tick();
+  p1->tick();
 }
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::tick_apply() {
   _tick++;
-  a1->tick();
-  a2->tick();
-  a3->tick();
-  a4->tick();
   scratchpad->tick();
+  a4->tick();
+  a3->tick();
+  a2->tick();
+  a1->tick();
 }
 
 template<class v_t, class e_t>

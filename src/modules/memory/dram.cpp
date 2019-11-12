@@ -26,7 +26,7 @@ SimObj::DRAM::DRAM() {
   buffer_size = 16;
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
-  _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
+  _mem = DRAMSim::getMemorySystemInstance("DDR4_micro_32M_16B_x8.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
 	_mem->RegisterCallbacks(read_cb, write_cb, NULL);
 }
 
@@ -41,7 +41,7 @@ SimObj::DRAM::DRAM(uint64_t access_latency, uint64_t write_latency, uint64_t num
   buffer_size = 16;
 	read_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::read_complete);
 	write_cb = new DRAMSim::Callback<SimObj::DRAM, void, unsigned, uint64_t, uint64_t>(this, &SimObj::DRAM::write_complete);
-  _mem = DRAMSim::getMemorySystemInstance("DDR3_micron_64M_8B_x4_sg15.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
+  _mem = DRAMSim::getMemorySystemInstance("DDR4_micro_32M_16B_x8.ini", "graphicionado_system.ini", "./modules/memory", "g_sim", 65536);
 	_mem->RegisterCallbacks(read_cb, write_cb, NULL);
 }
 
@@ -80,7 +80,7 @@ void SimObj::DRAM::tick(void) {
     for(int i = sequential_write_counter; i < buffer_size; i++) {
       if(!_sequential_write_queue.empty()) {
         // Dequeue and mark as complete:
-        sequential_read_counter++;
+        sequential_write_counter++;
         transaction = _sequential_write_queue.front();
         _sequential_write_queue.pop_front();
         *(std::get<1>(transaction)) = true;
@@ -183,5 +183,3 @@ void SimObj::DRAM::reset() {
   sequential_read_addr = SEQUENTIAL_START_ADDR;
   sequential_write_addr = SEQUENTIAL_START_ADDR;
 }
-
-

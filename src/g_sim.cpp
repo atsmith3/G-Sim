@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
 #ifdef DRAMSIM2
   SimObj::Memory* mem = new SimObj::DRAM;
 #else
-  SimObj::Memory* mem = new SimObj::Memory(1,1,1000);
+  SimObj::Memory* mem = new SimObj::Memory(0,0,1000);
 #endif
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
@@ -100,10 +100,10 @@ int main(int argc, char** argv) {
     complete = false;
     while(!complete || (process->size() != 0)) {
       global_tick++;
-      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
-      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       crossbar->tick();
       mem->tick();
+      std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_process();});
+      //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete, crossbar](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->process_complete() || crossbar->busy()) complete = false;
@@ -126,9 +126,9 @@ int main(int argc, char** argv) {
     complete = false;
     while(!complete || (apply_size != 0)) {
       global_tick++;
+      mem->tick();
       std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->tick_apply();});
       //std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_debug();});
-      mem->tick();
       complete = true;
       std::for_each(tile->begin(), tile->end(), [&complete](SimObj::Pipeline<vertex_t, edge_t>* a) mutable {
         if(!a->apply_complete()) complete = false;

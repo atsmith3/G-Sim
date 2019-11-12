@@ -55,9 +55,6 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
-#ifdef MODULE_DEBUG
-        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
-#endif
         _ready = false;
         _mem_flag = false;
         _scratchpad->write(0x01, &_mem_flag);
