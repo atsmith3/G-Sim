@@ -71,7 +71,7 @@ void SimObj::DRAM::tick(void) {
   else if (!_sequential_read_queue.empty() && !sequential_read_issued) {
     // Issue a new sequential Read:
     _mem->addTransaction(false, sequential_read_addr);
-    transaction = std::make_tuple(sequential_read_addr, &_complete, true);
+    transaction = std::make_tuple(sequential_read_addr, &_read_complete, true);
     _read_queue.push_back(transaction);
     sequential_read_addr += buffer_size;
     sequential_read_issued = true;
@@ -93,7 +93,7 @@ void SimObj::DRAM::tick(void) {
   else if (!_sequential_write_queue.empty() && !sequential_write_issued) {
     // Issue a new sequential Read:
     _mem->addTransaction(true, sequential_write_addr);
-    transaction = std::make_tuple(sequential_write_addr, &_complete, true);
+    transaction = std::make_tuple(sequential_write_addr, &_write_complete, true);
     _write_queue.push_back(transaction);
     sequential_write_addr += buffer_size;
     sequential_write_issued = true;

@@ -12,7 +12,6 @@
 template<class v_t, class e_t>
 SimObj::Arbiter<v_t, e_t>::Arbiter() {
   _items_processed = 0;
-  _state = OP_WAIT;
 }
 
 
@@ -29,7 +28,7 @@ void SimObj::Arbiter<v_t, e_t>::tick(void) {
 
 
 template<class v_t, class e_t>
-stall_t SimObj::Arbiter<v_t, e_t>::is_stalled(void) {
+SimObj::stall_t SimObj::Arbiter<v_t, e_t>::is_stalled(void) {
   return _next->is_stalled();
 }
 
@@ -45,7 +44,7 @@ void SimObj::Arbiter<v_t, e_t>::print_stats() {
   sim_out.write("-------------------------------------------------------------------------------\n");
   sim_out.write("[ " + _name + " ]\n");
   sim_out.write("  Throughput:\n");
-  sim_out.write("    workitems/tick: " + std::to_string((float)_items_processed/(float)_tick)_stall_ticks + " cycles\n");
+  sim_out.write("    workitems/tick: " + std::to_string((float)_items_processed/(float)_tick) + "\n");
   sim_out.write("    items Processed:  " + std::to_string(_items_processed) + "\n");
 }
 

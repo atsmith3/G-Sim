@@ -49,7 +49,6 @@ public:
   void clear_stats();
 
   stall_t is_stalled(void);
-  void ready(void);
   void ready(Utility::pipeline_data<v_t, e_t> data);
 
   void tick(void);

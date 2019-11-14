@@ -18,10 +18,16 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   // Allocate apply queue
   apply = new std::list<uint64_t>;
 
+  parallel_vertex_readers.resize(num_dst_readers);
+
   // Allocate Pipeline Modules
   p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph);
   p2 = new SimObj::ReadSrcEdges<v_t, e_t>(scratchpad, graph);
-  p3 = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph);
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    *mod = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph);
+  }
+  alloc = new SimObj::Allocator<v_t, e_t>(parallel_vertex_readers);
+  arbiter = new SimObj::Arbiter<v_t, e_t>();
   p4 = new SimObj::ProcessEdge<v_t, e_t>(1, application);
   p5 = new SimObj::ControlAtomicUpdate<v_t, e_t>;
   p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);
@@ -49,7 +55,7 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   arbiter->set_next(p4);
   arbiter->set_prev(parallel_vertex_readers[0]);
   p4->set_next(p5);
-  p4->set_prev(p3);
+  p4->set_prev(arbiter);
   p5->set_next(p6);
   p5->set_prev(p4);
   p6->set_next(p7);
@@ -71,7 +77,13 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   // Name Modules
   p1->set_name("ReadSrcProperty " + std::to_string(pipeline_id));
   p2->set_name("ReadSrcEdges " + std::to_string(pipeline_id));
-  p3->set_name("ReadDstProperty " + std::to_string(pipeline_id));
+  int i = 0;
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->set_name("ReadDstProperty " + std::to_string(pipeline_id) + " " + std::to_string(i));
+    i++;
+  }
+  alloc->set_name("Allocator " + std::to_string(pipeline_id));
+  arbiter->set_name("Arbiter " + std::to_string(pipeline_id));
   p4->set_name("ProcessEdge " + std::to_string(pipeline_id));
   p5->set_name("ControlAtomicUpdate " + std::to_string(pipeline_id));
   p6->set_name("ReadTempDstProperty " + std::to_string(pipeline_id));
@@ -97,8 +109,14 @@ SimObj::Pipeline<v_t, e_t>::~Pipeline() {
   p1 = NULL;
   delete p2;
   p2 = NULL;
-  delete p3;
-  p3 = NULL;
+  delete alloc;
+  alloc = NULL;
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    delete *mod;
+    *mod = NULL;
+  }
+  delete arbiter;
+  arbiter = NULL;
   delete p4;
   p4 = NULL;
   delete p5;
@@ -132,7 +150,11 @@ void SimObj::Pipeline<v_t, e_t>::tick_process() {
   p6->tick();
   p5->tick();
   p4->tick();
-  p3->tick();
+  arbiter->tick();
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->tick();
+  }
+  alloc->tick();
   p2->tick();
   p1->tick();
 }
@@ -149,7 +171,13 @@ void SimObj::Pipeline<v_t, e_t>::tick_apply() {
 
 template<class v_t, class e_t>
 bool SimObj::Pipeline<v_t, e_t>::process_complete() {
-  return (!p1->busy() && !p2->busy() && !p3->busy() && !p4->busy() &&
+  bool pvr = false;
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    if((*mod)->busy()) {
+      pvr = true;
+    }
+  }
+  return (!p1->busy() && !p2->busy() && !pvr && !p4->busy() &&
           !p5->busy() && !p6->busy() && !p7->busy() && !p8->busy());
 }
 
@@ -170,7 +198,13 @@ void SimObj::Pipeline<v_t, e_t>::apply_ready() {
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::print_debug() {
-  std::cout << "[ Pipeline " << _id << " ] " << " p1.busy() " << p1->busy() << ", p2.busy() " << p2->busy() << ", p3.busy() " << p3->busy();
+  bool pvr = false;
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    if((*mod)->busy()) {
+      pvr = true;
+    }
+  }
+  std::cout << "[ Pipeline " << _id << " ] " << " p1.busy() " << p1->busy() << ", p2.busy() " << p2->busy() << ", p3.busy() " << pvr;
   std::cout << ", p4.busy() " << p4->busy() << ", p5.busy() " << p5->busy() << ", p6.busy() " << p6->busy() << ", p7.busy() " << p7->busy() << ", p8.busy() " << p8->busy();
   std::cout << ", a1.busy() " << a1->busy() << ", a2.busy() " << a2->busy() << ", a3.busy() " << a3->busy() << ", a4.busy() " << a4->busy();
   std::cout << "\n" << std::flush;
@@ -181,7 +215,11 @@ void SimObj::Pipeline<v_t, e_t>::print_stats() {
   std::cout << "------Pipeline " << _id << "--------------\n";
   p1->print_stats();
   p2->print_stats();
-  p3->print_stats();
+  alloc->print_stats();
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->print_stats();
+  }
+  arbiter->print_stats();
   p4->print_stats();
   p5->print_stats();
   p6->print_stats();
@@ -198,7 +236,11 @@ void SimObj::Pipeline<v_t, e_t>::print_stats_csv() {
   std::cout << "------Pipeline " << _id << "--------------\n";
   p1->print_stats_csv();
   p2->print_stats_csv();
-  p3->print_stats_csv();
+  alloc->print_stats_csv();
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->print_stats_csv();
+  }
+  arbiter->print_stats_csv();
   p4->print_stats_csv();
   p5->print_stats_csv();
   p6->print_stats_csv();
@@ -214,7 +256,11 @@ template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::clear_stats() {
   p1->clear_stats();
   p2->clear_stats();
-  p3->clear_stats();
+  alloc->clear_stats();
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->clear_stats();
+  }
+  arbiter->clear_stats();
   p4->clear_stats();
   p5->clear_stats();
   p6->clear_stats();

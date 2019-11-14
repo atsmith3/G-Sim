@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
 #endif
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
-    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, mem, crossbar);
+    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, mem, crossbar, 32);
     tile->push_back(temp);
   }
 
@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);
-  std::cout << "Global Ticks, " << global_tick << ", Edges Processed, " << edges_processed << ", Throughput (Edges/Cycle), " << (float)edges_processed/(float)global_tick << "\n";
+  SimObj::sim_out.write("Global Ticks, " + std::to_string(global_tick) + ", Edges Processed, " + std::to_string(edges_processed) + ", Throughput (Edges/Cycle), " + std::to_string((float)edges_processed/(float)global_tick) + "\n");
   SimObj::sim_out.write("Phase Durations:Process/Apply,"+std::to_string(process_cycles)+","+std::to_string(apply_cycles)+"\n");
 #endif
 

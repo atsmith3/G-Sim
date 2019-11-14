@@ -23,6 +23,8 @@
 #include "crossbar.h"
 #include "readSrcProperty.h"
 #include "readSrcEdges.h"
+#include "allocator.h"
+#include "arbiter.h"
 #include "readDstProperty.h"
 #include "controlAtomicUpdate.h"
 #include "processEdge.h"
@@ -74,7 +76,7 @@ private:
 
 public:
   // Constructor:
-  Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar);
+  Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers);
 
   // Destructor:
   ~Pipeline();

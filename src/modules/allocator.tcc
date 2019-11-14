@@ -13,7 +13,6 @@ template<class v_t, class e_t>
 SimObj::Allocator<v_t, e_t>::Allocator(std::vector<Module<v_t, e_t>*> next) {
   _next = next;
   _items_processed = 0;
-  _state = OP_WAIT;
 }
 
 
@@ -30,10 +29,10 @@ void SimObj::Allocator<v_t, e_t>::tick(void) {
 
 
 template<class v_t, class e_t>
-stall_t SimObj::Allocator<v_t, e_t>::is_stalled(void) {
-  stall_t temp = STALL_MEM;
+SimObj::stall_t SimObj::Allocator<v_t, e_t>::is_stalled(void) {
+  SimObj::stall_t temp = STALL_MEM;
   for(auto module = _next.begin(); module != _next.end(); module++) {
-    if((*module)->is_stalled() == STALL_CAN_ACCEPT) {
+    if((*module)->is_stalled() == SimObj::STALL_CAN_ACCEPT) {
       temp = STALL_CAN_ACCEPT;
       return temp;
     }
@@ -46,7 +45,7 @@ template<class v_t, class e_t>
 void SimObj::Allocator<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   _items_processed++;
   for(auto module = _next.begin(); module != _next.end(); module++) {
-    if((*module)->is_stalled() == STALL_CAN_ACCEPT) {
+    if((*module)->is_stalled() == SimObj::STALL_CAN_ACCEPT) {
       (*module)->ready(data);
       return;
     }
@@ -60,7 +59,7 @@ void SimObj::Allocator<v_t, e_t>::print_stats() {
   sim_out.write("-------------------------------------------------------------------------------\n");
   sim_out.write("[ " + _name + " ]\n");
   sim_out.write("  Throughput:\n");
-  sim_out.write("    workitems/tick: " + std::to_string((float)_items_processed/(float)_tick)_stall_ticks + " cycles\n");
+  sim_out.write("    workitems/tick: " + std::to_string((float)_items_processed/(float)_tick) + " cycles\n");
   sim_out.write("    items Processed:  " + std::to_string(_items_processed) + "\n");
 }
 
