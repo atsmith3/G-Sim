@@ -32,10 +32,13 @@ private:
   int sequential_read_counter;
   bool sequential_write_issued;
   bool sequential_read_issued;
+  bool sequential_write_sent;
+  bool sequential_read_prefetched;
   uint64_t sequential_write_addr;
   uint64_t sequential_read_addr;
   int buffer_size;
-  bool _complete;
+  bool _read_complete;
+  bool _write_complete;
 
 public:
   DRAM(void);

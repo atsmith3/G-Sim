@@ -87,7 +87,7 @@ void SimObj::Apply<v_t, e_t>::tick(void) {
   }
 #if 0
   if(_state != next_state) {
-    std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
+    sim_out.write("[ " + (std::string)__PRETTY_FUNCTION__ + " ] tick: " + std::to_string(_tick) + "  state: " + _state_name[_state] + "  next_state: " + _state_name[next_state] + "\n");
   }
 #endif
   _state = next_state;

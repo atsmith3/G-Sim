@@ -1,13 +1,14 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar) {
+SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers) {
   // Assert inputs are OK
   assert(graph != NULL);
   assert(application != NULL);
   assert(mem != NULL);
   assert(crossbar != NULL);
   assert(process != NULL);
+  assert(num_dst_readers > 0);
 
   // Allocate Scratchpad
   scratchpad_map = new std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>;
@@ -39,9 +40,14 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   p2->set_prev(p1);
   // Crossbar goes here:
   crossbar->connect_input(p2, pipeline_id);
-  crossbar->connect_output(p3, pipeline_id);
-  p3->set_next(p4);
-  p3->set_prev(crossbar);
+  crossbar->connect_output(alloc, pipeline_id);
+  alloc->set_prev(crossbar);
+  for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
+    (*mod)->set_next(arbiter);
+    (*mod)->set_prev(alloc);
+  }
+  arbiter->set_next(p4);
+  arbiter->set_prev(parallel_vertex_readers[0]);
   p4->set_next(p5);
   p4->set_prev(p3);
   p5->set_next(p6);

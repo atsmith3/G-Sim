@@ -31,13 +31,11 @@ private:
     OP_NUM_OPS
   };
 
-#ifdef DEBUG
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
     {1, "OP_MEM_WAIT"},
     {2, "OP_SEND_DOWNSTREAM"},
     {3, "OP_NUM_OPS"}};
-#endif
 
   using Module<v_t, e_t>::_tick;
   using Module<v_t, e_t>::_ready;

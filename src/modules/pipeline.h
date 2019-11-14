@@ -51,9 +51,12 @@ private:
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratchpad_map;
   SimObj::Memory* scratchpad;
 
+
   SimObj::ReadSrcProperty<v_t, e_t>* p1;
   SimObj::ReadSrcEdges<v_t, e_t>* p2;
-  SimObj::ReadDstProperty<v_t, e_t>* p3;
+  SimObj::Allocator<v_t, e_t>* alloc;
+  std::vector<Module<v_t, e_t>*> parallel_vertex_readers;
+  SimObj::Arbiter<v_t, e_t>* arbiter;
   SimObj::ProcessEdge<v_t, e_t>* p4;
   SimObj::ControlAtomicUpdate<v_t, e_t>* p5;
   SimObj::ReadTempDstProperty<v_t, e_t>* p6;

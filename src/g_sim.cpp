@@ -100,7 +100,6 @@ int main(int argc, char** argv) {
     // Processing Phase 
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->process_ready();});
     complete = false;
-    process_cycles = 0;
     while(!complete || (process->size() != 0)) {
       global_tick++;
       process_cycles++;
@@ -128,7 +127,6 @@ int main(int argc, char** argv) {
     // Apply Phase
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->apply_ready();});
     complete = false;
-    apply_cycles = 0;
     while(!complete || (apply_size != 0)) {
       global_tick++;
       apply_cycles++;
@@ -148,11 +146,11 @@ int main(int argc, char** argv) {
     // Print all the stats counters:
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_stats_csv();});
     crossbar->print_stats_csv();
-    SimObj::sim_out.write("Phase Durations:Process/Apply,"+std::to_string(process_cycles)+","+std::to_string(apply_cycles)+"\n");
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);
   std::cout << "Global Ticks, " << global_tick << ", Edges Processed, " << edges_processed << ", Throughput (Edges/Cycle), " << (float)edges_processed/(float)global_tick << "\n";
+  SimObj::sim_out.write("Phase Durations:Process/Apply,"+std::to_string(process_cycles)+","+std::to_string(apply_cycles)+"\n");
 #endif
 
   mem->print_stats();
