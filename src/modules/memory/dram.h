@@ -40,6 +40,10 @@ private:
   bool _read_complete;
   bool _write_complete;
 
+  // DRAMSim2 Callbacks:
+  void read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
+  void write_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
+
 public:
   DRAM(void);
   DRAM(uint64_t access_latency, uint64_t write_latency, uint64_t num_simultaneous_requests);
@@ -49,9 +53,6 @@ public:
   void write(uint64_t addr, bool* complete, bool sequential=true);
   void read(uint64_t addr, bool* complete, bool sequential=true);
 
-  // DRAMSim2 Callbacks:
-  void read_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
-  void write_complete(unsigned int id, uint64_t address, uint64_t clock_cycle);
   void print_stats();
   void reset();
 }; // class DRAM

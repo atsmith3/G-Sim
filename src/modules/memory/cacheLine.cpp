@@ -10,9 +10,10 @@
 #include "cacheLine.h"
 
 SimObj::CacheLine::CacheLine() {
-  address = 0x0;
-  dirty = false;
-  lru = 0;
+  _address = 0x0;
+  _dirty = false;
+  _lru = 0;
+  _valid = false;
 }
 
 
@@ -22,47 +23,47 @@ SimObj::CacheLine::~CacheLine() {
 
 
 void SimObj::CacheLine::access(bool is_write) {
-  if(is_write) dirty = true;
-  lru = 0;
+  if(is_write) _dirty = true;
+  _lru = 0;
 }
 
 
 bool SimObj::CacheLine::hit(uint64_t addr) {
-  return ((addr & ~ACCESS_MASK) == _address) && valid;
+  return ((addr & ~ACCESS_MASK) == _address) && _valid;
 }
 
 
 bool SimObj::CacheLine::valid() {
-  return valid;
+  return _valid;
 }
 
 
 bool SimObj::CacheLine::dirty() {
-  return dirty;
+  return _dirty;
 }
 
 
 uint64_t SimObj::CacheLine::getAddr() {
-  return addr;
+  return _address;
 }
 
 
 uint64_t SimObj::CacheLine::getLRU() {
-  return lru;
+  return _lru;
 }
 
 
 void SimObj::CacheLine::insert(uint64_t addr) {
-  lru = 0;
-  address = addr & ~ACCESS_MASK;
-  valid = true;
-  dirty = false;
+  _lru = 0;
+  _address = addr & ~ACCESS_MASK;
+  _valid = true;
+  _dirty = false;
 }
 
 void SimObj::CacheLine::evict() {
-  valid = false;
+  _valid = false;
 }
 
 void SimObj::CacheLine::tick() {
-  lru++;
+  _lru++;
 }

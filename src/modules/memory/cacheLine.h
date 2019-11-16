@@ -29,15 +29,16 @@ public:
   CacheLine();
   ~CacheLine();
 
-  uint64_t access(bool is_write);
+  void access(bool is_write);
   bool hit(uint64_t addr);
   bool valid();
   bool dirty();
   uint64_t getAddr();
   uint64_t getLRU();
-  void tick():
+  void tick();
   
-  bool evict();
+  void insert(uint64_t addr);
+  void evict();
 }; // class CacheLine
 
 }; // namespace SimObj
