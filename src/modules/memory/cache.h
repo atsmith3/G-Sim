@@ -28,7 +28,9 @@ private:
   };
 
   std::vector<cacheLine> cache;
-  std::list<mshr_t> mshr;
+  std::list<mshr_t*> mshr;
+
+  std::list<std::pair<uint64_t, bool*>> outstanding_sequential_reads;
 
   Memory* _memory;
 
