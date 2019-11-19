@@ -16,6 +16,7 @@
 
 #include "cacheLine.h"
 #include "prefetch.h"
+#include "log.h"
 
 namespace SimObj {
 
@@ -27,17 +28,31 @@ private:
     bool complete;
   };
 
-  std::vector<cacheLine> cache;
-  std::list<mshr_t*> mshr;
+  std::vector<CacheLine> cache;
+  std::list<mshr_t> mshr;
 
   std::list<std::pair<uint64_t, bool*>> outstanding_sequential_reads;
 
   Memory* _memory;
 
-  int getLRU();
+  //Stats:
+  enum stat_t {
+    HIT,
+    MISS,
+    SEQ_READ,
+    SEQ_WRITE,
+    RAND_READ,
+    RAND_WRITE,
+    PREFETCH,
+    WRITEBACK,
+    NUM_STATS
+  };
+  std::vector<uint64_t> stats;
+
+  uint64_t getLRU();
+  uint64_t hit(uint64_t addr);
 
 public:
-  Cache();
   Cache(int entries, Memory* memory);
   ~Cache();
   

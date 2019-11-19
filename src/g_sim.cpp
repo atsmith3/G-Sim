@@ -7,6 +7,7 @@
 // Process Modules
 #include "memory.h"
 #include "dram.h"
+#include "cache.h"
 #include "crossbar.h"
 
 // Pipeline Class
@@ -61,7 +62,8 @@ int main(int argc, char** argv) {
 
   SimObj::Crossbar<vertex_t, edge_t>* crossbar = new SimObj::Crossbar<vertex_t, edge_t>(opt.num_pipelines);
 #ifdef DRAMSIM2
-  SimObj::Memory* mem = new SimObj::DRAM;
+  SimObj::Memory* dram = new SimObj::DRAM;
+  SimObj::Memory* mem = new SimObj::Cache(64, dram);
 #else
   SimObj::Memory* mem = new SimObj::Memory(0,0,1000);
 #endif

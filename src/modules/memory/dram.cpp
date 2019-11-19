@@ -180,6 +180,5 @@ void SimObj::DRAM::print_stats() {
 }
 
 void SimObj::DRAM::reset() {
-  sequential_read_addr = SEQUENTIAL_START_ADDR;
-  sequential_write_addr = SEQUENTIAL_START_ADDR;
+
 }
