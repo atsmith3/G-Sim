@@ -21,7 +21,7 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   parallel_vertex_readers.resize(num_dst_readers);
 
   // Allocate Pipeline Modules
-  p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph);
+  p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph, (((uint64_t)process + pipeline_id*(1<<20)) & ~(0x3F)));
   p2 = new SimObj::ReadSrcEdges<v_t, e_t>(scratchpad, graph);
   for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
     *mod = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph);
@@ -34,10 +34,10 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   p7 = new SimObj::Reduce<v_t, e_t>(1, application);
   p8 = new SimObj::WriteTempDstProperty<v_t, e_t>(scratchpad, p5, scratchpad_map, apply);
 
-  a1 = new SimObj::ReadVertexProperty<v_t, e_t>(mem, apply, graph);
+  a1 = new SimObj::ReadVertexProperty<v_t, e_t>(mem, apply, graph, (uint64_t)apply);
   a2 = new SimObj::ReadTempVertexProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);
   a3 = new SimObj::Apply<v_t, e_t>(1, application);
-  a4 = new SimObj::WriteVertexProperty<v_t, e_t>(mem, process, graph);
+  a4 = new SimObj::WriteVertexProperty<v_t, e_t>(mem, process, graph, (((uint64_t)process + pipeline_id*(1<<20)) & ~(0x3F)));
   
   // Connect Pipeline
   p1->set_next(p2);
@@ -189,11 +189,16 @@ bool SimObj::Pipeline<v_t, e_t>::apply_complete() {
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::process_ready() {
   p1->ready();
+  // Reset the sequential modules:
+  p1->reset();
 }
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::apply_ready() {
   a1->ready();
+  // Reset the sequential modules:
+  a1->reset();
+  a4->reset();
 }
 
 template<class v_t, class e_t>

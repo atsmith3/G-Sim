@@ -51,16 +51,20 @@ private:
   op_t _state;
   uint64_t _throughput;
 
+  uint64_t _base_addr;
+  uint64_t _curr_addr;
+
   Utility::readGraph<v_t>* _graph;
   std::list<uint64_t>* _process;
 
 public:
   bool _mem_flag;
   WriteVertexProperty();
-  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph);
+  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr);
   ~WriteVertexProperty();
 
   void tick(void);
+  void reset(void);
 
   void print_stats(void);
   void print_stats_csv(void);

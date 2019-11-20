@@ -48,14 +48,17 @@ private:
   op_t _state;
   std::list<uint64_t>* _apply;
   Utility::readGraph<v_t>* _graph;
+  uint64_t _base_addr;
+  uint64_t _curr_addr;
 
 public:
   bool _mem_flag;
   ReadVertexProperty();
-  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph);
+  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr);
   ~ReadVertexProperty();
 
   void tick(void);
+  void reset(void);
 };
 
 } // namespace SimObj

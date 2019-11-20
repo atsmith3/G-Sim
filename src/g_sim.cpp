@@ -148,6 +148,7 @@ int main(int argc, char** argv) {
     // Print all the stats counters:
     std::for_each(tile->begin(), tile->end(), [](SimObj::Pipeline<vertex_t, edge_t>* a) {a->print_stats_csv();});
     crossbar->print_stats_csv();
+    mem->print_stats();
   }
 #ifdef DEBUG
   graph.printVertexProperties(30);
@@ -155,7 +156,7 @@ int main(int argc, char** argv) {
   SimObj::sim_out.write("Phase Durations:Process/Apply,"+std::to_string(process_cycles)+","+std::to_string(apply_cycles)+"\n");
 #endif
 
-  mem->print_stats();
+  dram->print_stats();
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
     delete tile->operator[](i);

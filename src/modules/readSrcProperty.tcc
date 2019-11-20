@@ -13,18 +13,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty() {
-  _dram = NULL;
-  _process = NULL;
-  _graph = NULL;
-  _state = OP_WAIT;
-  _mem_flag = false;
-  _fetched = false;
-}
-
-
-template<class v_t, class e_t>
-SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph) {
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr) {
   assert(dram != NULL);
   assert(process != NULL);
   assert(graph != NULL);
@@ -34,6 +23,8 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint6
   _state = OP_WAIT;
   _mem_flag = false;
   _fetched = false;
+  _base_addr = base_addr;
+  _curr_addr = base_addr;
 }
 
 
@@ -71,7 +62,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
         }
 
         _mem_flag = false;
-        _dram->read(_data.vertex_id_addr, &_mem_flag);
+        _dram->read(_curr_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -85,6 +76,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          _curr_addr += 4;
           _next->ready(_data);
           _stall = STALL_CAN_ACCEPT;
           next_state = OP_WAIT;
@@ -112,4 +104,10 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
 #endif
   _state = next_state;
   this->update_stats();
+}
+
+
+template<class v_t, class e_t>
+void SimObj::ReadSrcProperty<v_t, e_t>::reset(void) {
+  _curr_addr = _base_addr;
 }

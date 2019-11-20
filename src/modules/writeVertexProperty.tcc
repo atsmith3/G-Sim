@@ -11,19 +11,7 @@
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty() {
-  _dram = NULL;
-  _process = NULL;
-  _graph = NULL;
-  _ready = false;
-  _mem_flag = false;
-  _state = OP_WAIT;
-  _throughput = 0;
-}
-
-
-template<class v_t, class e_t>
-SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph) {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr) {
   assert(dram != NULL);
   assert(graph != NULL);
   assert(process != NULL);
@@ -34,6 +22,8 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::li
   _mem_flag = false;
   _state = OP_WAIT;
   _throughput = 0;
+  _base_addr = base_addr;
+  _curr_addr = base_addr;
 }
 
 
@@ -57,7 +47,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
         // Upstream sent _edge property
         _ready = false;
         _mem_flag = false;
-        _dram->write(_data.vertex_id_addr, &_mem_flag);
+        _dram->write(_curr_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -77,6 +67,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
           _process->push_back(_data.vertex_id);
           _throughput++;
         }
+        _curr_addr += 4;
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
         _has_work = false;
@@ -98,6 +89,12 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
 #endif
   _state = next_state;
   this->update_stats();
+}
+
+
+template<class v_t, class e_t>
+void SimObj::WriteVertexProperty<v_t, e_t>::reset(void) {
+  _curr_addr = _base_addr;
 }
 
 

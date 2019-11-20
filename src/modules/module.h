@@ -69,6 +69,7 @@ public:
   virtual void set_name(std::string name);
   virtual bool busy();
   virtual void clear_stats();
+  virtual void reset();
 
 #ifdef DEBUG
   void set_stall(stall_t stall);

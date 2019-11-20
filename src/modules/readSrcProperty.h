@@ -56,16 +56,17 @@ private:
   bool _fetched;
   std::list<uint64_t>* _process;
   Utility::readGraph<v_t>* _graph;
+  uint64_t _base_addr;
+  uint64_t _curr_addr;
 
 public:
   bool _mem_flag;
 
-  uint64_t _vertex_id;
-  ReadSrcProperty();
-  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph);
+  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr);
   ~ReadSrcProperty();
 
   void tick(void);
+  void reset(void);
 };
 
 } // namespace SimObj

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "dram.h"
-#include "log.h"
 
 #define ACCESS_MASK 0x3F
 #define LINE_SIZE 64

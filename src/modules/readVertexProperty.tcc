@@ -7,19 +7,9 @@
 
 #include <cassert>
 
-template<class v_t, class e_t>
-SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty() {
-  _dram = NULL;
-  _apply = NULL;
-  _graph = NULL;
-  _ready = false;
-  _mem_flag = false;
-  _state = OP_WAIT;
-}
-
 
 template<class v_t, class e_t>
-SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph) {
+SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr) {
   assert(dram != NULL);
   assert(apply != NULL);
   assert(graph != NULL);
@@ -29,6 +19,8 @@ SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  _base_addr = base_addr;
+  _curr_addr = base_addr;
 }
 
 
@@ -65,7 +57,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
         // Read the global vertex property
         _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
         _mem_flag = false;
-        _dram->read(_data.vertex_id_addr, &_mem_flag);
+        _dram->read(_curr_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -80,6 +72,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+          _curr_addr += 4;
           _next->ready(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
@@ -109,3 +102,8 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   this->update_stats();
 }
 
+
+template<class v_t, class e_t>
+void SimObj::ReadVertexProperty<v_t, e_t>::reset(void) {
+  _curr_addr = _base_addr;
+}

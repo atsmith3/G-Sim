@@ -126,6 +126,11 @@ void SimObj::Module<v_t, e_t>::clear_stats() {
   _items_processed = 0;
 }
 
+template<class v_t, class e_t>
+void SimObj::Module<v_t, e_t>::reset(void) {
+  // Do nothing
+}
+
 #ifdef DEBUG
 template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::set_stall(stall_t stall) {

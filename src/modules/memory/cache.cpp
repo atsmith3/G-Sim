@@ -81,11 +81,11 @@ void SimObj::Cache::tick(void) {
     }
   }
   // Complete any outstanding requests:
-  for(auto it : outstanding_sequential_reads) {
-    if(hit(it.first) < cache.size()) {
-      cache[hit(it.first)].access(false);
-      *(it.second) = true;
-      outstanding_sequential_reads.remove(it);
+  for(auto it = outstanding_sequential_reads.begin(); it != outstanding_sequential_reads.end(); it++) {
+    if(hit(it->first) < cache.size()) {
+      cache[hit(it->first)].access(false);
+      *(it->second) = true;
+      it = outstanding_sequential_reads.erase(it);
     }
   }
   // Tick all the cache lines
@@ -145,30 +145,23 @@ void SimObj::Cache::read(uint64_t addr, bool* complete, bool sequential) {
     }
     else {
       stats[MISS]++;
-      line = getLRU();
-      if(cache[line].valid() && cache[line].dirty()) {
-        stats[WRITEBACK]++;
-        mshr_t req;
-        req.address = cache[line].getAddr();
-        req.write = true;
-        req.complete = false;
-        mshr.push_front(req);
-        _memory->write(mshr.front().address, &mshr.front().complete, false);
-      }
-      cache[line].insert(addr);
-      cache[line].access(true);
-      *complete = true;
+      mshr_t req;
+      req.address = addr;
+      req.write = false;
+      req.complete = false;
+      mshr.push_front(req);
+      _memory->read(mshr.front().address, &mshr.front().complete, false);
+      outstanding_sequential_reads.push_back(std::make_pair(addr, complete));
     }
   }
   else {
     stats[RAND_READ]++;
-    _memory->write(addr, complete, false);
+    _memory->read(addr, complete, false);
   }
 }
 
 
 void SimObj::Cache::print_stats() {
-  _memory->print_stats();
   SimObj::sim_out.write("Cache,");
   for(auto stat : stats) {
     SimObj::sim_out.write(std::to_string(stat)+",");
