@@ -13,10 +13,12 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr) {
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(process != NULL);
   assert(graph != NULL);
+  _id = id;
+  _name = name;
   _graph = graph;
   _dram = dram;
   _process = process;
@@ -25,6 +27,8 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint6
   _fetched = false;
   _base_addr = base_addr;
   _curr_addr = base_addr;
+  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(logger != NULL);
 }
 
 

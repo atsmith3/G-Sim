@@ -9,26 +9,20 @@
 
 #include <cassert>
 
-
 template<class v_t, class e_t>
-SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty() {
-  _dram = NULL;
-  _graph = NULL;
-  _ready = false;
-  _mem_flag = false;
-  _state = OP_WAIT;
-}
-
-
-template<class v_t, class e_t>
-SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph) {
+SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::string name, uint64_t id, uint64_t reader_id) {
   assert(dram != NULL);
   assert(graph != NULL);
+  _id = id;
+  _rid = reader_id;
+  _name = name;
   _graph = graph;
   _dram = dram;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_"+std::to_string(_rid)+".csv");
+  assert(logger != NULL);
 }
 
 

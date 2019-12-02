@@ -52,11 +52,13 @@ private:
   std::queue<uint>* _edge_list;
   Utility::readGraph<v_t>* _graph;
   bool _data_set;
+  uint64_t _id;
+  
+  Utility::Log* logger;
 
 public:
   bool _mem_flag;
-  ReadSrcEdges();
-  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* graph);
+  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* graph, std::string name, uint64_t id);
   ~ReadSrcEdges();
 
   void tick(void);

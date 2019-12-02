@@ -98,6 +98,7 @@ void SimObj::Cache::tick(void) {
 void SimObj::Cache::write(uint64_t addr, bool* complete, bool sequential) {
   if(sequential) {
     stats[SEQ_WRITE]++;
+    //Add Access to  
     uint64_t line = hit(addr);
     if(line < cache.size()) {
       stats[HIT]++;

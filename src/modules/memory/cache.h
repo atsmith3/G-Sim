@@ -13,6 +13,7 @@
 #include <iostream>
 #include <list>
 #include <vector>
+#include <map>
 
 #include "cacheLine.h"
 #include "prefetch.h"
@@ -26,12 +27,15 @@ private:
     uint64_t address;
     bool write;
     bool complete;
+    bool prefetch;
   };
 
   std::vector<CacheLine> cache;
   std::list<mshr_t> mshr;
 
   std::list<std::pair<uint64_t, bool*>> outstanding_sequential_reads;
+  // Address, Accessed this Cycle, Prefetch Issued
+  std::map<uint64_t, std::pair<bool, bool>> access_each_iter;
 
   Memory* _memory;
 

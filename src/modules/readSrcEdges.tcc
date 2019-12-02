@@ -10,17 +10,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges() {
-  _scratchpad = NULL;
-  _graph = NULL;
-  _state = OP_WAIT;
-  _ready = false;
-  _mem_flag = false;
-}
-
-
-template<class v_t, class e_t>
-SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* graph) {
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::string name, uint64_t id) {
   assert(scratchpad != NULL);
   assert(graph != NULL);
   _scratchpad = scratchpad;
@@ -28,6 +18,10 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   _state = OP_WAIT;
   _ready = false;
   _mem_flag = false;
+  _name = name;
+  _id = id;
+  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(logger != NULL);
 }
 
 

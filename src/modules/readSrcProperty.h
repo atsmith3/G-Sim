@@ -58,11 +58,13 @@ private:
   Utility::readGraph<v_t>* _graph;
   uint64_t _base_addr;
   uint64_t _curr_addr;
+  uint64_t _id;
+
+  Utility::Log* logger;
 
 public:
   bool _mem_flag;
-
-  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr);
+  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~ReadSrcProperty();
 
   void tick(void);

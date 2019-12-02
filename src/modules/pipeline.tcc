@@ -21,10 +21,12 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   parallel_vertex_readers.resize(num_dst_readers);
 
   // Allocate Pipeline Modules
-  p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph, (((uint64_t)process + pipeline_id*(1<<20)) & ~(0x3F)));
-  p2 = new SimObj::ReadSrcEdges<v_t, e_t>(scratchpad, graph);
+  p1 = new SimObj::ReadSrcProperty<v_t, e_t>(mem, process, graph, (((uint64_t)process + pipeline_id*(1<<20)) & ~(0x3F)), "ReadSrcProperty", _id);
+  p2 = new SimObj::ReadSrcEdges<v_t, e_t>(scratchpad, graph, "ReadSrcEdges", _id);
+  int _num = 0;
   for(auto mod = parallel_vertex_readers.begin(); mod != parallel_vertex_readers.end(); mod++) {
-    *mod = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph);
+    *mod = new SimObj::ReadDstProperty<v_t, e_t>(mem, graph, "ReadDstProperty", _id, _num);
+    _num++;
   }
   alloc = new SimObj::Allocator<v_t, e_t>(parallel_vertex_readers);
   arbiter = new SimObj::Arbiter<v_t, e_t>();

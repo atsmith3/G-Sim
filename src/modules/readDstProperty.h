@@ -49,11 +49,14 @@ private:
   Memory* _dram;
   op_t _state;
   Utility::readGraph<v_t>* _graph;
+  uint64_t _id;
+  uint64_t _rid;
+
+  Utility::Log* logger;
 
 public:
   bool _mem_flag;
-  ReadDstProperty();
-  ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph);
+  ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::string name, uint64_t id, uint64_t reader_id);
   ~ReadDstProperty();
 
   void tick(void);
