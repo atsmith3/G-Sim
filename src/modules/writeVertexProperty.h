@@ -46,6 +46,9 @@ private:
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_stall_ticks;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+#endif
 
   Memory* _dram;
   op_t _state;
@@ -54,13 +57,14 @@ private:
   uint64_t _base_addr;
   uint64_t _curr_addr;
 
+  uint64_t _id;
+
   Utility::readGraph<v_t>* _graph;
   std::list<uint64_t>* _process;
 
 public:
   bool _mem_flag;
-  WriteVertexProperty();
-  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr);
+  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~WriteVertexProperty();
 
   void tick(void);

@@ -43,7 +43,12 @@ private:
   using Module<v_t, e_t>::_next;
   using Module<v_t, e_t>::_has_work;
   using Module<v_t, e_t>::_items_processed;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool mem_req_logged;
+#endif
 
+  uint64_t _id;
   Memory* _dram;
   op_t _state;
   std::list<uint64_t>* _apply;
@@ -53,8 +58,7 @@ private:
 
 public:
   bool _mem_flag;
-  ReadVertexProperty();
-  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr);
+  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~ReadVertexProperty();
 
   void tick(void);

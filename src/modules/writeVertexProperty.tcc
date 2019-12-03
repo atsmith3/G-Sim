@@ -11,10 +11,12 @@
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr) {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(graph != NULL);
   assert(process != NULL);
+  _id = id;
+  _name = name;
   _graph = graph;
   _process = process;
   _dram = dram;
@@ -24,6 +26,10 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::li
   _throughput = 0;
   _base_addr = base_addr;
   _curr_addr = base_addr;
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -32,6 +38,12 @@ SimObj::WriteVertexProperty<v_t, e_t>::~WriteVertexProperty() {
   _dram = NULL;
   _process = NULL;
   _graph = NULL;
+#if MODULE_TRACE
+  if(_logger) {
+    delete _logger;
+    _logger = NULL;
+  }
+#endif
 }
 
 
@@ -44,6 +56,10 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
+#ifdef MODULE_TRACE
+        // Ready, Complete
+        _logger->write(std::to_string(_tick)+",1,0\n");
+#endif
         // Upstream sent _edge property
         _ready = false;
         _mem_flag = false;
@@ -61,6 +77,9 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        _logger->write(std::to_string(_tick)+",0,1\n");
+#endif
         // Write to global mem
         if(_data.updated) {
           _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);

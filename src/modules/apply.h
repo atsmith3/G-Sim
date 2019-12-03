@@ -44,15 +44,19 @@ private:
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_stall_ticks;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool complete_logged;
+#endif
 
+  uint64_t _id;
   op_t _state;
   uint64_t _counter;
   uint64_t _delay_cycles;
   GraphMat::GraphApp<v_t, e_t>* _app;
 
 public:
-  Apply();
-  Apply(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app);
+  Apply(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app, std::string name, uint64_t id);
   ~Apply();
 
   void tick(void);

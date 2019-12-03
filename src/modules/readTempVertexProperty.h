@@ -27,15 +27,13 @@ private:
   enum op_t {
     OP_WAIT,
     OP_MEM_WAIT,
-    OP_SEND_DOWNSTREAM,
     OP_NUM_OPS
   };
 
   std::map<int, std::string> _state_name = {
     {0, "OP_WAIT"},
     {1, "OP_MEM_WAIT"},
-    {2, "OP_SEND_DOWNSTREAM"},
-    {3, "OP_NUM_OPS"}};
+    {2, "OP_NUM_OPS"}};
 
   using Module<v_t, e_t>::_tick;
   using Module<v_t, e_t>::_ready;
@@ -44,7 +42,12 @@ private:
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_next;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool mem_req_logged;
+#endif
 
+  uint64_t _id;
   Memory* _dram;
   op_t _state;
   Utility::readGraph<v_t>* _graph;
@@ -52,8 +55,7 @@ private:
 
 public:
   bool _mem_flag;
-  ReadTempVertexProperty();
-  ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem);
+  ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
   ~ReadTempVertexProperty();
 
   void tick(void);
