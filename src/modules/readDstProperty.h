@@ -45,14 +45,16 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool mem_req_logged;
+#endif
 
   Memory* _dram;
   op_t _state;
   Utility::readGraph<v_t>* _graph;
   uint64_t _id;
   uint64_t _rid;
-
-  Utility::Log* logger;
 
 public:
   bool _mem_flag;

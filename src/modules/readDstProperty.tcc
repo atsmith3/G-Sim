@@ -21,8 +21,10 @@ SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGr
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
-  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_"+std::to_string(_rid)+".csv");
-  assert(logger != NULL);
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_"+std::to_string(_rid)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -43,8 +45,10 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef MODULE_DEBUG
-        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#ifdef MODULE_TRACE
+        // Ready, Complete, Send
+        _logger->write(std::to_string(_tick)+",1,0,0\n");
+        mem_req_logged = false;
 #endif
         _ready = false;
         _mem_flag = false;
@@ -63,8 +67,17 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        if(!mem_req_logged) {
+          _logger->write(std::to_string(_tick)+",0,1,0\n");
+          mem_req_logged = true;
+        }
+#endif
         _data.vertex_dst_data = _graph->getVertexProperty(_data.vertex_dst_id);
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+#ifdef MODULE_TRACE
+        _logger->write(std::to_string(_tick)+",0,0,1\n");
+#endif
           _next->ready(_data);
           _stall = STALL_CAN_ACCEPT;
           next_state = OP_WAIT;
@@ -87,7 +100,7 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
   }
 #if 0
   if(_state != next_state) {
-    std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
+    _logger->write(std::to_string(_tick)+","+std::to_string((uint64_t)_state)+","+_state_name[_state]+","+std::to_string((uint64_t)next_state)+","+_state_name[next_state]+"\n");
   }
 #endif
   _state = next_state;

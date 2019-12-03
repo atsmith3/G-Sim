@@ -10,10 +10,16 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate() {
+SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate(std::string name, uint64_t id) {
+  _id = id;
+  _name = name;
   _state = OP_WAIT;
   _ready = false;
   _op_complete = false;
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 template<class v_t, class e_t>
@@ -42,8 +48,10 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
-#ifdef MODULE_DEBUG
-        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#ifdef MODULE_TRACE
+        // Ready, Dependency, Sent
+        _logger->write(std::to_string(_tick)+",1,0,0\n");
+        dep_logged = false;
 #endif
         _ready = false;
         if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
@@ -70,6 +78,9 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
       // Check if an edge was finalized:
       //std::cout << "Dependency: " << dependency() << " Queue Size: " << _nodes.size() << "\n";
       if(!dependency() && _next->is_stalled() == STALL_CAN_ACCEPT) {
+#ifdef MODULE_TRACE
+        _logger->write(std::to_string(_tick)+",0,0,1\n");
+#endif
         _next->ready(_data);
         _nodes.push_front(_data);
 #ifdef DEBUG
@@ -80,6 +91,12 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
         _has_work = false;
       }
       else {
+#ifdef MODULE_TRACE
+        if(!dep_logged) {
+          _logger->write(std::to_string(_tick)+",0,1,0\n");
+          dep_logged = true;
+        }
+#endif
         next_state = OP_STALL;
         _stall = STALL_PIPE;
       }

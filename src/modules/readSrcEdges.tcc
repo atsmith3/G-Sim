@@ -20,8 +20,10 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   _mem_flag = false;
   _name = name;
   _id = id;
-  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
-  assert(logger != NULL);
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -42,8 +44,10 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef MODULE_DEBUG
-        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#ifdef MODULE_TRACE
+        // Ready, Complete, Can Accept, Edges
+        _logger->write(std::to_string(_tick)+",1,0,0,0\n");
+        mem_req_logged = false;
 #endif
         _ready = false;
         if(!_edge_list->empty()) {
@@ -68,6 +72,12 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        if(!mem_req_logged) {
+          _logger->write(std::to_string(_tick)+",0,1,0,0\n");
+          mem_req_logged = true;
+        }
+#endif
         if(_data_set == false) {
           _data.edge_id = _edge_list->front();
           _edge_list->pop();
@@ -76,7 +86,14 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
           _data_set = true;
         }
         if(_next->is_stalled(_data) == STALL_CAN_ACCEPT) {
+#ifdef MODULE_TRACE
+          _logger->write(std::to_string(_tick)+",0,0,1,0\n");
+#endif
           if(!_edge_list->empty()) {
+#ifdef MODULE_TRACE
+            _logger->write(std::to_string(_tick)+",0,0,0,1\n");
+            mem_req_logged = false;
+#endif
             _data_set = false;
             _mem_flag = false;
             _scratchpad->read(0x01, &_mem_flag);
@@ -111,7 +128,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
   }
 #if 0
   if(_state != next_state) {
-    std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
+    _logger->write(std::to_string(_tick)+","+std::to_string((uint64_t)_state)+","+_state_name[_state]+","+std::to_string((uint64_t)next_state)+","+_state_name[next_state]+"\n");
   }
 #endif
   _state = next_state;
@@ -124,4 +141,20 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _has_work = true;
   _data = data;
   _edge_list = _graph->getEdges(data.vertex_id);
+#if MODULE_TRACE
+  if(_logger != NULL) {
+    _logger->write(std::to_string(_tick)+","+
+                   std::to_string(_data.vertex_id_addr)+","+
+                   std::to_string(_data.vertex_dst_id)+","+
+                   std::to_string(_data.vertex_dst_id_addr)+","+
+                   std::to_string(_data.edge_id)+","+
+                   std::to_string(_data.vertex_data)+","+
+                   std::to_string(_data.vertex_dst_data)+","+
+                   std::to_string(_data.message_data)+","+
+                   std::to_string(_data.vertex_temp_dst_data)+","+
+                   std::to_string(_data.edge_data)+","+
+                   std::to_string(_data.edge_temp_data)+","+
+                   std::to_string(_data.updated)+"\n");
+  }
+#endif
 }

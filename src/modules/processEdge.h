@@ -44,15 +44,19 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool complete_logged;
+#endif
 
   op_t _state;
   uint64_t _counter;
   uint64_t _delay_cycles;
   GraphMat::GraphApp<v_t, e_t>* _graph_app;
+  uint64_t _id;
 
 public:
-  ProcessEdge();
-  ProcessEdge(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* graph_app);
+  ProcessEdge(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* graph_app, std::string name, uint64_t id);
   ~ProcessEdge();
 
   void tick(void);

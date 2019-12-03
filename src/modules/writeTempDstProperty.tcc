@@ -9,23 +9,13 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty() {
-  _scratchpad = NULL;
-  _scratch_mem = NULL;
-  _cau = NULL;
-  _apply = NULL;
-  _ready = false;
-  _mem_flag = false;
-  _state = OP_WAIT;
-}
-
-
-template<class v_t, class e_t>
-SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply) {
+SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply, std::string name, uint64_t id) {
   assert(scratchpad != NULL);
   assert(cau != NULL);
   assert(scratch_mem != NULL);
   assert(apply != NULL);
+  _id = id;
+  _name = name;
   _apply = apply;
   _scratchpad = scratchpad;
   _cau = cau;
@@ -34,6 +24,10 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
   _mem_flag = false;
   _state = OP_WAIT;
   _edges_written = 0;
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -43,6 +37,12 @@ SimObj::WriteTempDstProperty<v_t, e_t>::~WriteTempDstProperty() {
   _scratch_mem = NULL;
   _cau = NULL;
   _apply = NULL;
+#if MODULE_TRACE
+  if(_logger) {
+    delete _logger;
+    _logger = NULL;
+  }
+#endif
 }
 
 
@@ -55,6 +55,10 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
+#ifdef MODULE_TRACE
+        // Ready, Complete
+        _logger->write(std::to_string(_tick)+",1,0\n");
+#endif
         _ready = false;
         _mem_flag = false;
         _scratchpad->write(0x01, &_mem_flag);
@@ -71,6 +75,9 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        _logger->write(std::to_string(_tick)+",0,1\n");
+#endif
         _scratch_mem->insert_or_assign(_data.vertex_dst_id, _data);
         _apply->push_back(_data.vertex_dst_id);
         _edges_written++;

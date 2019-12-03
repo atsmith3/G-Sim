@@ -50,6 +50,8 @@ protected:
   bool _ready;
   bool _has_work;     // Flag for determine if there is still work left in the pipeline stages
 
+  Utility::Log* _logger;
+
 public:
   Module();
   virtual ~Module();

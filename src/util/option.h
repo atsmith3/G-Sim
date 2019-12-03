@@ -53,7 +53,7 @@ namespace Utility {
       // Simultaion Options
       unsigned long long int num_iter = 10000;
       unsigned long long int num_pipelines = 1;
-      unsigned long long int avg_connectivity = 1;
+      unsigned long long int num_dst_readers = 4;
       int shouldInit = 0; // Used for the readGraph
       std::string graph_path = "";
       std::string result = "vertex_properties.out";
@@ -92,7 +92,7 @@ namespace Utility {
           sim.add_options()
             ("num_iter", po::value<unsigned long long int>(&num_iter), "the number of iterations to simulate")
             ("num_pipelines", po::value<unsigned long long int>(&num_pipelines), "the number of pipelines in parallel")
-            ("avg_connectivity", po::value<unsigned long long int>(&avg_connectivity), "the average connectivity k of the graph");
+            ("num_dst_readers", po::value<unsigned long long int>(&num_dst_readers), "the number of readVertexProperty  modules")
           ;
 
           po::options_description graph("ReadGrpah Options");

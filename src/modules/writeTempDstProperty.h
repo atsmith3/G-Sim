@@ -47,10 +47,14 @@ private:
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_stall_ticks;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+#endif
 
   Memory* _scratchpad;
   op_t _state;
   ControlAtomicUpdate<v_t, e_t>* _cau;
+  uint64_t _id;
 
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
   std::list<uint64_t>* _apply;
@@ -59,8 +63,7 @@ private:
 
 public:
   bool _mem_flag;
-  WriteTempDstProperty();
-  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply);
+  WriteTempDstProperty(Memory* scratchpad, ControlAtomicUpdate<v_t, e_t>* cau, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::list<uint64_t>* apply, std::string name, uint64_t id);
   ~WriteTempDstProperty();
 
   void tick(void);

@@ -9,29 +9,23 @@
 
 #include <cassert>
 
-
 template<class v_t, class e_t>
-SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty() {
-  _scratchpad = NULL;
-  _graph = NULL;
-  _scratch_mem = NULL;
-  _ready = false;
-  _mem_flag = false;
-  _state = OP_WAIT;
-}
-
-
-template<class v_t, class e_t>
-SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem) {
+SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id) {
   assert(scratchpad != NULL);
   assert(graph != NULL);
   assert(scratch_mem != NULL);
+  _id = id;
+  _name = name;
   _scratchpad = scratchpad;
   _graph = graph;
   _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -53,8 +47,10 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef MODULE_DEBUG
-        std::cout << "Tick:" << _tick << " " << _name << " recieved: " << _data << "\n";
+#ifdef MODULE_TRACE
+        // Ready, Complete, Sent
+        _logger->write(std::to_string(_tick)+",1,0,0\n");
+        mem_req_logged = false;
 #endif
         _ready = false;
         _mem_flag = false;
@@ -71,7 +67,16 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        if(!mem_req_logged) {
+          _logger->write(std::to_string(_tick)+",0,1,0\n");
+          mem_req_logged = true;
+        }
+#endif
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+#ifdef MODULE_TRACE
+        _logger->write(std::to_string(_tick)+",0,0,1\n");
+#endif
           // Read from "scratchpad map holding temp values"
           //Check if it exists in the map:
           if(_scratch_mem->find(_data.vertex_dst_id) != _scratch_mem->end()) {

@@ -30,12 +30,18 @@ private:
     bool prefetch;
   };
 
+  struct prefetch_t {
+    uint64_t address;
+    bool issued;
+    bool complete;
+  };
+
   std::vector<CacheLine> cache;
   std::list<mshr_t> mshr;
 
   std::list<std::pair<uint64_t, bool*>> outstanding_sequential_reads;
   // Address, Accessed this Cycle, Prefetch Issued
-  std::map<uint64_t, std::pair<bool, bool>> access_each_iter;
+  std::map<uint64_t, std::pair<bool, bool>> prefetched;
 
   Memory* _memory;
 

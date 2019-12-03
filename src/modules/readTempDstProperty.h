@@ -43,16 +43,20 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool mem_req_logged;
+#endif
 
   Memory* _scratchpad;
   op_t _state;
   Utility::readGraph<v_t>* _graph;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
+  uint64_t _id;
 
 public:
   bool _mem_flag;
-  ReadTempDstProperty();
-  ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem);
+  ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
   ~ReadTempDstProperty();
 
   void tick(void);

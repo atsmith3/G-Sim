@@ -30,11 +30,11 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   }
   alloc = new SimObj::Allocator<v_t, e_t>(parallel_vertex_readers);
   arbiter = new SimObj::Arbiter<v_t, e_t>();
-  p4 = new SimObj::ProcessEdge<v_t, e_t>(1, application);
-  p5 = new SimObj::ControlAtomicUpdate<v_t, e_t>;
-  p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);
-  p7 = new SimObj::Reduce<v_t, e_t>(1, application);
-  p8 = new SimObj::WriteTempDstProperty<v_t, e_t>(scratchpad, p5, scratchpad_map, apply);
+  p4 = new SimObj::ProcessEdge<v_t, e_t>(1, application, "ProcessEdge", _id);
+  p5 = new SimObj::ControlAtomicUpdate<v_t, e_t>("ControlAtomicUpdate", _id);
+  p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, graph, scratchpad_map, "ReadTempDstProperty", _id);
+  p7 = new SimObj::Reduce<v_t, e_t>(1, application, "Reduce", _id);
+  p8 = new SimObj::WriteTempDstProperty<v_t, e_t>(scratchpad, p5, scratchpad_map, apply, "WriteTempDstProperty", _id);
 
   a1 = new SimObj::ReadVertexProperty<v_t, e_t>(mem, apply, graph, (uint64_t)apply);
   a2 = new SimObj::ReadTempVertexProperty<v_t, e_t>(scratchpad, graph, scratchpad_map);

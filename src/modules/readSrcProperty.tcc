@@ -27,8 +27,10 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint6
   _fetched = false;
   _base_addr = base_addr;
   _curr_addr = base_addr;
-  logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
-  assert(logger != NULL);
+#if MODULE_TRACE
+  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
+  assert(_logger != NULL);
+#endif
 }
 
 
@@ -49,6 +51,11 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   switch(_state) {
     case OP_WAIT : {
       if(_ready && !_process->empty()) {
+#ifdef MODULE_TRACE
+        // Ready, Complete, Send
+        _logger->write(std::to_string(_tick)+",1,0,0\n");
+        mem_req_logged = false;
+#endif
         // Dequeue from the work queue
         _data.vertex_id = _process->front();
         _process->pop_front();
@@ -79,7 +86,16 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
+#ifdef MODULE_TRACE
+        if(!mem_req_logged) {
+          _logger->write(std::to_string(_tick)+",0,1,0\n");
+          mem_req_logged = true;
+        }
+#endif
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
+#ifdef MODULE_TRACE
+          _logger->write(std::to_string(_tick)+",0,0,1\n");
+#endif
           _curr_addr += 4;
           _next->ready(_data);
           _stall = STALL_CAN_ACCEPT;
@@ -103,7 +119,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   }
 #if 0
   if(_state != next_state) {
-    std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << this->_tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
+    _logger->write(std::to_string(_tick)+","+std::to_string((uint64_t)_state)+","+_state_name[_state]+","+std::to_string((uint64_t)next_state)+","+_state_name[next_state]+"\n");
   }
 #endif
   _state = next_state;

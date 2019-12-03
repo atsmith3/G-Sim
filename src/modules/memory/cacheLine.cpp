@@ -52,12 +52,17 @@ uint64_t SimObj::CacheLine::getLRU() {
   return _lru;
 }
 
+bool SimObj::CacheLine::getPrefetch() {
+  return _pf;
+}
 
-void SimObj::CacheLine::insert(uint64_t addr) {
+
+void SimObj::CacheLine::insert(uint64_t addr, bool prefetch) {
   _lru = 0;
   _address = addr & ~ACCESS_MASK;
   _valid = true;
   _dirty = false;
+  _pf = prefetch;
 }
 
 void SimObj::CacheLine::evict() {

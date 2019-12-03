@@ -24,6 +24,7 @@ private:
   bool _dirty;
   bool _valid;
   uint64_t _lru;
+  bool _pf;
 
 public:
   CacheLine();
@@ -35,9 +36,10 @@ public:
   bool dirty();
   uint64_t getAddr();
   uint64_t getLRU();
+  bool getPrefetch();
   void tick();
   
-  void insert(uint64_t addr);
+  void insert(uint64_t addr, bool prefetch = false);
   void evict();
 }; // class CacheLine
 

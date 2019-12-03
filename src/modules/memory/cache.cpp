@@ -62,16 +62,21 @@ void SimObj::Cache::tick(void) {
     if(it.complete) {
       if(!it.write) {
         uint64_t line = getLRU();
+        if(cache[line].getPrefetch()) {
+          // When evicting line, check if it was inseted by prefetching mechanism,
+          // If it was, then remove the entry from the list of prefectched addresses
+        }
         if(cache[line].valid() && cache[line].dirty()) {
           stats[WRITEBACK]++;
           mshr_t req;
           req.address = cache[line].getAddr();
           req.write = true;
           req.complete = false;
+          req.prefetch = false;
           mshr.push_front(req);
           _memory->write(mshr.front().address, &mshr.front().complete, false);
         }
-        cache[line].insert(it.address);
+        cache[line].insert(it.address, it.prefetch);
       }
     }
   }
@@ -114,6 +119,7 @@ void SimObj::Cache::write(uint64_t addr, bool* complete, bool sequential) {
         req.address = cache[line].getAddr();
         req.write = true;
         req.complete = false;
+        req.prefetch = false;
         mshr.push_front(req);
         _memory->write(mshr.front().address, &mshr.front().complete, false);
       }
@@ -150,6 +156,7 @@ void SimObj::Cache::read(uint64_t addr, bool* complete, bool sequential) {
       req.address = addr;
       req.write = false;
       req.complete = false;
+      req.prefetch = false;
       mshr.push_front(req);
       _memory->read(mshr.front().address, &mshr.front().complete, false);
       outstanding_sequential_reads.push_back(std::make_pair(addr, complete));

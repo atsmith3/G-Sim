@@ -46,15 +46,20 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool dep_logged;
+#endif
 
   op_t _state;
   bool _op_complete;
   std::list<Utility::pipeline_data<v_t, e_t>> _nodes;
+  uint64_t _id;
 
   bool dependency();
 
 public:
-  ControlAtomicUpdate();
+  ControlAtomicUpdate(std::string name, uint64_t id);
   ~ControlAtomicUpdate();
 
   void tick(void);

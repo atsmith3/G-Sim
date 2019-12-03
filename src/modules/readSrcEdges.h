@@ -46,6 +46,10 @@ private:
   using Module<v_t, e_t>::_data;
   using Module<v_t, e_t>::_name;
   using Module<v_t, e_t>::_has_work;
+#if MODULE_TRACE
+  using Module<v_t, e_t>::_logger;
+  bool mem_req_logged;
+#endif
 
   Memory* _scratchpad;
   op_t _state;
@@ -53,8 +57,6 @@ private:
   Utility::readGraph<v_t>* _graph;
   bool _data_set;
   uint64_t _id;
-  
-  Utility::Log* logger;
 
 public:
   bool _mem_flag;
