@@ -22,9 +22,12 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, U
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
+  _curr_addr = 0x1000;
 #if MODULE_TRACE
-  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
-  assert(_logger != NULL);
+  _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
+  _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
+  assert(_in_logger != NULL);
+  assert(_out_logger != NULL);
 #endif
 }
 
@@ -41,20 +44,28 @@ template<class v_t, class e_t>
 void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
+#ifdef MODULE_TRACE
+  mem_flag_curr = _mem_flag;
+  ready_curr = _ready;
+  send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
+  address_curr = _curr_addr;
+#endif
 
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef MODULE_TRACE
-        // Ready, Complete, Sent
-        _logger->write(std::to_string(_tick)+",1,0,0\n");
-        mem_req_logged = false;
-#endif
         _ready = false;
         _mem_flag = false;
-        _scratchpad->read(0x01, &_mem_flag);
+        _scratchpad->read(_curr_addr, &_mem_flag);
+        _curr_addr+=4;
+        if(_scratch_mem->find(_data.vertex_dst_id) != _scratch_mem->end()) {
+          _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
+        }
+        else {
+          _data.vertex_temp_dst_data = _graph->getInitializer();
+        }
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -68,23 +79,11 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
 #ifdef MODULE_TRACE
-        if(!mem_req_logged) {
-          _logger->write(std::to_string(_tick)+",0,1,0\n");
-          mem_req_logged = true;
-        }
+        mem_result_curr = _data.vertex_dst_data;
 #endif
         if(_next->is_stalled() == STALL_CAN_ACCEPT) {
-#ifdef MODULE_TRACE
-        _logger->write(std::to_string(_tick)+",0,0,1\n");
-#endif
           // Read from "scratchpad map holding temp values"
           //Check if it exists in the map:
-          if(_scratch_mem->find(_data.vertex_dst_id) != _scratch_mem->end()) {
-            _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
-          }
-          else {
-            _data.vertex_temp_dst_data = _graph->getInitializer();
-          }
           _next->ready(_data);
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
@@ -110,7 +109,58 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
     std::cout << "[ " << __PRETTY_FUNCTION__ << " ] tick: " << _tick << "  state: " << _state_name[_state] << "  next_state: " << _state_name[next_state] << "\n";
   }
 #endif
+#ifdef MODULE_TRACE
+  update_logger();
+#endif
   _state = next_state;
   this->update_stats();
 }
 
+#ifdef MODULE_TRACE
+template<class v_t, class e_t>
+void SimObj::ReadTempDstProperty<v_t, e_t>::update_logger(void) {
+  if(ready_prev != ready_curr ||
+     mem_flag_prev != mem_flag_curr ||
+     send_prev != send_curr ||
+     mem_result_prev != mem_result_curr) {
+    if(_in_logger != NULL) {
+      _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id_addr)+","+
+                     std::to_string(_in_data.vertex_dst_id)+","+
+                     std::to_string(_in_data.vertex_dst_id_addr)+","+
+                     std::to_string(_in_data.edge_id)+","+
+                     std::to_string(_in_data.vertex_data)+","+
+                     std::to_string(_in_data.vertex_dst_data)+","+
+                     std::to_string(_in_data.message_data)+","+
+                     std::to_string(_in_data.vertex_temp_dst_data)+","+
+                     std::to_string(_in_data.edge_data)+","+
+                     std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(ready_curr)+","+
+                     std::to_string(mem_flag_curr)+","+
+                     std::to_string(send_curr)+","+
+                     std::to_string(mem_result_curr)+"\n");
+    }
+    ready_prev = ready_curr;
+    mem_flag_prev = mem_flag_curr;
+    send_prev = send_curr;
+    mem_result_prev = mem_result_curr;
+  }
+  if(address_prev != address_curr) {
+    if(_out_logger != NULL) {
+      _out_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_data.vertex_id_addr)+","+
+                     std::to_string(_data.vertex_dst_id)+","+
+                     std::to_string(_data.vertex_dst_id_addr)+","+
+                     std::to_string(_data.edge_id)+","+
+                     std::to_string(_data.vertex_data)+","+
+                     std::to_string(_data.vertex_dst_data)+","+
+                     std::to_string(_data.message_data)+","+
+                     std::to_string(_data.vertex_temp_dst_data)+","+
+                     std::to_string(_data.edge_data)+","+
+                     std::to_string(_data.edge_temp_data)+","+
+                     std::to_string(address_curr)+"\n");
+    }
+    address_prev = address_curr;
+  }
+}
+#endif
