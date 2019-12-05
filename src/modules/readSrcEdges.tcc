@@ -20,9 +20,12 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   _mem_flag = false;
   _name = name;
   _id = id;
+  _curr_addr = 0x1000;
 #if MODULE_TRACE
-  _logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+".csv");
-  assert(_logger != NULL);
+  _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
+  _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
+  assert(_in_logger != NULL);
+  assert(_out_logger != NULL);
 #endif
 }
 
@@ -38,17 +41,18 @@ template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
   _tick++;
   op_t next_state;
+#ifdef MODULE_TRACE
+  mem_flag_curr = _mem_flag;
+  ready_curr = _ready;
+  send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
+  address_curr = _curr_addr;
+#endif
 
   // Module State Machine
   switch(_state) {
     case OP_WAIT : {
       if(_ready) {
         // Upstream sent vertex & vertex property
-#ifdef MODULE_TRACE
-        // Ready, Complete, Can Accept, Edges
-        _logger->write(std::to_string(_tick)+",1,0,0,0\n");
-        mem_req_logged = false;
-#endif
         _ready = false;
         if(!_edge_list->empty()) {
           _data_set = false;
@@ -72,31 +76,23 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-#ifdef MODULE_TRACE
-        if(!mem_req_logged) {
-          _logger->write(std::to_string(_tick)+",0,1,0,0\n");
-          mem_req_logged = true;
-        }
-#endif
         if(_data_set == false) {
           _data.edge_id = _edge_list->front();
           _edge_list->pop();
           _data.edge_data = _graph->getEdgeWeight(_data.edge_id);
           _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
           _data_set = true;
+#ifdef MODULE_TRACE
+          edge_data_curr = _data.edge_data;
+          dst_id_curr = _data.vertex_dst_id;
+#endif
         }
         if(_next->is_stalled(_data) == STALL_CAN_ACCEPT) {
-#ifdef MODULE_TRACE
-          _logger->write(std::to_string(_tick)+",0,0,1,0\n");
-#endif
           if(!_edge_list->empty()) {
-#ifdef MODULE_TRACE
-            _logger->write(std::to_string(_tick)+",0,0,0,1\n");
-            mem_req_logged = false;
-#endif
             _data_set = false;
             _mem_flag = false;
-            _scratchpad->read(0x01, &_mem_flag);
+            _scratchpad->read(_curr_addr, &_mem_flag);
+            _curr_addr += 4;
             _stall = STALL_MEM;
             next_state = OP_MEM_WAIT;
             _data.last_edge = false;
@@ -131,9 +127,13 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     _logger->write(std::to_string(_tick)+","+std::to_string((uint64_t)_state)+","+_state_name[_state]+","+std::to_string((uint64_t)next_state)+","+_state_name[next_state]+"\n");
   }
 #endif
+#ifdef MODULE_TRACE
+  update_logger();
+#endif
   _state = next_state;
   this->update_stats();
 }
+
 
 template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
@@ -142,19 +142,62 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _data = data;
   _edge_list = _graph->getEdges(data.vertex_id);
 #if MODULE_TRACE
-  if(_logger != NULL) {
-    _logger->write(std::to_string(_tick)+","+
-                   std::to_string(_data.vertex_id_addr)+","+
-                   std::to_string(_data.vertex_dst_id)+","+
-                   std::to_string(_data.vertex_dst_id_addr)+","+
-                   std::to_string(_data.edge_id)+","+
-                   std::to_string(_data.vertex_data)+","+
-                   std::to_string(_data.vertex_dst_data)+","+
-                   std::to_string(_data.message_data)+","+
-                   std::to_string(_data.vertex_temp_dst_data)+","+
-                   std::to_string(_data.edge_data)+","+
-                   std::to_string(_data.edge_temp_data)+","+
-                   std::to_string(_data.updated)+"\n");
-  }
+  _in_data = data;
 #endif
 }
+
+
+#ifdef MODULE_TRACE
+template<class v_t, class e_t>
+void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
+  if(ready_prev != ready_curr ||
+     mem_flag_prev != mem_flag_curr ||
+     send_prev != send_curr ||
+     edges_empty_prev != edges_empty_curr ||
+     edge_data_prev != edge_data_curr ||
+     dst_id_prev != dst_id_curr) {
+    if(_in_logger != NULL) {
+      _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id_addr)+","+
+                     std::to_string(_in_data.vertex_dst_id)+","+
+                     std::to_string(_in_data.vertex_dst_id_addr)+","+
+                     std::to_string(_in_data.edge_id)+","+
+                     std::to_string(_in_data.vertex_data)+","+
+                     std::to_string(_in_data.vertex_dst_data)+","+
+                     std::to_string(_in_data.message_data)+","+
+                     std::to_string(_in_data.vertex_temp_dst_data)+","+
+                     std::to_string(_in_data.edge_data)+","+
+                     std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(ready_curr)+","+
+                     std::to_string(mem_flag_curr)+","+
+                     std::to_string(send_curr)+","+
+                     std::to_string(edges_empty_curr)+","+
+                     std::to_string(edge_data_curr)+","+
+                     std::to_string(dst_id_curr)+"\n");
+    }
+    ready_prev = ready_curr;
+    mem_flag_prev = mem_flag_curr;
+    send_prev = send_curr;
+    edges_empty_prev = edges_empty_curr;
+    edge_data_prev = edge_data_curr;
+    dst_id_prev = dst_id_curr;
+  }
+  if(address_prev != address_curr) {
+    if(_out_logger != NULL) {
+      _out_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_data.vertex_id_addr)+","+
+                     std::to_string(_data.vertex_dst_id)+","+
+                     std::to_string(_data.vertex_dst_id_addr)+","+
+                     std::to_string(_data.edge_id)+","+
+                     std::to_string(_data.vertex_data)+","+
+                     std::to_string(_data.vertex_dst_data)+","+
+                     std::to_string(_data.message_data)+","+
+                     std::to_string(_data.vertex_temp_dst_data)+","+
+                     std::to_string(_data.edge_data)+","+
+                     std::to_string(_data.edge_temp_data)+","+
+                     std::to_string(address_curr)+"\n");
+    }
+    address_prev = address_curr;
+  }
+}
+#endif

@@ -62,25 +62,12 @@ template<class v_t, class e_t>
 void SimObj::Module<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data) {
   // Does Nothing
   _data = data;
+#ifdef MODULE_TRACE
+  _in_data = data;
+#endif
   _ready = true;
   _has_work = true;
   _items_processed++;
-#if MODULE_TRACE
-  if(_logger != NULL) {
-    _logger->write(std::to_string(_tick)+","+
-                   std::to_string(_data.vertex_id_addr)+","+
-                   std::to_string(_data.vertex_dst_id)+","+
-                   std::to_string(_data.vertex_dst_id_addr)+","+
-                   std::to_string(_data.edge_id)+","+
-                   std::to_string(_data.vertex_data)+","+
-                   std::to_string(_data.vertex_dst_data)+","+
-                   std::to_string(_data.message_data)+","+
-                   std::to_string(_data.vertex_temp_dst_data)+","+
-                   std::to_string(_data.edge_data)+","+
-                   std::to_string(_data.edge_temp_data)+","+
-                   std::to_string(_data.updated)+"\n");
-  }
-#endif
 }
 
 template<class v_t, class e_t>

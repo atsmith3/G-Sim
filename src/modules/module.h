@@ -50,7 +50,11 @@ protected:
   bool _ready;
   bool _has_work;     // Flag for determine if there is still work left in the pipeline stages
 
-  Utility::Log* _logger;
+#ifdef MODULE_TRACE
+  Utility::pipeline_data<v_t, e_t> _in_data;
+  Utility::Log* _in_logger;
+  Utility::Log* _out_logger;
+#endif
 
 public:
   Module();
