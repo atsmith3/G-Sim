@@ -22,6 +22,16 @@ SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGr
   _mem_flag = false;
   _state = OP_WAIT;
 #if MODULE_TRACE
+  ready_prev = false;
+  mem_flag_prev = false;
+  send_prev = false;
+  address_prev = 0;
+  mem_result_prev = 0;
+  ready_curr = false;
+  mem_flag_curr = false;
+  send_curr = false;
+  address_curr = 0;
+  mem_result_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_"+std::to_string(_rid)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_"+std::to_string(_rid)+"_out.csv");
   assert(_in_logger != NULL);
@@ -45,7 +55,6 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;
   send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
-  address_curr = _curr_addr;
 #endif
 
   // Module State Machine
@@ -58,6 +67,9 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
         _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
         _data.vertex_dst_id_addr = _graph->getVertexAddress(_data.vertex_dst_id);
         _dram->read(_data.vertex_dst_id_addr, &_mem_flag, false);
+#ifdef MODULE_TRACE
+        address_curr = _data.vertex_dst_id_addr;
+#endif
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -109,7 +121,7 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
 
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
-void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
+void SimObj::ReadDstProperty<v_t, e_t>::update_logger(void) {
   if(ready_prev != ready_curr ||
      mem_flag_prev != mem_flag_curr ||
      send_prev != send_curr ||

@@ -28,6 +28,16 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint6
   _base_addr = base_addr;
   _curr_addr = base_addr;
 #if MODULE_TRACE
+  ready_prev = false;
+  mem_flag_prev = false;
+  send_prev = false;
+  address_prev = _curr_addr;
+  mem_result_prev = 0;
+  ready_curr = false;
+  mem_flag_curr = false;
+  send_curr = false;
+  address_curr = _curr_addr;
+  mem_result_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);

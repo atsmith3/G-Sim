@@ -47,7 +47,19 @@ private:
   using Module<v_t, e_t>::_stall_ticks;
   using Module<v_t, e_t>::_has_work;
 #if MODULE_TRACE
-  using Module<v_t, e_t>::_logger;
+  using Module<v_t, e_t>::_in_data;
+  using Module<v_t, e_t>::_in_logger;
+  using Module<v_t, e_t>::_out_logger;
+  bool ready_prev;
+  bool mem_flag_prev;
+  uint64_t address_prev;
+  uint64_t mem_out_prev;
+  bool ready_curr;
+  bool mem_flag_curr;
+  uint64_t address_curr;
+  uint64_t mem_out_curr;
+
+  void update_logger();
 #endif
 
   Memory* _dram;

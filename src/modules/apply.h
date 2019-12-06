@@ -45,8 +45,17 @@ private:
   using Module<v_t, e_t>::_stall_ticks;
   using Module<v_t, e_t>::_has_work;
 #if MODULE_TRACE
-  using Module<v_t, e_t>::_logger;
-  bool complete_logged;
+  using Module<v_t, e_t>::_in_data;
+  using Module<v_t, e_t>::_in_logger;
+  using Module<v_t, e_t>::_out_logger;
+  bool ready_prev;
+  bool complete_prev;
+  bool send_prev;
+  bool ready_curr;
+  bool complete_curr;
+  bool send_curr;
+
+  void update_logger();
 #endif
 
   uint64_t _id;

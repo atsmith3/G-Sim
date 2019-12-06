@@ -22,6 +22,20 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   _id = id;
   _curr_addr = 0x1000;
 #if MODULE_TRACE
+  ready_prev = false;
+  mem_flag_prev = false;
+  send_prev = false;
+  edges_empty_prev = false;
+  address_prev = _curr_addr;
+  edge_data_prev = e_t();
+  dst_id_prev = 0;
+  ready_curr = false;
+  mem_flag_curr = false;
+  send_curr = false;
+  edges_empty_curr = false;
+  address_curr = _curr_addr;
+  edge_data_curr = e_t();
+  dst_id_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -149,7 +163,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
 
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
-void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
+void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
   if(ready_prev != ready_curr ||
      mem_flag_prev != mem_flag_curr ||
      send_prev != send_curr ||

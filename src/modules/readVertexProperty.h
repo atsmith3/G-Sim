@@ -44,8 +44,21 @@ private:
   using Module<v_t, e_t>::_has_work;
   using Module<v_t, e_t>::_items_processed;
 #if MODULE_TRACE
-  using Module<v_t, e_t>::_logger;
-  bool mem_req_logged;
+  using Module<v_t, e_t>::_in_data;
+  using Module<v_t, e_t>::_in_logger;
+  using Module<v_t, e_t>::_out_logger;
+  bool ready_prev;
+  bool mem_flag_prev;
+  bool send_prev;
+  uint64_t address_prev;
+  uint64_t mem_result_prev;
+  bool ready_curr;
+  bool mem_flag_curr;
+  bool send_curr;
+  uint64_t address_curr;
+  uint64_t mem_result_curr;
+
+  void update_logger();
 #endif
 
   uint64_t _id;

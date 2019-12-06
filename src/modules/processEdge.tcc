@@ -21,6 +21,12 @@ SimObj::ProcessEdge<v_t, e_t>::ProcessEdge(int delay_cycles, GraphMat::GraphApp<
   _counter = 0;
   _delay_cycles = delay_cycles;
 #if MODULE_TRACE
+  ready_prev = false;
+  complete_prev = false;
+  send_prev = false;
+  ready_curr = false;
+  complete_curr = false;
+  send_curr = false;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -104,7 +110,7 @@ void SimObj::ProcessEdge<v_t, e_t>::tick(void) {
 
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
-void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
+void SimObj::ProcessEdge<v_t, e_t>::update_logger(void) {
   if(ready_prev != ready_curr ||
      complete_prev != complete_curr ||
      send_prev != send_curr) {
@@ -121,9 +127,8 @@ void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
                      std::to_string(ready_curr)+","+
-                     std::to_string(mem_flag_curr)+","+
-                     std::to_string(send_curr)+","+
-                     std::to_string(mem_result_curr)+"\n");
+                     std::to_string(complete_curr)+","+
+                     std::to_string(send_curr)+","+"\n");
     }
     ready_prev = ready_curr;
     complete_prev = complete_curr;

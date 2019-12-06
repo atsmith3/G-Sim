@@ -24,6 +24,16 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, U
   _state = OP_WAIT;
   _curr_addr = 0x1000;
 #if MODULE_TRACE
+  ready_prev = false;
+  mem_flag_prev = false;
+  send_prev = false;
+  address_prev = _curr_addr;
+  mem_result_prev = 0;
+  ready_curr = false;
+  mem_flag_curr = false;
+  send_curr = false;
+  address_curr = _curr_addr;
+  mem_result_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
