@@ -126,6 +126,9 @@ void SimObj::ProcessEdge<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(complete_curr)+","+
                      std::to_string(send_curr)+","+"\n");

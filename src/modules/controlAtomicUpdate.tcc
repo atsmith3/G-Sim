@@ -18,11 +18,15 @@ SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate(std::string name, uin
   _op_complete = false;
 #if MODULE_TRACE
   ready_prev = false;
-  dependency_prev = false;
   send_prev = false;
+  dep_prev[0] = 0;
+  dep_prev[1] = 0;
+  dep_prev[2] = 0;
   ready_curr = false;
-  dependency_curr = false;
   send_curr = false;
+  dep_curr[0] = 0;
+  dep_curr[1] = 0;
+  dep_curr[2] = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -39,11 +43,22 @@ template<class v_t, class e_t>
 bool SimObj::ControlAtomicUpdate<v_t, e_t>::dependency() {
   bool ret = false;
   for(auto it = _nodes.begin(); it != _nodes.end(); it++) {
-    if(_data.edge_id == it->edge_id) {
+    if(_data.vertex_dst_id == it->vertex_dst_id) {
       ret = true;
       break;
     }
   }
+#ifdef MODULE_TRACE
+  int i = 0;
+  for(auto it = _nodes.begin(); it != _nodes.end(); it++) {
+    dep_curr[i] = it->vertex_dst_id;
+    i++;
+  }
+  for(int j = i; j < 3; j++) {
+    dep_curr[j] = 0;
+  }
+#endif
+
   return ret;
 }
 
@@ -54,7 +69,6 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::tick(void) {
 #ifdef MODULE_TRACE
   ready_curr = _ready;
   send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
-  dependency_curr = dependency();
 #endif
 
   // Module State Machine
@@ -135,10 +149,13 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::debug(void) {
 template<class v_t, class e_t>
 void SimObj::ControlAtomicUpdate<v_t, e_t>::update_logger(void) {
   if(ready_prev != ready_curr ||
-     dependency_prev != dependency_curr ||
+     dep_prev[0] != dep_curr[0] ||
+     dep_prev[1] != dep_curr[1] ||
+     dep_prev[2] != dep_curr[2] ||
      send_prev != send_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -149,13 +166,20 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
-                     std::to_string(dependency_curr)+","+
-                     std::to_string(send_curr)+","+"\n");
+                     std::to_string(send_curr)+","+
+                     std::to_string(dep_curr[0])+","+
+                     std::to_string(dep_curr[1])+","+
+                     std::to_string(dep_curr[2])+","+"\n");
     }
     ready_prev = ready_curr;
-    dependency_prev = dependency_curr;
     send_prev = send_curr;
+    dep_prev[0] = dep_curr[0];
+    dep_prev[1] = dep_curr[1];
+    dep_prev[2] = dep_curr[2];
   }
 }
 #endif

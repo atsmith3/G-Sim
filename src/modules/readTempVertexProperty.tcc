@@ -143,6 +143,7 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::update_logger(void) {
      mem_result_prev != mem_result_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -153,31 +154,19 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(mem_flag_curr)+","+
                      std::to_string(send_curr)+","+
-                     std::to_string(mem_result_curr)+"\n");
+                     std::to_string(mem_result_curr)+","+
+                     std::to_string(address_curr)+"\n");
     }
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;
     send_prev = send_curr;
     mem_result_prev = mem_result_curr;
-  }
-  if(address_prev != address_curr) {
-    if(_out_logger != NULL) {
-      _out_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_data.vertex_id_addr)+","+
-                     std::to_string(_data.vertex_dst_id)+","+
-                     std::to_string(_data.vertex_dst_id_addr)+","+
-                     std::to_string(_data.edge_id)+","+
-                     std::to_string(_data.vertex_data)+","+
-                     std::to_string(_data.vertex_dst_data)+","+
-                     std::to_string(_data.message_data)+","+
-                     std::to_string(_data.vertex_temp_dst_data)+","+
-                     std::to_string(_data.edge_data)+","+
-                     std::to_string(_data.edge_temp_data)+","+
-                     std::to_string(address_curr)+"\n");
-    }
     address_prev = address_curr;
   }
 }

@@ -31,13 +31,17 @@ SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint6
   ready_prev = false;
   mem_flag_prev = false;
   send_prev = false;
-  address_prev = _curr_addr;
+  address_prev = 0;
   mem_result_prev = 0;
+  queue_length_prev = 0;
+  iteration_reset_prev = false;
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
-  address_curr = _curr_addr;
+  address_curr = (uint64_t)_process;
   mem_result_curr = 0;
+  queue_length_curr = _process->size();
+  iteration_reset_curr = true;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -62,7 +66,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;
   send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
-  address_curr = _curr_addr;
+  address_curr = (uint64_t)_process;
 #endif
 
   // Module State Machine
@@ -131,6 +135,8 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
 #endif
 #ifdef MODULE_TRACE
   update_logger();
+  queue_length_curr = 0;
+  iteration_reset_curr = false;
 #endif
   _state = next_state;
   this->update_stats();
@@ -140,6 +146,10 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
 template<class v_t, class e_t>
 void SimObj::ReadSrcProperty<v_t, e_t>::reset(void) {
   _curr_addr = _base_addr;
+#ifdef MODULE_TRACE
+  queue_length_curr = _process->size();
+  iteration_reset_curr = true;
+#endif
 }
 
 #ifdef MODULE_TRACE
@@ -151,6 +161,7 @@ void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
      mem_result_prev != mem_result_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -161,32 +172,24 @@ void SimObj::ReadSrcProperty<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(mem_flag_curr)+","+
                      std::to_string(send_curr)+","+
-                     std::to_string(mem_result_curr)+"\n");
+                     std::to_string(mem_result_curr)+","+
+                     std::to_string(address_curr)+","+
+                     std::to_string(queue_length_curr)+","+
+                     std::to_string(iteration_reset_curr)+"\n");
     }
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;
     send_prev = send_curr;
     mem_result_prev = mem_result_curr;
-  }
-  if(address_prev != address_curr) {
-    if(_out_logger != NULL) {
-      _out_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_data.vertex_id_addr)+","+
-                     std::to_string(_data.vertex_dst_id)+","+
-                     std::to_string(_data.vertex_dst_id_addr)+","+
-                     std::to_string(_data.edge_id)+","+
-                     std::to_string(_data.vertex_data)+","+
-                     std::to_string(_data.vertex_dst_data)+","+
-                     std::to_string(_data.message_data)+","+
-                     std::to_string(_data.vertex_temp_dst_data)+","+
-                     std::to_string(_data.edge_data)+","+
-                     std::to_string(_data.edge_temp_data)+","+
-                     std::to_string(address_curr)+"\n");
-    }
     address_prev = address_curr;
+    queue_length_prev = queue_length_curr;
+    iteration_reset_prev = iteration_reset_curr;
   }
 }
 #endif

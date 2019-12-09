@@ -29,6 +29,7 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   address_prev = _curr_addr;
   edge_data_prev = e_t();
   dst_id_prev = 0;
+  num_edges_prev = 0;
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
@@ -36,6 +37,7 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGr
   address_curr = _curr_addr;
   edge_data_curr = e_t();
   dst_id_curr = 0;
+  num_edges_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -156,6 +158,8 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _data = data;
   _edge_list = _graph->getEdges(data.vertex_id);
 #if MODULE_TRACE
+  num_edges_curr = _edge_list->size();
+  _curr_addr = 0x1000;
   _in_data = data;
 #endif
 }
@@ -172,6 +176,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
      dst_id_prev != dst_id_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -182,12 +187,17 @@ void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(mem_flag_curr)+","+
                      std::to_string(send_curr)+","+
                      std::to_string(edges_empty_curr)+","+
                      std::to_string(edge_data_curr)+","+
-                     std::to_string(dst_id_curr)+"\n");
+                     std::to_string(dst_id_curr)+","+
+                     std::to_string(address_curr)+","+
+                     std::to_string(num_edges_curr)+"\n");
     }
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;
@@ -195,23 +205,8 @@ void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
     edges_empty_prev = edges_empty_curr;
     edge_data_prev = edge_data_curr;
     dst_id_prev = dst_id_curr;
-  }
-  if(address_prev != address_curr) {
-    if(_out_logger != NULL) {
-      _out_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_data.vertex_id_addr)+","+
-                     std::to_string(_data.vertex_dst_id)+","+
-                     std::to_string(_data.vertex_dst_id_addr)+","+
-                     std::to_string(_data.edge_id)+","+
-                     std::to_string(_data.vertex_data)+","+
-                     std::to_string(_data.vertex_dst_data)+","+
-                     std::to_string(_data.message_data)+","+
-                     std::to_string(_data.vertex_temp_dst_data)+","+
-                     std::to_string(_data.edge_data)+","+
-                     std::to_string(_data.edge_temp_data)+","+
-                     std::to_string(address_curr)+"\n");
-    }
     address_prev = address_curr;
+    num_edges_prev = num_edges_curr;
   }
 }
 #endif

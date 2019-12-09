@@ -66,7 +66,6 @@ private:
   Utility::readGraph<v_t>* _graph;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
   uint64_t _id;
-  uint64_t _curr_addr;
 
 public:
   bool _mem_flag;

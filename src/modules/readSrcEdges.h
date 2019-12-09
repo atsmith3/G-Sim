@@ -54,17 +54,19 @@ private:
   bool mem_flag_prev;
   bool send_prev;
   bool edges_empty_prev;
-  uint64_t address_prev;
   e_t edge_data_prev;
   uint64_t dst_id_prev;
+  uint64_t address_prev;
+  uint64_t num_edges_prev;
   
   bool ready_curr;
   bool mem_flag_curr;
   bool send_curr;
   bool edges_empty_curr;
-  uint64_t address_curr;
   e_t edge_data_curr;
   uint64_t dst_id_curr;
+  uint64_t address_curr;
+  uint64_t num_edges_curr;
 
   void update_logger();
 #endif

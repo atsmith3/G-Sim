@@ -51,11 +51,11 @@ private:
   using Module<v_t, e_t>::_in_logger;
   using Module<v_t, e_t>::_out_logger;
   bool ready_prev;
-  bool dependency_prev;
   bool send_prev;
+  uint64_t dep_prev[3];
   bool ready_curr;
-  bool dependency_curr;
   bool send_curr;
+  uint64_t dep_curr[3];
 
   void update_logger();
 #endif

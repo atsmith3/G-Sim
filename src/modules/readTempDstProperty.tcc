@@ -22,17 +22,16 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, U
   _ready = false;
   _mem_flag = false;
   _state = OP_WAIT;
-  _curr_addr = 0x1000;
 #if MODULE_TRACE
   ready_prev = false;
   mem_flag_prev = false;
   send_prev = false;
-  address_prev = _curr_addr;
+  address_prev = 0;
   mem_result_prev = 0;
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
-  address_curr = _curr_addr;
+  address_curr = 0;
   mem_result_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
@@ -58,7 +57,7 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;
   send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;
-  address_curr = _curr_addr;
+  address_curr = _data.vertex_dst_id_addr;
 #endif
 
   // Module State Machine
@@ -68,8 +67,7 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
         // Upstream sent vertex & vertex property
         _ready = false;
         _mem_flag = false;
-        _scratchpad->read(_curr_addr, &_mem_flag);
-        _curr_addr+=4;
+        _scratchpad->read(_data.vertex_dst_id_addr, &_mem_flag);
         if(_scratch_mem->find(_data.vertex_dst_id) != _scratch_mem->end()) {
           _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
         }
@@ -135,6 +133,7 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::update_logger(void) {
      mem_result_prev != mem_result_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -145,6 +144,9 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.vertex_temp_dst_data)+","+
                      std::to_string(_in_data.edge_data)+","+
                      std::to_string(_in_data.edge_temp_data)+","+
+                     std::to_string(_in_data.last_vertex)+","+
+                     std::to_string(_in_data.last_edge)+","+
+                     std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(mem_flag_curr)+","+
                      std::to_string(send_curr)+","+
@@ -154,23 +156,6 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::update_logger(void) {
     mem_flag_prev = mem_flag_curr;
     send_prev = send_curr;
     mem_result_prev = mem_result_curr;
-  }
-  if(address_prev != address_curr) {
-    if(_out_logger != NULL) {
-      _out_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_data.vertex_id_addr)+","+
-                     std::to_string(_data.vertex_dst_id)+","+
-                     std::to_string(_data.vertex_dst_id_addr)+","+
-                     std::to_string(_data.edge_id)+","+
-                     std::to_string(_data.vertex_data)+","+
-                     std::to_string(_data.vertex_dst_data)+","+
-                     std::to_string(_data.message_data)+","+
-                     std::to_string(_data.vertex_temp_dst_data)+","+
-                     std::to_string(_data.edge_data)+","+
-                     std::to_string(_data.edge_temp_data)+","+
-                     std::to_string(address_curr)+"\n");
-    }
-    address_prev = address_curr;
   }
 }
 #endif
