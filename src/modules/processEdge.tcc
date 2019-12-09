@@ -116,6 +116,7 @@ void SimObj::ProcessEdge<v_t, e_t>::update_logger(void) {
      send_prev != send_curr) {
     if(_in_logger != NULL) {
       _in_logger->write(std::to_string(_tick)+","+
+                     std::to_string(_in_data.vertex_id)+","+
                      std::to_string(_in_data.vertex_id_addr)+","+
                      std::to_string(_in_data.vertex_dst_id)+","+
                      std::to_string(_in_data.vertex_dst_id_addr)+","+
@@ -131,7 +132,7 @@ void SimObj::ProcessEdge<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(complete_curr)+","+
-                     std::to_string(send_curr)+","+"\n");
+                     std::to_string(send_curr)+"\n");
     }
     ready_prev = ready_curr;
     complete_prev = complete_curr;

@@ -173,7 +173,7 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::update_logger(void) {
                      std::to_string(send_curr)+","+
                      std::to_string(dep_curr[0])+","+
                      std::to_string(dep_curr[1])+","+
-                     std::to_string(dep_curr[2])+","+"\n");
+                     std::to_string(dep_curr[2])+"\n");
     }
     ready_prev = ready_curr;
     send_prev = send_curr;

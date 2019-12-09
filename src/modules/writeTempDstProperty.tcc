@@ -184,29 +184,5 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::update_logger(void) {
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;
   }
-  if(address_prev != address_curr ||
-     mem_out_prev != mem_out_curr) {
-    if(_out_logger != NULL) {
-      _out_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_data.vertex_id)+","+
-                     std::to_string(_data.vertex_id_addr)+","+
-                     std::to_string(_data.vertex_dst_id)+","+
-                     std::to_string(_data.vertex_dst_id_addr)+","+
-                     std::to_string(_data.edge_id)+","+
-                     std::to_string(_data.vertex_data)+","+
-                     std::to_string(_data.vertex_dst_data)+","+
-                     std::to_string(_data.message_data)+","+
-                     std::to_string(_data.vertex_temp_dst_data)+","+
-                     std::to_string(_data.edge_data)+","+
-                     std::to_string(_data.edge_temp_data)+","+
-                     std::to_string(_data.last_vertex)+","+
-                     std::to_string(_data.last_edge)+","+
-                     std::to_string(_data.updated)+","+
-                     std::to_string(address_curr)+","+
-                     std::to_string(mem_out_curr)+"\n");
-    }
-    address_prev = address_curr;
-    mem_out_prev = mem_out_curr;
-  }
 }
 #endif

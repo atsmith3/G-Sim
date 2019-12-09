@@ -134,7 +134,7 @@ void SimObj::Reduce<v_t, e_t>::update_logger(void) {
                      std::to_string(_in_data.updated)+","+
                      std::to_string(ready_curr)+","+
                      std::to_string(complete_curr)+","+
-                     std::to_string(send_curr)+","+"\n");
+                     std::to_string(send_curr)+"\n");
     }
     ready_prev = ready_curr;
     complete_prev = complete_curr;

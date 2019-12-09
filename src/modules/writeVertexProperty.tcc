@@ -29,12 +29,10 @@ SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::li
 #if MODULE_TRACE
   ready_prev = false;
   mem_flag_prev = false;
-  address_prev = _curr_addr;
-  mem_out_prev = 0;
+  address_prev = 9;
   ready_curr = false;
   mem_flag_curr = false;
   address_curr = _curr_addr;
-  mem_out_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -68,7 +66,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
 #ifdef MODULE_TRACE
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;
-  address_curr = _data.vertex_id_addr;
+  address_curr = _curr_addr;
 #endif
 
   // Module State Machine
@@ -78,7 +76,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
         // Upstream sent _edge property
         _ready = false;
         _mem_flag = false;
-        _dram->write(_data.vertex_id_addr, &_mem_flag);
+        _dram->write(_curr_addr, &_mem_flag);
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -94,9 +92,6 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
       if(_mem_flag) {
         // Write to global mem
         if(_data.updated) {
-#ifdef MODULE_TRACE
-          mem_out_curr = _data.vertex_data;
-#endif
           _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
           _process->push_back(_data.vertex_id);
           _throughput++;

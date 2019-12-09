@@ -24,12 +24,10 @@ SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, U
   ready_prev = false;
   mem_flag_prev = false;
   send_prev = false;
-  address_prev = 0;
   mem_result_prev = 0;
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
-  address_curr = 0;
   mem_result_curr = 0;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
@@ -75,9 +73,6 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
         _ready = false;
         _mem_flag = false;
         _dram->read(_data.vertex_id_addr, &_mem_flag);
-#ifdef MODULE_TRACE
-        address_curr = _data.vertex_id_addr;
-#endif
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;
       }
@@ -160,14 +155,12 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::update_logger(void) {
                      std::to_string(ready_curr)+","+
                      std::to_string(mem_flag_curr)+","+
                      std::to_string(send_curr)+","+
-                     std::to_string(mem_result_curr)+","+
-                     std::to_string(address_curr)+"\n");
+                     std::to_string(mem_result_curr)+"\n");
     }
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;
     send_prev = send_curr;
     mem_result_prev = mem_result_curr;
-    address_prev = address_curr;
   }
 }
 #endif
