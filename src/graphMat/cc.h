@@ -2,28 +2,32 @@
  *
  * Andrew Smith
  *
- * BFS graphMat implementation for Graphicionado
+ * CC graphMat implementation for Graphicionado
+ *
+ * Connected Components labels each vertex with an integer
+ * corresponding to the set of verticies reachable from that
+ * vertex.
  *
  */
 
-#ifndef GRAPHMAT_BFS_H
-#define GRAPHMAT_BFS_H
+#ifndef GRAPHMAT_CC_H
+#define GRAPHMAT_CC_H
 
 #include "graphMat.h"
 
 namespace GraphMat {
 
 template<class v_t, class e_t>
-class BFS : public GraphApp<v_t, e_t> {
+class CC : public GraphApp<v_t, e_t> {
 protected:
   
 
 public:
   // Constructor
-  BFS() {}
+  CC() {}
 
   // Destructor
-  ~BFS() { /* Do Nothing */ }
+  ~CC() { /* Do Nothing */ }
 
   // Reduction Function
   bool reduce(v_t& a, const v_t& b);
@@ -34,10 +38,10 @@ public:
   // Apply
   bool apply(const v_t& scratch, v_t& dram);
 
-}; // class BFS
+}; // class CC
 
 }; // namespace GraphMat
 
-#include "bfs.tcc"
+#include "cc.tcc"
 
 #endif

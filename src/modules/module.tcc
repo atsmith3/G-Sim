@@ -16,8 +16,10 @@ SimObj::Module<v_t, e_t>::Module() {
   _next = NULL;
   _prev = NULL;
   _has_work = false;
+#ifdef MODULE_TRACE
   _in_logger = NULL;
   _out_logger = NULL;
+#endif
 }
 
 

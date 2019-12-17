@@ -63,7 +63,7 @@ class readGraph {
     void writeVertexPropertyToFile(std::string name) {
       std::ofstream out;
       out.open(name, std::ios::out);
-      for(int i = 0; i < *numNodes + 1; i++) {
+      for(int i = 1; i < *numNodes + 1; i++) {
         out << vertex_property[i] << "\n";
       }
       out.close();

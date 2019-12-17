@@ -23,7 +23,7 @@ public:
   ~GraphApp() { /* Do nothing */ }
 
   // Applies reduction function to a vertex to be written to scratchpad
-  virtual void reduce(v_t& a, const v_t& b);
+  virtual bool reduce(v_t& a, const v_t& b);
 
   // Processes edge
   virtual void process_edge(v_t& message, const e_t& edge, const v_t& vertex);

@@ -20,14 +20,32 @@
 
 // GraphMat
 #include "bfs.h"
+#include "cc.h"
+#include "sssp.h"
+#include "pr.h"
 
 #define ITERATIONS 10000
 
-// The vertex type
+#define APP_CC
+#ifdef APP_BFS
 typedef bool vertex_t;
-
-// The edge type
 typedef double edge_t;
+#endif
+
+#ifdef APP_CC
+typedef uint64_t vertex_t;
+typedef double edge_t;
+#endif
+
+#ifdef APP_SSSP
+typedef uint64_t vertex_t;
+typedef double edge_t;
+#endif
+
+#ifdef APP_PR
+typedef bool vertex_t;
+typedef double edge_t;
+#endif
 
 void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
   std::cout << "Iteration: " << iteration << " " << name << " Queue Size " << q->size();
@@ -48,14 +66,34 @@ void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
 int main(int argc, char** argv) {
   Utility::Options opt;
   opt.parse(argc, argv);
+
+#ifdef APP_BFS
   Utility::readGraph<vertex_t> graph(opt);
   graph.setInitializer(false);
   graph.readMatrixMarket(opt.graph_path.c_str());
-#ifdef DEBUG
-  //graph.printGraph();
+  GraphMat::BFS<vertex_t, edge_t> app;
 #endif
-
-  GraphMat::BFS<vertex_t, edge_t> bfs;
+#ifdef APP_CC
+  Utility::readGraph<vertex_t> graph(opt);
+  graph.setInitializer(~0x0);
+  graph.readMatrixMarket(opt.graph_path.c_str());
+  GraphMat::CC<vertex_t, edge_t> app;
+#endif
+#ifdef APP_SSSP
+  Utility::readGraph<vertex_t> graph(opt);
+  graph.setInitializer(~0x0);
+  graph.readMatrixMarket(opt.graph_path.c_str());
+  GraphMat::SSSP<vertex_t, edge_t> app;
+#endif
+#ifdef APP_PR
+  double alpha = 0.85;
+  double tolerance = 1.0e-3;
+  Utility::readGraph<vertex_t> graph(opt);
+  vertex_t init(0.0, 1-alpha, 0.0, tolerance);
+  graph.setInitializer(~0x0);
+  graph.readMatrixMarket(opt.graph_path.c_str());
+  GraphMat::PR<vertex_t, edge_t> app(alpha, tolerance);
+#endif
 
   std::list<uint64_t>* process = new std::list<uint64_t>;
   std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
@@ -69,7 +107,7 @@ int main(int argc, char** argv) {
 #endif
 
   for(uint64_t i = 0; i < opt.num_pipelines; i++) {
-    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &bfs, mem, crossbar, opt.num_dst_readers);
+    SimObj::Pipeline<vertex_t, edge_t>* temp = new SimObj::Pipeline<vertex_t, edge_t>(i, opt, &graph, process, &app, mem, crossbar, opt.num_dst_readers);
     tile->push_back(temp);
   }
 

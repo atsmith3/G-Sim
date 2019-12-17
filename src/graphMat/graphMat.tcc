@@ -1,6 +1,7 @@
 template<class v_t, class e_t>
-void GraphMat::GraphApp<v_t, e_t>::reduce(v_t& scratch, const v_t& message) {
+bool GraphMat::GraphApp<v_t, e_t>::reduce(v_t& scratch, const v_t& message) {
   // Reduce
+  return true;
 }
 
 template<class v_t, class e_t>

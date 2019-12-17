@@ -1,54 +1,54 @@
-/*
- * Andrew Smith
- *
- * Graph Class
- *
- */
+// Andrew Smith
+//
+// Graph class
+//
+// 121219
 
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include <map>
+#include <iostream>
 #include <string>
 #include <vector>
-
-#include "readGraph.h"
+#include <list>
 
 namespace Utility {
 
-template <class vertex_property_t, class edge_property_t>
-class Graph {
-private:
-//  // readGraph
-//  readGraph* mm_graph;
-//
-//  // Vertex Property List
-//  std::vector<vertex_property_t> vertex_property;
-//
-//  // Edge Property List
-//  std::vector<edge_property_t> edge_property;
-   
+template<class e_t>
+class Edge {
 public:
-//  // Constructor
-//  Graph(std::string graph_file, int should_init);
-//
-//  // Destructor
-//  ~Graph();
-//
-//  // Copy Constructor
-//  Graph(Graph const & other);
-//
-//  // Get Edge List
-//
-//  // Get Vertex Property
-//
-//  // Set Vertex Property
+  e_t property;
+  uint64_t dst;
+  uint64_t src;
 
+  Edge(e_t init, uint64_t src, uint64_t dst);
+};
 
-}; // class Graph
+template<class v_t, class e_t>
+class Vertex {
+public:
+  v_t property;
+  std::vector<Edge<e_t>> edges;
+  std::vector<Edge<e_t>> in_edges;
+
+  template<class T, class U>
+  friend std::ostream& operator<<(std::ostream& os, const Vertex<T, U>& obj);
+};
+
+template<class v_t, class e_t>
+class Graph {
+public:
+  std::string graph_name;
+  std::vector<Vertex<v_t, e_t>> vertex;
+
+  void import(std::string fname);
+  void writeVertexProperty();
+  void serialize();
+  void deserialize();
+};
 
 }; // namespace Utility
 
-#include "graph.cpp"
+#include "graph.tcc"
 
 #endif // GRAPH_H

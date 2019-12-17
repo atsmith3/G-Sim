@@ -2,28 +2,31 @@
  *
  * Andrew Smith
  *
- * BFS graphMat implementation for Graphicionado
+ * SSSP graphMat implementation for Graphicionado
+ *
+ * Single Source Shortest Path (SSSP) finds the shortest distance from 
+ * the start node to all of the nodes reachable from the start node.
  *
  */
 
-#ifndef GRAPHMAT_BFS_H
-#define GRAPHMAT_BFS_H
+#ifndef GRAPHMAT_SSSP_H
+#define GRAPHMAT_SSSP_H
 
 #include "graphMat.h"
 
 namespace GraphMat {
 
 template<class v_t, class e_t>
-class BFS : public GraphApp<v_t, e_t> {
+class SSSP : public GraphApp<v_t, e_t> {
 protected:
   
 
 public:
   // Constructor
-  BFS() {}
+  SSSP() {}
 
   // Destructor
-  ~BFS() { /* Do Nothing */ }
+  ~SSSP() { /* Do Nothing */ }
 
   // Reduction Function
   bool reduce(v_t& a, const v_t& b);
@@ -34,10 +37,10 @@ public:
   // Apply
   bool apply(const v_t& scratch, v_t& dram);
 
-}; // class BFS
+}; // class SSSP
 
 }; // namespace GraphMat
 
-#include "bfs.tcc"
+#include "sssp.tcc"
 
 #endif
