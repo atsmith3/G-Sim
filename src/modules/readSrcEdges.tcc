@@ -8,6 +8,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 template<class v_t, class e_t>
 SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::Graph<v_t, e_t>* graph, std::string name, uint64_t id) {
@@ -159,7 +160,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _data = data;
   _edge_ptr = _graph->vertex[data.vertex_id].edges.size() - 1;
 #if MODULE_TRACE
-  num_edges_curr = _edge_list->size();
+  num_edges_curr = _graph->vertex[data.vertex_id].edges.size();
   _curr_addr = 0x1000;
   _in_data = data;
 #endif
@@ -169,6 +170,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
+  std::stringstream out;
   if(ready_prev != ready_curr ||
      mem_flag_prev != mem_flag_curr ||
      send_prev != send_curr ||
@@ -176,29 +178,40 @@ void SimObj::ReadSrcEdges<v_t, e_t>::update_logger(void) {
      edge_data_prev != edge_data_curr ||
      dst_id_prev != dst_id_curr) {
     if(_in_logger != NULL) {
-      _in_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_in_data.vertex_id)+","+
-                     std::to_string(_in_data.vertex_id_addr)+","+
-                     std::to_string(_in_data.vertex_dst_id)+","+
-                     std::to_string(_in_data.vertex_dst_id_addr)+","+
-                     std::to_string(_in_data.edge_id)+","+
-                     std::to_string(_in_data.vertex_data)+","+
-                     std::to_string(_in_data.vertex_dst_data)+","+
-                     std::to_string(_in_data.message_data)+","+
-                     std::to_string(_in_data.vertex_temp_dst_data)+","+
-                     std::to_string(_in_data.edge_data)+","+
-                     std::to_string(_in_data.edge_temp_data)+","+
-                     std::to_string(_in_data.last_vertex)+","+
-                     std::to_string(_in_data.last_edge)+","+
-                     std::to_string(_in_data.updated)+","+
-                     std::to_string(ready_curr)+","+
-                     std::to_string(mem_flag_curr)+","+
-                     std::to_string(send_curr)+","+
-                     std::to_string(edges_empty_curr)+","+
-                     std::to_string(edge_data_curr)+","+
-                     std::to_string(dst_id_curr)+","+
-                     std::to_string(address_curr)+","+
-                     std::to_string(num_edges_curr)+"\n");
+      out << _tick << ",";
+      out << _in_data << ",";
+      out << ready_curr << ",";
+      out << mem_flag_curr << ",";
+      out << send_curr << ",";
+      out << edges_empty_curr << ",";
+      out << edge_data_curr << ",";
+      out << dst_id_curr << ",";
+      out << address_curr << ",";
+      out << num_edges_curr << "\n";
+      _in_logger->write(out.str());
+      //_in_logger->write(std::to_string(_tick)+","+
+      //               std::to_string(_in_data.vertex_id)+","+
+      //               std::to_string(_in_data.vertex_id_addr)+","+
+      //               std::to_string(_in_data.vertex_dst_id)+","+
+      //               std::to_string(_in_data.vertex_dst_id_addr)+","+
+      //               std::to_string(_in_data.edge_id)+","+
+      //               std::to_string(_in_data.vertex_data)+","+
+      //               std::to_string(_in_data.vertex_dst_data)+","+
+      //               std::to_string(_in_data.message_data)+","+
+      //               std::to_string(_in_data.vertex_temp_dst_data)+","+
+      //               std::to_string(_in_data.edge_data)+","+
+      //               std::to_string(_in_data.edge_temp_data)+","+
+      //               std::to_string(_in_data.last_vertex)+","+
+      //               std::to_string(_in_data.last_edge)+","+
+      //               std::to_string(_in_data.updated)+","+
+      //               std::to_string(ready_curr)+","+
+      //               std::to_string(mem_flag_curr)+","+
+      //               std::to_string(send_curr)+","+
+      //               std::to_string(edges_empty_curr)+","+
+      //               std::to_string(edge_data_curr)+","+
+      //               std::to_string(dst_id_curr)+","+
+      //               std::to_string(address_curr)+","+
+      //               std::to_string(num_edges_curr)+"\n");
     }
     ready_prev = ready_curr;
     mem_flag_prev = mem_flag_curr;

@@ -54,11 +54,11 @@ private:
   bool ready_prev;
   bool mem_flag_prev;
   uint64_t address_prev;
-  uint64_t mem_out_prev;
+  v_t mem_out_prev;
   bool ready_curr;
   bool mem_flag_curr;
   uint64_t address_curr;
-  uint64_t mem_out_curr;
+  v_t mem_out_curr;
 
   void update_logger();
 #endif

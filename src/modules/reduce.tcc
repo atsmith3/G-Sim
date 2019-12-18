@@ -10,6 +10,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 template<class v_t, class e_t>
 SimObj::Reduce<v_t, e_t>::Reduce(int delay_cycles, GraphMat::GraphApp<v_t, e_t>* app, std::string name, uint64_t id) {
@@ -113,28 +114,35 @@ void SimObj::Reduce<v_t, e_t>::tick(void) {
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
 void SimObj::Reduce<v_t, e_t>::update_logger(void) {
+  std::stringstream out;
   if(ready_prev != ready_curr ||
      complete_prev != complete_curr ||
      send_prev != send_curr) {
     if(_in_logger != NULL) {
-      _in_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_in_data.vertex_id)+","+
-                     std::to_string(_in_data.vertex_id_addr)+","+
-                     std::to_string(_in_data.vertex_dst_id)+","+
-                     std::to_string(_in_data.vertex_dst_id_addr)+","+
-                     std::to_string(_in_data.edge_id)+","+
-                     std::to_string(_in_data.vertex_data)+","+
-                     std::to_string(_in_data.vertex_dst_data)+","+
-                     std::to_string(_in_data.message_data)+","+
-                     std::to_string(_in_data.vertex_temp_dst_data)+","+
-                     std::to_string(_in_data.edge_data)+","+
-                     std::to_string(_in_data.edge_temp_data)+","+
-                     std::to_string(_in_data.last_vertex)+","+
-                     std::to_string(_in_data.last_edge)+","+
-                     std::to_string(_in_data.updated)+","+
-                     std::to_string(ready_curr)+","+
-                     std::to_string(complete_curr)+","+
-                     std::to_string(send_curr)+"\n");
+      out << _tick << ",";
+      out << _in_data << ",";
+      out << ready_curr << ",";
+      out << complete_curr << ",";
+      out << send_curr << "\n";
+      _in_logger->write(out.str());
+      //_in_logger->write(std::to_string(_tick)+","+
+      //               std::to_string(_in_data.vertex_id)+","+
+      //               std::to_string(_in_data.vertex_id_addr)+","+
+      //               std::to_string(_in_data.vertex_dst_id)+","+
+      //               std::to_string(_in_data.vertex_dst_id_addr)+","+
+      //               std::to_string(_in_data.edge_id)+","+
+      //               std::to_string(_in_data.vertex_data)+","+
+      //               std::to_string(_in_data.vertex_dst_data)+","+
+      //               std::to_string(_in_data.message_data)+","+
+      //               std::to_string(_in_data.vertex_temp_dst_data)+","+
+      //               std::to_string(_in_data.edge_data)+","+
+      //               std::to_string(_in_data.edge_temp_data)+","+
+      //               std::to_string(_in_data.last_vertex)+","+
+      //               std::to_string(_in_data.last_edge)+","+
+      //               std::to_string(_in_data.updated)+","+
+      //               std::to_string(ready_curr)+","+
+      //               std::to_string(complete_curr)+","+
+      //               std::to_string(send_curr)+"\n");
     }
     ready_prev = ready_curr;
     complete_prev = complete_curr;

@@ -8,6 +8,7 @@
  */
 
 #include <cassert>
+#include <sstream>
 
 template<class v_t, class e_t>
 SimObj::ControlAtomicUpdate<v_t, e_t>::ControlAtomicUpdate(std::string name, uint64_t id) {
@@ -148,32 +149,41 @@ void SimObj::ControlAtomicUpdate<v_t, e_t>::debug(void) {
 #ifdef MODULE_TRACE
 template<class v_t, class e_t>
 void SimObj::ControlAtomicUpdate<v_t, e_t>::update_logger(void) {
+  std::stringstream out;
   if(ready_prev != ready_curr ||
      dep_prev[0] != dep_curr[0] ||
      dep_prev[1] != dep_curr[1] ||
      dep_prev[2] != dep_curr[2] ||
      send_prev != send_curr) {
     if(_in_logger != NULL) {
-      _in_logger->write(std::to_string(_tick)+","+
-                     std::to_string(_in_data.vertex_id)+","+
-                     std::to_string(_in_data.vertex_id_addr)+","+
-                     std::to_string(_in_data.vertex_dst_id)+","+
-                     std::to_string(_in_data.vertex_dst_id_addr)+","+
-                     std::to_string(_in_data.edge_id)+","+
-                     std::to_string(_in_data.vertex_data)+","+
-                     std::to_string(_in_data.vertex_dst_data)+","+
-                     std::to_string(_in_data.message_data)+","+
-                     std::to_string(_in_data.vertex_temp_dst_data)+","+
-                     std::to_string(_in_data.edge_data)+","+
-                     std::to_string(_in_data.edge_temp_data)+","+
-                     std::to_string(_in_data.last_vertex)+","+
-                     std::to_string(_in_data.last_edge)+","+
-                     std::to_string(_in_data.updated)+","+
-                     std::to_string(ready_curr)+","+
-                     std::to_string(send_curr)+","+
-                     std::to_string(dep_curr[0])+","+
-                     std::to_string(dep_curr[1])+","+
-                     std::to_string(dep_curr[2])+"\n");
+      out << _tick << ",";
+      out << _in_data << ",";
+      out << ready_curr << ",";
+      out << send_curr << ",";
+      out << dep_curr[0] << ",";
+      out << dep_curr[1] << ",";
+      out << dep_curr[2] << "\n";
+      _in_logger->write(out.str());
+      //_in_logger->write(std::to_string(_tick)+","+
+      //               std::to_string(_in_data.vertex_id)+","+
+      //               std::to_string(_in_data.vertex_id_addr)+","+
+      //               std::to_string(_in_data.vertex_dst_id)+","+
+      //               std::to_string(_in_data.vertex_dst_id_addr)+","+
+      //               std::to_string(_in_data.edge_id)+","+
+      //               std::to_string(_in_data.vertex_data)+","+
+      //               std::to_string(_in_data.vertex_dst_data)+","+
+      //               std::to_string(_in_data.message_data)+","+
+      //               std::to_string(_in_data.vertex_temp_dst_data)+","+
+      //               std::to_string(_in_data.edge_data)+","+
+      //               std::to_string(_in_data.edge_temp_data)+","+
+      //               std::to_string(_in_data.last_vertex)+","+
+      //               std::to_string(_in_data.last_edge)+","+
+      //               std::to_string(_in_data.updated)+","+
+      //               std::to_string(ready_curr)+","+
+      //               std::to_string(send_curr)+","+
+      //               std::to_string(dep_curr[0])+","+
+      //               std::to_string(dep_curr[1])+","+
+      //               std::to_string(dep_curr[2])+"\n");
     }
     ready_prev = ready_curr;
     send_prev = send_curr;

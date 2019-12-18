@@ -26,6 +26,9 @@ public:
     os << obj.distance;
     return os;
   }
+  bool operator==(const sssp_t& obj) {
+    return obj.distance == this->distance;
+  }
 };
 
 template<class v_t, class e_t>

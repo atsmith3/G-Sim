@@ -58,10 +58,19 @@ struct pipeline_data {
 
 template<class v_t, class e_t>
 std::ostream& operator<<(std::ostream& out, const pipeline_data<v_t, e_t>& obj) {
-  out << "{ vertex_id:" << obj.vertex_id << ", vertex_dst_id:" << obj.vertex_dst_id << ", edge_id:" << obj.edge_id; 
-  out << ", vertex_data:" << obj.vertex_data << ", vertex_dst_data:" << obj.vertex_dst_data << ", message_data:" << obj.message_data << ", vertex_temp_dst_data:" << obj.vertex_temp_dst_data;
-  out << ", edge_data:" << obj.edge_data << ", edge_temp_data:" << obj.edge_temp_data;
-  out << ", last_vertex:" << obj.last_vertex << ", last_edge:" << obj.last_edge << ", updated:" << obj.updated << " }";
+  out << obj.vertex_id << ",";
+  out << obj.vertex_id_addr << ",";
+  out << obj.vertex_dst_id << ",";
+  out << obj.vertex_dst_id_addr << ",";
+  out << obj.vertex_data << ",";
+  out << obj.vertex_dst_data << ",";
+  out << obj.message_data << ",";
+  out << obj.vertex_temp_dst_data << ",";
+  out << obj.edge_data << ",";
+  out << obj.edge_temp_data << ",";
+  out << obj.last_vertex << ",";
+  out << obj.last_edge << ",";
+  out << obj.updated;
   return out;
 }
 
