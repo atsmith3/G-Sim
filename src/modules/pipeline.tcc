@@ -1,7 +1,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers) {
+SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::Graph<v_t, e_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers) {
   // Assert inputs are OK
   assert(graph != NULL);
   assert(application != NULL);
@@ -32,12 +32,12 @@ SimObj::Pipeline<v_t, e_t>::Pipeline(uint64_t pipeline_id, const Utility::Option
   arbiter = new SimObj::Arbiter<v_t, e_t>();
   p4 = new SimObj::ProcessEdge<v_t, e_t>(1, application, "ProcessEdge", _id);
   p5 = new SimObj::ControlAtomicUpdate<v_t, e_t>("ControlAtomicUpdate", _id);
-  p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, graph, scratchpad_map, "ReadTempDstProperty", _id);
+  p6 = new SimObj::ReadTempDstProperty<v_t, e_t>(scratchpad, scratchpad_map, "ReadTempDstProperty", _id);
   p7 = new SimObj::Reduce<v_t, e_t>(1, application, "Reduce", _id);
   p8 = new SimObj::WriteTempDstProperty<v_t, e_t>(scratchpad, p5, scratchpad_map, apply, "WriteTempDstProperty", _id);
 
   a1 = new SimObj::ReadVertexProperty<v_t, e_t>(mem, apply, graph, (uint64_t)apply, "ReadVertexProperty", _id);
-  a2 = new SimObj::ReadTempVertexProperty<v_t, e_t>(scratchpad, graph, scratchpad_map, "ReadTempVertexProperty", _id);
+  a2 = new SimObj::ReadTempVertexProperty<v_t, e_t>(scratchpad, scratchpad_map, "ReadTempVertexProperty", _id);
   a3 = new SimObj::Apply<v_t, e_t>(1, application, "Apply", _id);
   a4 = new SimObj::WriteVertexProperty<v_t, e_t>(mem, process, graph, (((uint64_t)process + pipeline_id*(1<<20)) & ~(0x3F)), "WriteVertexProperty", _id);
   

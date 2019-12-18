@@ -11,7 +11,7 @@
 
 
 template<class v_t, class e_t>
-SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
+SimObj::WriteVertexProperty<v_t, e_t>::WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(graph != NULL);
   assert(process != NULL);
@@ -92,7 +92,7 @@ void SimObj::WriteVertexProperty<v_t, e_t>::tick(void) {
       if(_mem_flag) {
         // Write to global mem
         if(_data.updated) {
-          _graph->setVertexProperty(_data.vertex_id, _data.vertex_data);
+          _graph->vertex[_data.vertex_id].property = _data.vertex_data;
           _process->push_back(_data.vertex_id);
           _throughput++;
         }

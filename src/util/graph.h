@@ -42,7 +42,8 @@ public:
   std::vector<Vertex<v_t, e_t>> vertex;
 
   void import(std::string fname);
-  void writeVertexProperty();
+  void printVertexProperties(uint64_t n);
+  void writeVertexProperties(std::string fname);
   void serialize();
   void deserialize();
 };

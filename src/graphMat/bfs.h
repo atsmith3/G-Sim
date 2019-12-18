@@ -25,6 +25,12 @@ public:
   // Destructor
   ~BFS() { /* Do Nothing */ }
 
+  // Init
+  void initialize(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr); 
+
+  // Do Every Iteration
+  void do_every_iteration(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr); 
+
   // Reduction Function
   bool reduce(v_t& a, const v_t& b);
 
@@ -33,7 +39,6 @@ public:
 
   // Apply
   bool apply(const v_t& scratch, v_t& dram);
-
 }; // class BFS
 
 }; // namespace GraphMat

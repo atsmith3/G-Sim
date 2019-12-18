@@ -10,7 +10,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::string name, uint64_t id, uint64_t reader_id) {
+SimObj::ReadDstProperty<v_t, e_t>::ReadDstProperty(Memory* dram, Utility::Graph<v_t, e_t>* graph, std::string name, uint64_t id, uint64_t reader_id) {
   assert(dram != NULL);
   assert(graph != NULL);
   _id = id;
@@ -64,8 +64,8 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
         // Upstream sent vertex & vertex property
         _ready = false;
         _mem_flag = false;
-        _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
-        _data.vertex_dst_id_addr = _graph->getVertexAddress(_data.vertex_dst_id);
+        _data.vertex_dst_id = _graph->vertex[_data.vertex_id].edges[_data.edge_id].dst;
+        _data.vertex_dst_id_addr = (uint64_t)((void*)(&_graph->vertex[_data.vertex_dst_id]));
         _dram->read(_data.vertex_dst_id_addr, &_mem_flag, false);
 #ifdef MODULE_TRACE
         address_curr = _data.vertex_dst_id_addr;
@@ -82,7 +82,7 @@ void SimObj::ReadDstProperty<v_t, e_t>::tick(void) {
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
-        _data.vertex_dst_data = _graph->getVertexProperty(_data.vertex_dst_id);
+        _data.vertex_dst_data = _graph->vertex[_data.vertex_dst_id].property;
 #ifdef MODULE_TRACE
         mem_result_curr = _data.vertex_dst_data;
 #endif

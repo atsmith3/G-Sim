@@ -13,7 +13,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
+SimObj::ReadSrcProperty<v_t, e_t>::ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(process != NULL);
   assert(graph != NULL);
@@ -76,8 +76,9 @@ void SimObj::ReadSrcProperty<v_t, e_t>::tick() {
         // Dequeue from the work queue
         _data.vertex_id = _process->front();
         _process->pop_front();
-        _data.vertex_id_addr = _graph->getVertexAddress(_data.vertex_id);
-        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
+        _data.vertex_id_addr = _curr_addr;
+        //_data.vertex_id_addr = &_graph->vertex[_data.vertex_id];
+        _data.vertex_data = _graph->vertex[_data.vertex_id].property;
 #ifdef MODULE_TRACE
         mem_result_curr = _data.vertex_data;
 #endif

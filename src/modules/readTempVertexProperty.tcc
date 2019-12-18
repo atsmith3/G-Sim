@@ -8,13 +8,11 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id) {
+SimObj::ReadTempVertexProperty<v_t, e_t>::ReadTempVertexProperty(Memory* dram, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(scratch_mem != NULL);
-  assert(graph != NULL);
   _id = id;
   _name = name;
-  _graph = graph;
   _scratch_mem = scratch_mem;
   _dram = dram;
   _ready = false;
@@ -41,7 +39,6 @@ template<class v_t, class e_t>
 SimObj::ReadTempVertexProperty<v_t, e_t>::~ReadTempVertexProperty() {
   _dram = NULL;
   _scratch_mem = NULL;
-  _graph = NULL;
 #if MODULE_TRACE
   if(_in_logger) {
     delete _in_logger;
@@ -91,7 +88,7 @@ void SimObj::ReadTempVertexProperty<v_t, e_t>::tick(void) {
             _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_id)->second.vertex_temp_dst_data;
           }
           else {
-            _data.vertex_temp_dst_data = _graph->getInitializer();
+            _data.vertex_temp_dst_data = v_t();
           }
 #ifdef MODULE_TRACE
           mem_result_curr = _data.vertex_temp_dst_data;

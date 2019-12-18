@@ -9,7 +9,7 @@
 
 
 template<class v_t, class e_t>
-SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
+SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id) {
   assert(dram != NULL);
   assert(apply != NULL);
   assert(graph != NULL);
@@ -80,7 +80,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
       if(_ready && !_apply->empty()) {
         // Dequeue from the apply work queue
         _data.vertex_id = _apply->front();
-        _data.vertex_id_addr = _graph->getVertexAddress(_data.vertex_id_addr);
+        _data.vertex_id_addr = (uint64_t)((void*)(&_graph->vertex[_data.vertex_id]));
         _apply->pop_front();
         _data.last_edge = false;
         _data.last_vertex = false;
@@ -92,7 +92,7 @@ void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
         }
 
         // Read the global vertex property
-        _data.vertex_data = _graph->getVertexProperty(_data.vertex_id);
+        _data.vertex_data = _graph->vertex[_data.vertex_id].property;
 #ifdef MODULE_TRACE
         mem_result_curr = _data.vertex_data;
 #endif

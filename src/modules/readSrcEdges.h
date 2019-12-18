@@ -19,7 +19,7 @@
 #include "module.h"
 #include "memory.h"
 
-#include "readGraph.h"
+#include "graph.h"
 
 namespace SimObj {
 
@@ -73,15 +73,15 @@ private:
 
   Memory* _scratchpad;
   op_t _state;
-  std::queue<uint>* _edge_list;
-  Utility::readGraph<v_t>* _graph;
+  std::vector<Utility::Edge<e_t>> _edge_list;
+  Utility::Graph<v_t, e_t>* _graph;
   bool _data_set;
   uint64_t _id;
   uint64_t _curr_addr;
 
 public:
   bool _mem_flag;
-  ReadSrcEdges(Memory* dram, Utility::readGraph<v_t>* graph, std::string name, uint64_t id);
+  ReadSrcEdges(Memory* dram, Utility::Graph<v_t, e_t>* graph, std::string name, uint64_t id);
   ~ReadSrcEdges();
 
   void tick(void);

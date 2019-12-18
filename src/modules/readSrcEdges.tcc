@@ -10,7 +10,7 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::string name, uint64_t id) {
+SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::Graph<v_t, e_t>* graph, std::string name, uint64_t id) {
   assert(scratchpad != NULL);
   assert(graph != NULL);
   _scratchpad = scratchpad;
@@ -70,7 +70,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
       if(_ready) {
         // Upstream sent vertex & vertex property
         _ready = false;
-        if(!_edge_list->empty()) {
+        if(_edge_list.size() != 0) {
           _data_set = false;
           _mem_flag = false;
           _scratchpad->read(0x01, &_mem_flag);
@@ -93,10 +93,10 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_data_set == false) {
-          _data.edge_id = _edge_list->front();
-          _edge_list->pop();
-          _data.edge_data = _graph->getEdgeWeight(_data.edge_id);
-          _data.vertex_dst_id = _graph->getNodeNeighbor(_data.edge_id);
+          _data.edge_id =_edge_list.size() - 1;
+          _data.edge_data = _edge_list[_edge_list.size() - 1].property;
+          _data.vertex_dst_id = _edge_list[_edge_list.size() - 1].dst;
+          _edge_list.pop_back();
           _data_set = true;
 #ifdef MODULE_TRACE
           edge_data_curr = _data.edge_data;
@@ -104,7 +104,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
 #endif
         }
         if(_next->is_stalled(_data) == STALL_CAN_ACCEPT) {
-          if(!_edge_list->empty()) {
+          if(_edge_list.size() != 0) {
             _data_set = false;
             _mem_flag = false;
             _scratchpad->read(_curr_addr, &_mem_flag);
@@ -114,8 +114,6 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
             _data.last_edge = false;
           }
           else {
-            delete _edge_list;
-            _edge_list = NULL;
             next_state = OP_WAIT;
             _stall = STALL_CAN_ACCEPT;
             _data.last_edge = true;
@@ -156,7 +154,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _ready = true;
   _has_work = true;
   _data = data;
-  _edge_list = _graph->getEdges(data.vertex_id);
+  _edge_list = _graph->vertex[data.vertex_id].edges;
 #if MODULE_TRACE
   num_edges_curr = _edge_list->size();
   _curr_addr = 0x1000;

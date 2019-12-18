@@ -22,22 +22,38 @@
 
 namespace GraphMat {
 
+#define ALPHA 0.85f
+#define TOLERANCE 1.0e-3f
+
+class pr_t {
+public:
+  double delta;
+  double residual;
+  double pageRank;
+  pr_t() {
+    delta = 0.0;
+    residual = 1-ALPHA;
+    pageRank = 0.0;
+  }
+  friend std::ostream& operator<<(std::ostream& os, const pr_t& obj);
+};
+
 template<class v_t, class e_t>
 class PR : public GraphApp<v_t, e_t> {
 protected:
-  double alpha;
-  double tolerance;
-  
 
 public:
   // Constructor
-  PR(double alpha, double tolerance) {
-    this->alpha = alpha;
-    this->tolerance = alpha;
-  }
+  PR() {}
 
   // Destructor
   ~PR() { /* Do Nothing */ }
+
+  // Init
+  void initialize(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr);
+
+  // Function to do every iteration of the graph application
+  void do_every_iteration(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr);
 
   // Reduction Function
   bool reduce(v_t& a, const v_t& b);

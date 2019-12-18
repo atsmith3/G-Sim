@@ -22,7 +22,7 @@
 #include "module.h"
 #include "memory.h"
 
-#include "readGraph.h"
+#include "graph.h"
 
 namespace SimObj {
 
@@ -76,14 +76,14 @@ private:
   op_t _state;
   bool _fetched;
   std::list<uint64_t>* _process;
-  Utility::readGraph<v_t>* _graph;
+  Utility::Graph<v_t, e_t>* _graph;
   uint64_t _base_addr;
   uint64_t _curr_addr;
   uint64_t _id;
 
 public:
   bool _mem_flag;
-  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
+  ReadSrcProperty(Memory* dram, std::list<uint64_t>* process, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~ReadSrcProperty();
 
   void tick(void);

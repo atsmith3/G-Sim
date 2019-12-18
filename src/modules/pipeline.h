@@ -37,7 +37,7 @@
 #include "readVertexProperty.h"
 #include "readTempVertexProperty.h"
 #include "writeVertexProperty.h"
-#include "readGraph.h"
+#include "graph.h"
 
 // Utility
 #include "option.h"
@@ -76,7 +76,7 @@ private:
 
 public:
   // Constructor:
-  Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::readGraph<v_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers);
+  Pipeline(uint64_t pipeline_id, const Utility::Options opt, Utility::Graph<v_t, e_t>* graph, std::list<uint64_t>* process, GraphMat::GraphApp<v_t, e_t>* application, Memory* mem, Crossbar<v_t, e_t>* crossbar, int num_dst_readers);
 
   // Destructor:
   ~Pipeline();

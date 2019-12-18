@@ -29,6 +29,12 @@ public:
   // Destructor
   ~CC() { /* Do Nothing */ }
 
+  // Init
+  void initialize(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr);
+
+  // Function to do every iteration of the graph application
+  void do_every_iteration(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr);
+
   // Reduction Function
   bool reduce(v_t& a, const v_t& b);
 

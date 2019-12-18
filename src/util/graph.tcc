@@ -132,9 +132,22 @@ void Graph<v_t, e_t>::import(std::string fname) {
 }
 
 template<class v_t, class e_t>
-void Graph<v_t, e_t>::writeVertexProperty() {
+void Graph<v_t, e_t>::printVertexProperties(uint64_t n) {
+  std::cout << "VertexProperties [ ";
+  for(uint64_t i = 0; i < n && i < vertex.size(); i++) { 
+    if(i == (n - 1) || i == (vertex.size() - 1)) {
+      std::cout << vertex[i].property << " ]\n";
+    }
+    else {
+      std::cout << vertex[i].property << ", ";
+    }
+  }
+}
+
+template<class v_t, class e_t>
+void Graph<v_t, e_t>::writeVertexProperties(std::string fname) {
   std::fstream out;
-  out.open("vertexProperty.out", std::ios::out);
+  out.open(fname, std::ios::out);
 
   for(auto it = vertex.begin(); it != vertex.end(); it++) {
     out << *it << "\n";

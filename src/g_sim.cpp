@@ -16,7 +16,7 @@
 
 // Utility
 #include "option.h"
-#include "edge.h"
+#include "graph.h"
 
 // GraphMat
 #include "bfs.h"
@@ -26,7 +26,7 @@
 
 #define ITERATIONS 10000
 
-#define APP_CC
+#define APP_BFS
 #ifdef APP_BFS
 typedef bool vertex_t;
 typedef double edge_t;
@@ -66,36 +66,15 @@ void print_queue(std::string name, std::list<uint64_t>* q, int iteration) {
 int main(int argc, char** argv) {
   Utility::Options opt;
   opt.parse(argc, argv);
+  std::list<uint64_t>* process = new std::list<uint64_t>;
 
 #ifdef APP_BFS
-  Utility::readGraph<vertex_t> graph(opt);
-  graph.setInitializer(false);
-  graph.readMatrixMarket(opt.graph_path.c_str());
+  Utility::Graph<vertex_t, edge_t> graph;
+  graph.import(opt.graph_path);
   GraphMat::BFS<vertex_t, edge_t> app;
-#endif
-#ifdef APP_CC
-  Utility::readGraph<vertex_t> graph(opt);
-  graph.setInitializer(~0x0);
-  graph.readMatrixMarket(opt.graph_path.c_str());
-  GraphMat::CC<vertex_t, edge_t> app;
-#endif
-#ifdef APP_SSSP
-  Utility::readGraph<vertex_t> graph(opt);
-  graph.setInitializer(~0x0);
-  graph.readMatrixMarket(opt.graph_path.c_str());
-  GraphMat::SSSP<vertex_t, edge_t> app;
-#endif
-#ifdef APP_PR
-  double alpha = 0.85;
-  double tolerance = 1.0e-3;
-  Utility::readGraph<vertex_t> graph(opt);
-  vertex_t init(0.0, 1-alpha, 0.0, tolerance);
-  graph.setInitializer(~0x0);
-  graph.readMatrixMarket(opt.graph_path.c_str());
-  GraphMat::PR<vertex_t, edge_t> app(alpha, tolerance);
+  app.initialize(graph, process); 
 #endif
 
-  std::list<uint64_t>* process = new std::list<uint64_t>;
   std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
 
   SimObj::Crossbar<vertex_t, edge_t>* crossbar = new SimObj::Crossbar<vertex_t, edge_t>(opt.num_pipelines);
@@ -119,10 +98,6 @@ int main(int argc, char** argv) {
   uint64_t process_cycles = 0;
   uint64_t apply_cycles = 0;
 
-  // Setup problem:
-  process->push_back(1);
-  graph.setVertexProperty(1, true);
-
   // Iteration Loop:
   for(uint64_t iteration = 0; iteration < opt.num_iter && !process->empty(); iteration++) {
     // Reset all the stats Counters:
@@ -134,7 +109,6 @@ int main(int argc, char** argv) {
 
 #ifdef DEBUG
     print_queue("Process", process, iteration);
-    //graph.printVertexProperties();
 #endif
     mem->reset();
     // Processing Phase 
@@ -200,7 +174,7 @@ int main(int argc, char** argv) {
     delete tile->operator[](i);
   }
 
-  graph.writeVertexPropertyToFile(opt.result);
+  graph.writeVertexProperties(opt.result);
 
   return 0;
 }

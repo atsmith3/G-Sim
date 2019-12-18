@@ -10,14 +10,12 @@
 #include <cassert>
 
 template<class v_t, class e_t>
-SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id) {
+SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id) {
   assert(scratchpad != NULL);
-  assert(graph != NULL);
   assert(scratch_mem != NULL);
   _id = id;
   _name = name;
   _scratchpad = scratchpad;
-  _graph = graph;
   _scratch_mem = scratch_mem;
   _ready = false;
   _mem_flag = false;
@@ -44,7 +42,6 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, U
 template<class v_t, class e_t>
 SimObj::ReadTempDstProperty<v_t, e_t>::~ReadTempDstProperty() {
   _scratchpad = NULL;
-  _graph = NULL;
   _scratch_mem = NULL;
 }
 
@@ -72,7 +69,7 @@ void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
           _data.vertex_temp_dst_data = _scratch_mem->find(_data.vertex_dst_id)->second.vertex_temp_dst_data;
         }
         else {
-          _data.vertex_temp_dst_data = _graph->getInitializer();
+          _data.vertex_temp_dst_data = v_t();
         }
         _stall = STALL_MEM;
         next_state = OP_MEM_WAIT;

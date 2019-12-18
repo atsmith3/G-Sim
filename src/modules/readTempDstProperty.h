@@ -63,13 +63,12 @@ private:
 
   Memory* _scratchpad;
   op_t _state;
-  Utility::readGraph<v_t>* _graph;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
   uint64_t _id;
 
 public:
   bool _mem_flag;
-  ReadTempDstProperty(Memory* scratchpad, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
+  ReadTempDstProperty(Memory* scratchpad, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
   ~ReadTempDstProperty();
 
   void tick(void);

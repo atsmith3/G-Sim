@@ -17,6 +17,7 @@
 
 #include "module.h"
 #include "memory.h"
+#include "graph.h"
 
 namespace SimObj {
 
@@ -70,13 +71,13 @@ private:
   Memory* _dram;
   op_t _state;
   std::list<uint64_t>* _apply;
-  Utility::readGraph<v_t>* _graph;
+  Utility::Graph<v_t, e_t>* _graph;
   uint64_t _base_addr;
   uint64_t _curr_addr;
 
 public:
   bool _mem_flag;
-  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
+  ReadVertexProperty(Memory* dram, std::list<uint64_t>* apply, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~ReadVertexProperty();
 
   void tick(void);

@@ -20,7 +20,7 @@
 #include "memory.h"
 #include "log.h"
 
-#include "readGraph.h"
+#include "graph.h"
 
 namespace SimObj {
 
@@ -69,12 +69,12 @@ private:
 
   uint64_t _id;
 
-  Utility::readGraph<v_t>* _graph;
+  Utility::Graph<v_t, e_t>* _graph;
   std::list<uint64_t>* _process;
 
 public:
   bool _mem_flag;
-  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::readGraph<v_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
+  WriteVertexProperty(Memory* dram, std::list<uint64_t>* process, Utility::Graph<v_t, e_t>* graph, uint64_t base_addr, std::string name, uint64_t id);
   ~WriteVertexProperty();
 
   void tick(void);

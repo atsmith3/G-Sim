@@ -17,8 +17,6 @@
 #include "module.h"
 #include "memory.h"
 
-#include "readGraph.h"
-
 namespace SimObj {
 
 template<class v_t, class e_t>
@@ -61,12 +59,11 @@ private:
   uint64_t _id;
   Memory* _dram;
   op_t _state;
-  Utility::readGraph<v_t>* _graph;
   std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* _scratch_mem;
 
 public:
   bool _mem_flag;
-  ReadTempVertexProperty(Memory* dram, Utility::readGraph<v_t>* graph, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
+  ReadTempVertexProperty(Memory* dram, std::map<uint64_t, Utility::pipeline_data<v_t, e_t>>* scratch_mem, std::string name, uint64_t id);
   ~ReadTempVertexProperty();
 
   void tick(void);
