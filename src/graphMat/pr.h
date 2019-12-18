@@ -35,7 +35,10 @@ public:
     residual = 1-ALPHA;
     pageRank = 0.0;
   }
-  friend std::ostream& operator<<(std::ostream& os, const pr_t& obj);
+  friend std::ostream& operator<<(std::ostream& os, const pr_t& obj) {
+    os << obj.pageRank << "," << obj.delta << "," << obj.residual;
+    return os;
+  }
 };
 
 template<class v_t, class e_t>

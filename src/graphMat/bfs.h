@@ -13,6 +13,18 @@
 
 namespace GraphMat {
 
+class bfs_t {
+public:
+  bool visited;
+  bfs_t() {
+    visited = false;
+  }
+  friend std::ostream& operator<<(std::ostream& os, const bfs_t& obj) {
+    os << obj.visited;
+    return os;
+  }
+};
+
 template<class v_t, class e_t>
 class BFS : public GraphApp<v_t, e_t> {
 protected:

@@ -73,10 +73,10 @@ private:
 
   Memory* _scratchpad;
   op_t _state;
-  std::vector<Utility::Edge<e_t>> _edge_list;
   Utility::Graph<v_t, e_t>* _graph;
   bool _data_set;
   uint64_t _id;
+  uint64_t _edge_ptr;
   uint64_t _curr_addr;
 
 public:

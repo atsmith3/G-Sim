@@ -26,24 +26,25 @@
 
 #define ITERATIONS 10000
 
-#define APP_BFS
+#define APP_SSSP
+
 #ifdef APP_BFS
-typedef bool vertex_t;
+typedef GraphMat::bfs_t vertex_t;
 typedef double edge_t;
 #endif
 
 #ifdef APP_CC
-typedef uint64_t vertex_t;
+typedef GraphMat::cc_t vertex_t;
 typedef double edge_t;
 #endif
 
 #ifdef APP_SSSP
-typedef uint64_t vertex_t;
+typedef GraphMat::sssp_t vertex_t;
 typedef double edge_t;
 #endif
 
 #ifdef APP_PR
-typedef bool vertex_t;
+typedef GraphMat::pr_t vertex_t;
 typedef double edge_t;
 #endif
 
@@ -68,12 +69,21 @@ int main(int argc, char** argv) {
   opt.parse(argc, argv);
   std::list<uint64_t>* process = new std::list<uint64_t>;
 
-#ifdef APP_BFS
   Utility::Graph<vertex_t, edge_t> graph;
   graph.import(opt.graph_path);
+#ifdef APP_BFS
   GraphMat::BFS<vertex_t, edge_t> app;
-  app.initialize(graph, process); 
 #endif
+#ifdef APP_CC
+  GraphMat::CC<vertex_t, edge_t> app;
+#endif
+#ifdef APP_SSSP
+  GraphMat::SSSP<vertex_t, edge_t> app;
+#endif
+#ifdef APP_PR
+  GraphMat::PR<vertex_t, edge_t> app;
+#endif
+  app.initialize(graph, process); 
 
   std::vector<SimObj::Pipeline<vertex_t, edge_t>*>* tile = new std::vector<SimObj::Pipeline<vertex_t, edge_t>*>;
 

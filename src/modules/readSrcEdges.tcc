@@ -21,6 +21,7 @@ SimObj::ReadSrcEdges<v_t, e_t>::ReadSrcEdges(Memory* scratchpad, Utility::Graph<
   _name = name;
   _id = id;
   _curr_addr = 0x1000;
+  _edge_ptr = 0;
 #if MODULE_TRACE
   ready_prev = false;
   mem_flag_prev = false;
@@ -70,7 +71,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
       if(_ready) {
         // Upstream sent vertex & vertex property
         _ready = false;
-        if(_edge_list.size() != 0) {
+        if(_graph->vertex[_data.vertex_id].edges.size() != 0) {
           _data_set = false;
           _mem_flag = false;
           _scratchpad->read(0x01, &_mem_flag);
@@ -81,22 +82,24 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
           // Edge List is Empty
           next_state = OP_WAIT;
           _stall = STALL_CAN_ACCEPT;
+          _has_work = false;
         }
       }
       else {
         // Wait for upstream to send vertex
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
+        _has_work = false;
       }
       break;
     }
     case OP_MEM_WAIT : {
       if(_mem_flag) {
         if(_data_set == false) {
-          _data.edge_id =_edge_list.size() - 1;
-          _data.edge_data = _edge_list[_edge_list.size() - 1].property;
-          _data.vertex_dst_id = _edge_list[_edge_list.size() - 1].dst;
-          _edge_list.pop_back();
+          _data.edge_id = _edge_ptr;
+          _data.edge_data = _graph->vertex[_data.vertex_id].edges[_edge_ptr].property;
+          _data.vertex_dst_id = _graph->vertex[_data.vertex_id].edges[_edge_ptr].dst;
+          _edge_ptr--;
           _data_set = true;
 #ifdef MODULE_TRACE
           edge_data_curr = _data.edge_data;
@@ -104,7 +107,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
 #endif
         }
         if(_next->is_stalled(_data) == STALL_CAN_ACCEPT) {
-          if(_edge_list.size() != 0) {
+          if(_edge_ptr < _graph->vertex[_data.vertex_id].edges.size()) {
             _data_set = false;
             _mem_flag = false;
             _scratchpad->read(_curr_addr, &_mem_flag);
@@ -154,7 +157,7 @@ void SimObj::ReadSrcEdges<v_t, e_t>::ready(Utility::pipeline_data<v_t, e_t> data
   _ready = true;
   _has_work = true;
   _data = data;
-  _edge_list = _graph->vertex[data.vertex_id].edges;
+  _edge_ptr = _graph->vertex[data.vertex_id].edges.size() - 1;
 #if MODULE_TRACE
   num_edges_curr = _edge_list->size();
   _curr_addr = 0x1000;

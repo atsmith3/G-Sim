@@ -16,6 +16,18 @@
 
 namespace GraphMat {
 
+class sssp_t {
+public:
+  uint64_t distance;
+  sssp_t() {
+    distance = ~0;
+  }
+  friend std::ostream& operator<<(std::ostream& os, const sssp_t& obj) {
+    os << obj.distance;
+    return os;
+  }
+};
+
 template<class v_t, class e_t>
 class SSSP : public GraphApp<v_t, e_t> {
 protected:

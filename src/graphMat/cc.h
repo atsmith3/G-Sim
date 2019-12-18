@@ -17,6 +17,18 @@
 
 namespace GraphMat {
 
+class cc_t {
+public:
+  uint64_t component;
+  cc_t() {
+    component = ~0;
+  }
+  friend std::ostream& operator<<(std::ostream& os, const cc_t& obj) {
+    os << obj.component;
+    return os;
+  }
+};
+
 template<class v_t, class e_t>
 class CC : public GraphApp<v_t, e_t> {
 protected:
