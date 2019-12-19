@@ -7,6 +7,7 @@
 *.log
 *.bin
 *.mtx
+*.zip
 *.fuse_hidden*
 src/trace
 src/output
