@@ -1,20 +1,47 @@
 #!/bin/bash
 
-compile_app=('bfs' 'cc' 'sssp' 'pr')
-pipelines=('1' '8' '16' '32')
-graphs=('soc_Slashdot0902')
+APP=('bfs' 'cc' 'sssp')
+PL=('1' '8' '16' '32')
+GRAPHS=('shl_200' 'gemat11' 'mbeacxc' 'lshp1882' 'lock_700' 'citeseer')
+GRAPHS_LARGE=('orani678' 'amazon0302' 'G42')
+#GRAPHS_LARGE=('soc_Slashdot0902' 'orani678' 'amazon0302' 'G42')
 
-
-# Sweep DRAM Parameters
-for app in "${APPS[@]}" do
-  `make clean && make ${app}`
-  for graph in "${DRAM_WRITE_LATENCY[@]}"
-    do
-    for graph in "${GNAME[@]}"
-      do
-      inputGraph="/software/graphs/mm/$graph/$graph.mtx"
-      echo "./g_sim --dram_read_latency=$drl --dram_write_latency=$dwl --should_init=1 --graph_path=${inputGraph}"
-      ./g_sim --dram_read_latency=$drl --dram_write_latency=$dwl --should_init=1 --graph_path=${inputGraph} #> output/dram_param_sweep_${drl}_${dwl}.csv
+for app in "${APP[@]}"; do
+  make clean && make DRAMSIM2=1 MODULE_TRACE=1 ${app}
+  for graph in "${GRAPHS[@]}"; do
+    for pipeline in "${PL[@]}"; do
+      inputGraph="$graph"
+      fbase="${inputGraph}_${app}_${pipeline}"
+      IO_OPTIONS="--logfile=${fbase}_log.out"
+      READGRAPH_OPTIONS="--graph_path=graphs/${inputGraph}.mtx"
+      SIMULATION_OPTIONS="--num_iter=8 --num_pipelines=$pipeline --num_dst_readers=4 --app=$app --vertex_properties=${fbase}_vp.out"
+      `rm -f trace/*.csv`
+      echo "./g_sim $DRAM_OPTIONS $READGRAPH_OPTIONS $SIMULATION_OPTIONS 2>&1 ${fbase}_run.out"
+      ./g_sim $DRAM_OPTIONS $READGRAPH_OPTIONS $SIMULATION_OPTIONS 2>&1 ${fbase}_run.out
+      if [ $? -eq 0 ]; then
+        `rm -f trace/*_out.csv`
+        zip -r ${fbase}_trace.zip trace
+        mv dramsim.log ${fbase}_dramsim.out
+      fi
+      mv simulator_output.log ${fbase}_log.out
+    done
+  done
+  for graph in "${GRAPHS_LARGE[@]}"; do
+    for pipeline in "${PL[@]}"; do
+      inputGraph="$graph"
+      fbase="${inputGraph}_${app}_${pipeline}"
+      IO_OPTIONS="--logfile=${fbase}_log.out"
+      READGRAPH_OPTIONS="--graph_path=graphs/${inputGraph}.mtx"
+      SIMULATION_OPTIONS="--num_iter=3 --num_pipelines=$pipeline --num_dst_readers=4 --app=$app --vertex_properties=${fbase}_vp.out"
+      `rm -f trace/*.csv`
+      echo "./g_sim $DRAM_OPTIONS $READGRAPH_OPTIONS $SIMULATION_OPTIONS 2>&1 ${fbase}_run.out"
+      ./g_sim $DRAM_OPTIONS $READGRAPH_OPTIONS $SIMULATION_OPTIONS 2>&1 ${fbase}_run.out
+      if [ $? -eq 0 ]; then
+        `rm -f trace/*_out.csv`
+        zip -r ${fbase}_trace.zip trace
+        mv dramsim.log ${fbase}_dramsim.out
+      fi
+      mv simulator_output.log ${fbase}_log.out
     done
   done
 done

@@ -1,7 +1,16 @@
 template<class v_t, class e_t>
 void GraphMat::SSSP<v_t, e_t>::initialize(Utility::Graph<v_t, e_t>& graph, std::list<uint64_t>* curr) {
-  graph.vertex[0].property.distance = 0;
-  curr->push_back(0);
+  uint64_t max = 0;
+  uint64_t it = 0;
+  for(uint64_t i = 0; i < graph.vertex.size(); i++) {
+    if(graph.vertex[i].edges.size() > max) {
+      max = graph.vertex[i].edges.size();
+      it = i;
+    }
+  } 
+  std::cout << "Starting @ vertex " << it << "\n";
+  graph.vertex[it].property.distance = 0;
+  curr->push_back(it);
 }
 
 template<class v_t, class e_t>

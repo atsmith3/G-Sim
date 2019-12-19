@@ -240,7 +240,7 @@ void SimObj::Pipeline<v_t, e_t>::print_stats() {
 
 template<class v_t, class e_t>
 void SimObj::Pipeline<v_t, e_t>::print_stats_csv() {
-  std::cout << "------Pipeline " << _id << "--------------\n";
+  sim_out.write("------Pipeline "+std::to_string(_id)+"--------------\n");
   p1->print_stats_csv();
   p2->print_stats_csv();
   alloc->print_stats_csv();

@@ -80,8 +80,8 @@ void Graph<v_t, e_t>::import(std::string fname) {
           vertex.resize(rows);
         }
         else {
-          src = std::stoull(tokens[0]) - 1;
-          dst = std::stoull(tokens[1]) - 1;
+          dst = std::stoull(tokens[0]) - 1;
+          src = std::stoull(tokens[1]) - 1;
           if(field == "pattern") {
             if(symmetry == "symmetric") {
               vertex[dst].property = v_t();
