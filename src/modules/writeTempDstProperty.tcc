@@ -29,11 +29,11 @@ SimObj::WriteTempDstProperty<v_t, e_t>::WriteTempDstProperty(Memory* scratchpad,
   ready_prev = false;
   mem_flag_prev = false;
   address_prev = 0;
-  mem_out_prev = 0;
+  mem_out_prev = v_t();
   ready_curr = false;
   mem_flag_curr = false;
   address_curr = 0;
-  mem_out_curr = 0;
+  mem_out_curr = v_t();
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -64,7 +64,7 @@ SimObj::WriteTempDstProperty<v_t, e_t>::~WriteTempDstProperty() {
 template<class v_t, class e_t>
 void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
   _tick++;
-  op_t next_state;
+  op_t next_state = _state;
 #ifdef MODULE_TRACE
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;
@@ -99,11 +99,9 @@ void SimObj::WriteTempDstProperty<v_t, e_t>::tick(void) {
         _apply->push_back(_data.vertex_dst_id);
         _edges_written++;
         Utility::pipeline_data<v_t, e_t> temp_data = _cau->signal();
-#ifdef DEBUG
         assert(temp_data.vertex_id == _data.vertex_id);
         assert(temp_data.edge_id == _data.edge_id);
         assert(temp_data.vertex_dst_id == _data.vertex_dst_id);
-#endif
         next_state = OP_WAIT;
         _stall = STALL_CAN_ACCEPT;
         _has_work = false;

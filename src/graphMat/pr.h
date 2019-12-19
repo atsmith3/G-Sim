@@ -39,6 +39,12 @@ public:
     os << obj.pageRank << "," << obj.delta << "," << obj.residual;
     return os;
   }
+  bool operator==(const pr_t& obj) const {
+    return this->delta == obj.delta && this->residual == obj.residual && this->pageRank == obj.pageRank;
+  }
+  bool operator!=(const pr_t& obj) const {
+    return !(this->delta == obj.delta && this->residual == obj.residual && this->pageRank == obj.pageRank);
+  }
 };
 
 template<class v_t, class e_t>

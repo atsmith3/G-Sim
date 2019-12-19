@@ -1,20 +1,14 @@
 #!/bin/bash
 
-SCRATCH_READ_LATENCY=('0' '1' '2' '5' '10')
-SCRATCH_WRITE_LATENCY=('0' '1' '2' '5' '10')
-SCRATCH_NUM_SIMULTANEOUS_REQ=('2' '4' '8' '16')
-
-DRAM_READ_LATENCY=('0' '5' '10' '15')
-DRAM_WRITE_LATENCY=('0' '10' '20' '30')
-DRAM_NUM_SIMULTANEOUS_REQ=('2' '4' '8' '16')
-
-GNAME=('arabic_2005' 'soc_Slashdot0902' 'hollywood_2009' 'wikipedia_20070206' 'webbase_2001')
+compile_app=('bfs' 'cc' 'sssp' 'pr')
+pipelines=('1' '8' '16' '32')
+graphs=('soc_Slashdot0902')
 
 
 # Sweep DRAM Parameters
-for drl in "${DRAM_READ_LATENCY[@]}"
-  do
-  for dwl in "${DRAM_WRITE_LATENCY[@]}"
+for app in "${APPS[@]}" do
+  `make clean && make ${app}`
+  for graph in "${DRAM_WRITE_LATENCY[@]}"
     do
     for graph in "${GNAME[@]}"
       do

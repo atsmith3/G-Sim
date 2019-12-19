@@ -32,6 +32,18 @@ OBJS :=  $(CPP_OBJS) $(C_OBJS)
 all: CPPFLAGS += -O0
 all: $(PROG)
 
+bfs: CPPFLAGS += -O3 -DAPP_BFS -DVERBOSE -DDEBUG
+bfs: $(PROG)
+
+cc: CPPFLAGS += -O3 -DAPP_CC -DVERBOSE -DDEBUG
+cc: $(PROG)
+
+sssp: CPPFLAGS += -O3 -DAPP_SSSP -DVERBOSE -DDEBUG
+sssp: $(PROG)
+
+pr: CPPFLAGS += -O3 -DAPP_PR -DVERBOSE -DDEBUG
+pr: $(PROG)
+
 debug: CPPFLAGS += -O0 -g -DVERBOSE -DDEBUG
 debug : $(PROG)
 

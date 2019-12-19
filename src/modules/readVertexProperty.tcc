@@ -28,14 +28,14 @@ SimObj::ReadVertexProperty<v_t, e_t>::ReadVertexProperty(Memory* dram, std::list
   mem_flag_prev = false;
   send_prev = false;
   address_prev = 0;
-  mem_result_prev = 0;
+  mem_result_prev = v_t();
   queue_length_prev = 0;
   iteration_reset_prev = false;
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
   address_curr = (uint64_t)_apply;
-  mem_result_curr = 0;
+  mem_result_curr = v_t();
   queue_length_curr = _apply->size();
   iteration_reset_curr = true;
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
@@ -67,7 +67,7 @@ SimObj::ReadVertexProperty<v_t, e_t>::~ReadVertexProperty() {
 template<class v_t, class e_t>
 void SimObj::ReadVertexProperty<v_t, e_t>::tick(void) {
   _tick++;
-  op_t next_state;
+  op_t next_state = _state;
 #ifdef MODULE_TRACE
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;

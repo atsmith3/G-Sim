@@ -23,6 +23,18 @@ public:
     os << obj.visited;
     return os;
   }
+  bool operator==(const bfs_t& obj) const {
+    return obj.visited == this->visited;
+  }
+  bool operator!=(const bfs_t& obj) const {
+    return obj.visited != this->visited;
+  }
+  bool operator<(const bfs_t& obj) const {
+    return this->visited < obj.visited;
+  }
+  bool operator>(const bfs_t& obj) const {
+    return this->visited >= obj.visited;
+  }
 };
 
 template<class v_t, class e_t>

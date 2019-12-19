@@ -26,8 +26,6 @@
 
 #define ITERATIONS 10000
 
-#define APP_SSSP
-
 #ifdef APP_BFS
 typedef GraphMat::bfs_t vertex_t;
 typedef double edge_t;

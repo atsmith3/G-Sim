@@ -45,7 +45,7 @@ SimObj::Reduce<v_t, e_t>::~Reduce() {
 template<class v_t, class e_t>
 void SimObj::Reduce<v_t, e_t>::tick(void) {
   _tick++;
-  op_t next_state;
+  op_t next_state = _state;
 #ifdef MODULE_TRACE
   ready_curr = _ready;
   send_curr = _next->is_stalled() == STALL_CAN_ACCEPT;

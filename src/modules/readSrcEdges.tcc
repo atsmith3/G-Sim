@@ -58,7 +58,7 @@ SimObj::ReadSrcEdges<v_t, e_t>::~ReadSrcEdges() {
 template<class v_t, class e_t>
 void SimObj::ReadSrcEdges<v_t, e_t>::tick(void) {
   _tick++;
-  op_t next_state;
+  op_t next_state = _state;
 #ifdef MODULE_TRACE
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;

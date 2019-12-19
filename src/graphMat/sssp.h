@@ -26,8 +26,17 @@ public:
     os << obj.distance;
     return os;
   }
-  bool operator==(const sssp_t& obj) {
+  bool operator==(const sssp_t& obj) const {
     return obj.distance == this->distance;
+  }
+  bool operator!=(const sssp_t& obj) const {
+    return obj.distance != this->distance;
+  }
+  bool operator<(const sssp_t& obj) const {
+    return this->distance < obj.distance;
+  }
+  bool operator>(const sssp_t& obj) const {
+    return this->distance >= obj.distance;
   }
 };
 

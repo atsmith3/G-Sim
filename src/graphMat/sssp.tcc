@@ -12,8 +12,8 @@ void GraphMat::SSSP<v_t, e_t>::do_every_iteration(Utility::Graph<v_t, e_t>& grap
 template<class v_t, class e_t>
 bool GraphMat::SSSP<v_t, e_t>::reduce(v_t& scratch, const v_t& message) {
   // Reduce
-  if(message.distance < scratch.distance) {
-    scratch.distance = message.distance;
+  if(message < scratch) {
+    scratch = message;
     return true;
   }
   return false;
@@ -28,8 +28,8 @@ void GraphMat::SSSP<v_t, e_t>::process_edge(v_t& message, const e_t& edge, const
 template<class v_t, class e_t>
 bool GraphMat::SSSP<v_t, e_t>::apply(const v_t& scratch, v_t& dram) {
   // Apply return true if successfully updated DRAM
-  if(scratch.distance < dram.distance) {
-    dram.distance = scratch.distance;
+  if(scratch < dram) {
+    dram = scratch;
     return true;
   }
   return false;

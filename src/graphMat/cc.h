@@ -27,6 +27,18 @@ public:
     os << obj.component;
     return os;
   }
+  bool operator==(const cc_t& obj) const {
+    return obj.component == this->component;
+  }
+  bool operator!=(const cc_t& obj) const {
+    return obj.component != this->component;
+  }
+  bool operator<(const cc_t& obj) const {
+    return this->component < obj.component;
+  }
+  bool operator>(const cc_t& obj) const {
+    return this->component >= obj.component;
+  }
 };
 
 template<class v_t, class e_t>

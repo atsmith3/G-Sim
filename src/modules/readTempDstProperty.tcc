@@ -26,12 +26,12 @@ SimObj::ReadTempDstProperty<v_t, e_t>::ReadTempDstProperty(Memory* scratchpad, s
   mem_flag_prev = false;
   send_prev = false;
   address_prev = 0;
-  mem_result_prev = 0;
+  mem_result_prev = v_t();
   ready_curr = false;
   mem_flag_curr = false;
   send_curr = false;
   address_curr = 0;
-  mem_result_curr = 0;
+  mem_result_curr = v_t();
   _in_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_in.csv");
   _out_logger = new Utility::Log("trace/"+name+"_"+std::to_string(_id)+"_out.csv");
   assert(_in_logger != NULL);
@@ -50,7 +50,7 @@ SimObj::ReadTempDstProperty<v_t, e_t>::~ReadTempDstProperty() {
 template<class v_t, class e_t>
 void SimObj::ReadTempDstProperty<v_t, e_t>::tick(void) {
   _tick++;
-  op_t next_state;
+  op_t next_state = _state;
 #ifdef MODULE_TRACE
   mem_flag_curr = _mem_flag;
   ready_curr = _ready;

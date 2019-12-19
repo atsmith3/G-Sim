@@ -29,6 +29,8 @@ SOFTWARE.
 #include <string>
 
 #include <boost/program_options.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 namespace Utility {
 
@@ -56,7 +58,11 @@ namespace Utility {
       unsigned long long int num_dst_readers = 4;
       int shouldInit = 0; // Used for the readGraph
       std::string graph_path = "";
-      std::string result = "vertex_properties.out";
+      std::string app = "";
+      std::string result = "";
+
+      std::vector<std::string> token;
+      
 
       bool parse(long long int argc, char** argv)
       {
@@ -90,18 +96,18 @@ namespace Utility {
 
           po::options_description sim("Simulation Options");
           sim.add_options()
+            ("app", po::value<std::string>(&app), "type of app")
             ("num_iter", po::value<unsigned long long int>(&num_iter), "the number of iterations to simulate")
             ("num_pipelines", po::value<unsigned long long int>(&num_pipelines), "the number of pipelines in parallel")
             ("num_dst_readers", po::value<unsigned long long int>(&num_dst_readers), "the number of readVertexProperty  modules")
           ;
 
           po::options_description graph("ReadGrpah Options");
-          sim.add_options()
+          graph.add_options()
             ("should_init", po::value<int>(&shouldInit), "graph needs to be initialized")
             ("graph_path", po::value<std::string>(&graph_path), "path to mat market format graph")
             ("vertex_properties", po::value<std::string>(&result), "name for the output file containing vertex values for verification")
           ;
-
 
           po::options_description all_options;
           all_options.add(desc);
